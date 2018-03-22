@@ -43,6 +43,7 @@
         'account_fix',  # Account Fixes
         'account_invoice_tax_wizard',  # add manual taxes on invoices
         'account_invoice_global_discount',  # descuentos en facturas de compra
+        'web_export_view',  # exportar vistas en excel
     ],
 
     'data': [
