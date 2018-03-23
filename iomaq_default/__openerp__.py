@@ -47,7 +47,8 @@
     ],
 
     'data': [
-        'views/product_view.xml'
+        'views/product_view.xml',
+        'views/afip_responsability.xml'
     ],
     'test': [
     ],
@@ -61,7 +62,8 @@
         {'usr': 'jobiols', 'repo': 'cl-iomaq', 'branch': '9.0'},
         {'usr': 'jobiols', 'repo': 'odoo-addons', 'branch': '9.0'},
         {'usr': 'Vauxoo', 'repo': 'addons-vauxoo', 'branch': '9.0'},
-        #        {'usr': 'JayVora-SerpentCS', 'repo': 'SerpentCS_Contributions', 'branch': '9.0'},
+        # {'usr': 'JayVora-SerpentCS',
+        # 'repo':'SerpentCS_Contributions', 'branch': '9.0'},
 
     ],
     'docker': [
