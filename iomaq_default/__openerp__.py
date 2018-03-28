@@ -44,6 +44,7 @@
         'account_invoice_tax_wizard',  # add manual taxes on invoices
         'account_invoice_global_discount',  # descuentos en facturas de compra
         'web_export_view',  # exportar vistas en excel
+        'account_clean_cancelled_invoice_number', #  borrar facturas canceladas
     ],
 
     'data': [
