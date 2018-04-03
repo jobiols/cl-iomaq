@@ -1,3 +1,3 @@
 # -*- coding: utf-8 -*-
 
-from . import report_controller
+from . import res_partner
