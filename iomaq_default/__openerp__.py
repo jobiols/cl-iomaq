@@ -38,14 +38,14 @@
         'account_reconciliation_menu',  # agrega boton en partner
         'product_multi_barcode',
         'stock_picking_auto',  # Automatic picking when Invoice is validated.
-        'price_security',  # Restringir quien ve el precio de costo
         'base_state_active',  # Deactivate US States
         'account_fix',  # Account Fixes
         'account_invoice_tax_wizard',  # add manual taxes on invoices
         'account_invoice_global_discount',  # descuentos en facturas de compra
         'web_export_view',  # exportar vistas en excel
         'account_clean_cancelled_invoice_number',  # borrar facturas canceladas
-        'sale_exception_price_security',  # limite de descuentos por usuario.
+        'price_security',  # Restringir quien ve el precio de costo
+        #'sale_exception_price_security',  # limite de descuentos por usuario
 
     ],
 
