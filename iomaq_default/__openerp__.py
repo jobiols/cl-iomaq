@@ -44,8 +44,7 @@
         'account_invoice_global_discount',  # descuentos en facturas de compra
         'web_export_view',  # exportar vistas en excel
         'account_clean_cancelled_invoice_number',  # borrar facturas canceladas
-        'price_security',  # Restringir quien ve el precio de costo
-        #'sale_exception_price_security',  # limite de descuentos por usuario
+        'price_security_fixed',  # Restringir quien ve el precio de costo
 
     ],
 
