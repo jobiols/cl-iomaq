@@ -44,13 +44,16 @@
         'account_invoice_global_discount',  # descuentos en facturas de compra
         'web_export_view',  # exportar vistas en excel
         'account_clean_cancelled_invoice_number',  # borrar facturas canceladas
-        'price_security_fixed',  # Restringir quien ve el precio de costo
+        'price_security', 'price_security_fix',  # Quien ve el precio de costo
 
     ],
 
     'data': [
         'views/product_view.xml',
-        'views/afip_responsability.xml'
+        'views/afip_responsability.xml',
+        'security/security_groups.xml',
+        'views/sale_view.xml',
+
     ],
     'test': [
     ],

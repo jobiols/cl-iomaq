@@ -15,24 +15,42 @@
                 </field>
 
                 <field name="website" position="after">
-                    <field name="afip_responsability_type_id" options="{'no_open': True, 'no_create': True}" attrs="{'invisible': [('is_company','=',False), ('parent_id','!=',False)]}"/>
+                    <field name="afip_responsability_type_id"
+                           options="{'no_open': True, 'no_create': True}"
+                           attrs="{'invisible': [('is_company','=',False), ('parent_id','!=',False)]}"/>
                 </field>
 
             </field>
         </record>
--->
-        <!-- quitar responsability
-        <record id="view_partner_property_form" model="ir.ui.view">
-            <field name="name">IOMAQ: quitar responsabilidad</field>
-            <field name="model">res.partner</field>
-            <field name="inherit_id" ref="l10n_ar_account.view_partner_property_form"/>
-            <field name="arch" type="xml">
+
+
                 <field name="ref" position="replace"/>
                 <field name="parent_id" position="replace"/>
-                <field name="afip_responsability_type_id" position="replace"/>
+
+                <field name="afip_responsability_type_id" position="attributes">
+                    <attribute name="invisible">0</attribute>
+                    <attribute name="required">1</attribute>
+                </field>
+
+
+                    <label for="afip_responsability_type_id"
+                           string="Tipo de Responsabilidad AFIP"/>
+
+-->
+        <!-- agregar afip responsability para el salesman -->
+        <record id="view_partner_property_form" model="ir.ui.view">
+            <field name="name">IOMAQ: poner afip responsability</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="l10n_ar_partner.view_partner_form"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//field[@name='website']" position="after">
+                    <field name="afip_responsability_type_id"
+                           options="{'no_open': True, 'no_create': True}"
+                           groups="iomaq_default.group_salesman_users"                    />
+                </xpath>
             </field>
         </record>
--->
     </data>
 
 </openerp>
