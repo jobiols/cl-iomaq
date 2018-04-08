@@ -45,6 +45,8 @@
         'web_export_view',  # exportar vistas en excel
         'account_clean_cancelled_invoice_number',  # borrar facturas canceladas
         'price_security', 'price_security_fix',  # Quien ve el precio de costo
+        'base_currency_inverse_rate',  # Ver TC al derecho
+        'l10n_ar_currency_update',  # Actualizar tipo de cambio
 
     ],
 
