@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
     <data>
-        <!-- ocultar boton confirmar presupuesto a los vendedores -->
+        <!-- ocultar boton confirmar presupuesto solo a los vendedores -->
         <record id="view_order_form" model="ir.ui.view">
             <field name="name">IOMAQ: ocultar Confirmar Venta</field>
             <field name="model">sale.order</field>
             <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="groups">iomaq_default.group_salesman_users"</field>
+
             <field name="arch" type="xml">
 
                 <xpath expr="//button[@name='action_confirm'][2]"
-                       position="attributes"
-                       groups="iomaq_default.group_salesman_users">
+                       position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>
 
