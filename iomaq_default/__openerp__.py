@@ -47,7 +47,7 @@
         'price_security', 'price_security_fix',  # Quien ve el precio de costo
         'base_currency_inverse_rate',  # Ver TC al derecho
         'l10n_ar_currency_update',  # Actualizar tipo de cambio
-        #'sale_order_validity', # imprimir validez del presupuesto
+        'sale_order_validity',  # imprimir validez del presupuesto
 
     ],
 
