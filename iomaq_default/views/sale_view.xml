@@ -6,12 +6,11 @@
             <field name="name">IOMAQ: ocultar Confirmar Venta</field>
             <field name="model">sale.order</field>
             <field name="inherit_id" ref="sale.view_order_form"/>
-            <field name="groups">iomaq_default.group_salesman_users"</field>
-
             <field name="arch" type="xml">
 
                 <xpath expr="//button[@name='action_confirm'][2]"
-                       position="attributes">
+                       position="attributes"
+                       groups="iomaq_default.group_salesman_users">
                     <attribute name="invisible">1</attribute>
                 </xpath>
 
