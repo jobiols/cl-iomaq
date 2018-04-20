@@ -1,0 +1,67 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+#	* iomaq_default
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 9.0c-20180206\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-04-20 18:07+0000\n"
+"PO-Revision-Date: 2018-04-20 18:07+0000\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: iomaq_default
+#: model:res.groups,name:iomaq_default.group_administrative_users
+msgid "Administration"
+msgstr "Administración"
+
+#. module: iomaq_default
+#: model:res.groups,name:iomaq_default.group_cashier_users
+msgid "Caja"
+msgstr "Caja"
+
+#. module: iomaq_default
+#: model:res.groups,comment:iomaq_default.group_administrative_users
+msgid "Grupo para los administrativos"
+msgstr "Grupo para los administrativos"
+
+#. module: iomaq_default
+#: model:res.groups,comment:iomaq_default.group_cashier_users
+msgid "Grupo para todos los cajeros"
+msgstr "Grupo para todos los cajeros"
+
+#. module: iomaq_default
+#: model:res.groups,comment:iomaq_default.group_supervisor_users
+msgid "Grupo para todos los supervisores"
+msgstr "Grupo para todos los supervisores"
+
+#. module: iomaq_default
+#: model:res.groups,comment:iomaq_default.group_salesman_users
+msgid "Grupo para todos los vendedores"
+msgstr "Grupo para todos los vendedores"
+
+#. module: iomaq_default
+#: model:ir.module.category,name:iomaq_default.module_iomaq
+msgid "IOMAQ Categ"
+msgstr "IOMAQ Categ"
+
+#. module: iomaq_default
+#: model:ir.model,name:iomaq_default.model_res_partner
+msgid "Partner"
+msgstr "Socio"
+
+#. module: iomaq_default
+#: model:res.groups,name:iomaq_default.group_salesman_users
+msgid "Sales"
+msgstr "Ventas"
+
+#. module: iomaq_default
+#: model:res.groups,name:iomaq_default.group_supervisor_users
+msgid "Supervisor"
+msgstr "Supervisor"
+
