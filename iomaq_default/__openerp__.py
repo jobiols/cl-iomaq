@@ -34,10 +34,10 @@
         'account_accountant',  # permisos para contabilidad
         'l10n_ar_aeroo_stock',
 
+        'stock_picking_auto',  # Automatic picking when Invoice is validated.
         'product_unique',
         'account_reconciliation_menu',  # agrega boton en partner
         'product_multi_barcode',
-        'stock_picking_auto',  # Automatic picking when Invoice is validated.
         'base_state_active',  # Deactivate US States
         'account_fix',  # Account Fixes
         'account_invoice_tax_wizard',  # add manual taxes on invoices
