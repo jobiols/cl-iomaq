@@ -2,3 +2,4 @@
 odoo-addons https://github.com/jobiols/odoo-addons 9.0
 ingadhoc-product https://github.com/ingadhoc/product.git 9.0
 ingadhoc-account-invoicing https://github.com/ingadhoc/account-invoicing.git 9.0
+ingadhoc-sale https://github.com/ingadhoc/sale.git 9.0

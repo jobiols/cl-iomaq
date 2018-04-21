@@ -43,12 +43,11 @@
         'account_invoice_tax_wizard',  # add manual taxes on invoices
         'account_invoice_global_discount',  # descuentos en facturas de compra
         'web_export_view',  # exportar vistas en excel
-        'account_clean_cancelled_invoice_number',  # borrar facturas canceladas
+        'account_clean_cancelled_invoice_number',  # borrar fac canceladas
         'price_security', 'price_security_fix',  # Quien ve el precio de costo
         'base_currency_inverse_rate',  # Ver TC al derecho
         'l10n_ar_currency_update',  # Actualizar tipo de cambio
         'sale_order_validity',  # imprimir validez del presupuesto
-
     ],
 
     'data': [
@@ -56,7 +55,7 @@
         'views/afip_responsability.xml',
         'security/security_groups.xml',
         'views/sale_view.xml',
-        #'views/custom_reports.xml',
+        # 'views/custom_reports.xml',
     ],
     'test': [
     ],
