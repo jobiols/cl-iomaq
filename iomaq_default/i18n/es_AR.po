@@ -4,10 +4,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 9.0c-20180206\n"
+"Project-Id-Version: Odoo Server 9.0c-20180313\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-04-20 18:07+0000\n"
-"PO-Revision-Date: 2018-04-20 18:07+0000\n"
+"POT-Creation-Date: 2018-04-25 02:41+0000\n"
+"PO-Revision-Date: 2018-04-25 02:41+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -24,6 +24,11 @@ msgstr "Administración"
 #: model:res.groups,name:iomaq_default.group_cashier_users
 msgid "Caja"
 msgstr "Caja"
+
+#. module: iomaq_default
+#: model:ir.model.fields,help:iomaq_default.field_product_template_final_price
+msgid "Final Price. This is the public price with tax"
+msgstr "Precio final. Este es el precio al publico con IVA"
 
 #. module: iomaq_default
 #: model:res.groups,comment:iomaq_default.group_administrative_users
@@ -56,6 +61,16 @@ msgid "Partner"
 msgstr "Socio"
 
 #. module: iomaq_default
+#: model:ir.model.fields,field_description:iomaq_default.field_product_template_final_price
+msgid "Price tax included"
+msgstr "Precio iva incluido"
+
+#. module: iomaq_default
+#: model:ir.model,name:iomaq_default.model_product_template
+msgid "Product Template"
+msgstr "Plantilla de Producto"
+
+#. module: iomaq_default
 #: model:res.groups,name:iomaq_default.group_salesman_users
 msgid "Sales"
 msgstr "Ventas"
@@ -64,4 +79,3 @@ msgstr "Ventas"
 #: model:res.groups,name:iomaq_default.group_supervisor_users
 msgid "Supervisor"
 msgstr "Supervisor"
-
