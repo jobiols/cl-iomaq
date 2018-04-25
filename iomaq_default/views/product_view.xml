@@ -18,7 +18,7 @@
                 </field>
                 <field name="name" position="before">
                     <field name="default_code"/>
-                    <field name="list_price"/>
+                    <field name="final_price"/>
                 </field>
             </field>
         </record>
