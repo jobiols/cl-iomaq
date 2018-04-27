@@ -48,6 +48,7 @@
         'base_currency_inverse_rate',  # Ver TC al derecho
         'l10n_ar_currency_update',  # Actualizar tipo de cambio
         'sale_order_validity',  # imprimir validez del presupuesto
+        'product_currency',  # distintas currencies para el producto
     ],
 
     'data': [
