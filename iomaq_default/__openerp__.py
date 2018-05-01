@@ -56,6 +56,7 @@
         'views/afip_responsability.xml',
         'security/security_groups.xml',
         'views/sale_view.xml',
+        'views/account_invoice_view.xml'
         # 'views/custom_reports.xml',
     ],
     'test': [
