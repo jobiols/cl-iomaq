@@ -38,16 +38,16 @@
 
 -->
         <!-- agregar afip responsability para el salesman -->
-        <record id="view_partner_property_form" model="ir.ui.view">
+        <record id="view_partner_form" model="ir.ui.view">
             <field name="name">IOMAQ: poner afip responsability</field>
             <field name="model">res.partner</field>
             <field name="inherit_id" ref="l10n_ar_partner.view_partner_form"/>
+            <field name="groups_id" eval="[(4, ref('group_salesman_users'))]"/>
             <field name="arch" type="xml">
 
                 <xpath expr="//field[@name='website']" position="after">
                     <field name="afip_responsability_type_id"
-                           options="{'no_open': True, 'no_create': True}"
-                           groups="iomaq_default.group_salesman_users"                    />
+                           options="{'no_open': True, 'no_create': True}"/>
                 </xpath>
             </field>
         </record>
