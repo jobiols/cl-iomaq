@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 9.0c-20180313\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-04-30 23:59+0000\n"
-"PO-Revision-Date: 2018-04-30 23:59+0000\n"
+"POT-Creation-Date: 2018-05-18 18:06+0000\n"
+"PO-Revision-Date: 2018-05-18 18:06+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -24,6 +24,21 @@ msgstr "Administración"
 #: model:res.groups,name:iomaq_default.group_cashier_users
 msgid "Caja"
 msgstr "Caja"
+
+#. module: iomaq_default
+#: model:ir.model.fields,field_description:iomaq_default.field_account_journal_cashier_id
+msgid "Cashier id"
+msgstr "Cashier id"
+
+#. module: iomaq_default
+#: model:ir.model.fields,field_description:iomaq_default.field_product_template_difference
+msgid "Difference"
+msgstr "Diferencia"
+
+#. module: iomaq_default
+#: model:ir.model.fields,help:iomaq_default.field_product_template_difference
+msgid "Difference % in cost price between invoce and system, calculated as (invoice_price-system_price)/invoice_pricethis diference is an error and must go towars zero."
+msgstr "Difference % in cost price between invoce and system, calculated as (invoice_price-system_price)/invoice_pricethis diference is an error and must go towars zero."
 
 #. module: iomaq_default
 #: model:ir.model.fields,help:iomaq_default.field_product_template_final_price
@@ -56,6 +71,16 @@ msgid "IOMAQ Categ"
 msgstr "IOMAQ Categ"
 
 #. module: iomaq_default
+#: model:ir.model,name:iomaq_default.model_account_invoice
+msgid "Invoice"
+msgstr "Factura"
+
+#. module: iomaq_default
+#: model:ir.model.fields,field_description:iomaq_default.field_account_invoice_line_invoice_discount
+msgid "Invoice Discount"
+msgstr "Invoice Discount"
+
+#. module: iomaq_default
 #: model:ir.model,name:iomaq_default.model_account_invoice_line
 msgid "Invoice Line"
 msgstr "Línea de factura"
@@ -63,12 +88,22 @@ msgstr "Línea de factura"
 #. module: iomaq_default
 #: model:ir.model,name:iomaq_default.model_account_invoice_line_report
 msgid "Invoices Statistics"
-msgstr "Estadística de facturas"
+msgstr "Estadísticas de Facturas"
+
+#. module: iomaq_default
+#: model:ir.model,name:iomaq_default.model_account_journal
+msgid "Journal"
+msgstr "Diario"
+
+#. module: iomaq_default
+#: model:ir.model.fields,field_description:iomaq_default.field_product_template_margin
+msgid "Margin"
+msgstr "Margen"
 
 #. module: iomaq_default
 #: model:ir.model,name:iomaq_default.model_res_partner
 msgid "Partner"
-msgstr "Socio"
+msgstr "Partner"
 
 #. module: iomaq_default
 #: model:ir.model.fields,field_description:iomaq_default.field_product_template_final_price
@@ -91,12 +126,32 @@ msgid "Supervisor"
 msgstr "Supervisor"
 
 #. module: iomaq_default
+#: model:ir.model.fields,field_description:iomaq_default.field_product_template_system_cost
+msgid "System cost"
+msgstr "System cost"
+
+#. module: iomaq_default
+#: model:ir.model.fields,field_description:iomaq_default.field_account_invoice_tag
+msgid "Tags"
+msgstr "Etiquetas"
+
+#. module: iomaq_default
 #: model:ir.model.fields,field_description:iomaq_default.field_account_invoice_line_cost_unit
+#: model:ir.model.fields,field_description:iomaq_default.field_account_invoice_line_report_cost_unit
 msgid "Unit Cost"
-msgstr "Costo unitario"
+msgstr "Coste unitario"
 
 #. module: iomaq_default
 #: model:ir.model.fields,field_description:iomaq_default.field_account_invoice_line_report_margin_unit
 msgid "Unit Margin"
 msgstr "Margen unitario"
 
+#. module: iomaq_default
+#: model:ir.model.fields,help:iomaq_default.field_product_template_margin
+msgid "bulonfer margin for this product"
+msgstr "bulonfer margin for this product"
+
+#. module: iomaq_default
+#: model:ir.model.fields,help:iomaq_default.field_account_invoice_line_invoice_discount
+msgid "the discount that applied to the purchase price minus the discount line gives the actual purcahse price. If there is noglobal discount then it is 0%"
+msgstr "the discount that applied to the purchase price minus the discount line gives the actual purcahse price. If there is noglobal discount then it is 0%"
