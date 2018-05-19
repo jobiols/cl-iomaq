@@ -59,7 +59,7 @@
         'views/sale_view.xml',
         'views/account_invoice_view.xml',
         'views/account_journal_view.xml'
-        # 'views/custom_reports.xml',
+        # 'views/custom_reports.xml', por si alguna vez hay que hacer custom reports
     ],
     'test': [
     ],
