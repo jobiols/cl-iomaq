@@ -53,12 +53,11 @@
     ],
 
     'data': [
+        'security/security_groups.xml',
         'views/product_view.xml',
         'views/afip_responsability.xml',
-        'security/security_groups.xml',
         'views/sale_view.xml',
         'views/account_invoice_view.xml',
-        'views/account_journal_view.xml'
         # 'views/custom_reports.xml', por si alguna vez hay que hacer custom reports
     ],
     'test': [
