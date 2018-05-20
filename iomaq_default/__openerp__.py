@@ -20,7 +20,7 @@
 # -----------------------------------------------------------------------------
 {
     'name': 'Iomaq',
-    'version': '9.0.1.2.0',
+    'version': '9.0.2.0.0',
     'license': 'Other OSI approved licence',
     'category': 'Tools',
     'summary': 'Customización IOMAQ SA',
@@ -53,12 +53,11 @@
     ],
 
     'data': [
+        'security/security_groups.xml',
         'views/product_view.xml',
         'views/afip_responsability.xml',
-        'security/security_groups.xml',
         'views/sale_view.xml',
         'views/account_invoice_view.xml',
-        'views/account_journal_view.xml'
         # 'views/custom_reports.xml', por si alguna vez hay que hacer custom reports
     ],
     'test': [
