@@ -50,6 +50,7 @@
         'sale_order_validity',  # imprimir validez del presupuesto
         'product_currency',  # distintas currencies para el producto
         'kpis_panel',        # muestra tablero de control
+        'account_cash_report'  # reporte de cajas
     ],
 
     'data': [
