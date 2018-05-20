@@ -20,7 +20,7 @@
 # -----------------------------------------------------------------------------
 {
     'name': 'Iomaq',
-    'version': '9.0.1.2.0',
+    'version': '9.0.2.0.0',
     'license': 'Other OSI approved licence',
     'category': 'Tools',
     'summary': 'Customización IOMAQ SA',
