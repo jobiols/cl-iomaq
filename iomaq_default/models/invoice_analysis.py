@@ -10,7 +10,6 @@ from openerp import tools
 class AccountInvoiceLineReport(models.Model):
     _inherit = "account.invoice.line.report"
 
-
     # Agregamos dos campos al pivot
     # - *cost_unit* es el costo unitario en moneda de la compa~nia y sin iva
     #   calculado desde el costo del producto.
