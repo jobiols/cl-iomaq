@@ -40,8 +40,8 @@ class AccountInvoiceLine(models.Model):
     def _compute_cost_unit(self):
         for ail in self:
             # traer el tipo de cambio del producto
-            rate = ail.product_id and ail.product_id.currency_id.rate or None
+            rate = ail.product_id and ail.product_id.currency_id.rate or False
 
             # obtener el costo en moneda de la compa~nia
-            cost = ail.product_id.standard_price / rate if rate != 0 else 0
+            cost = ail.product_id.standard_price / rate if rate else 0
             ail.cost_unit = cost
