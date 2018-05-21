@@ -9,13 +9,13 @@ class ProductTemplate(models.Model):
 
     final_price = fields.Float(
         string='Price tax included',
-        compute='_get_final_price',
+        compute='_compute_final_price',
         digits=dp.get_precision('Product Price'),
         help='Final Price. This is the public price with tax',
     )
 
     @api.multi
-    def _get_final_price(self):
+    def _compute_final_price(self):
         for prod in self:
             # obtener el rate con la divisa del producto
             rate = prod.currency_id.rate

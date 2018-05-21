@@ -15,12 +15,12 @@ class AccountInvoice(models.Model):
         help="This is the first tag found in the partner"
     )
 
-    @api.one
+    @api.multi
     @api.depends('partner_id.category_id')
     def _compute_tag(self):
-        if self.partner_id:
-            if self .partner_id.category_id:
-                self.tag = self.partner_id.category_id[0].name
+        for invoice in self:
+            if invoice.partner_id and invoice.partner_id.category_id:
+                invoice.tag = invoice.partner_id.category_id[0].name
 
 
 class AccountInvoiceLine(models.Model):
@@ -35,7 +35,7 @@ class AccountInvoiceLine(models.Model):
              "to the company currency"
     )
 
-    @api.one
+    @api.multi
     @api.depends('product_id.standard_price', 'invoice_id.currency_id')
     def _compute_cost_unit(self):
         for ail in self:
