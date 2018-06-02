@@ -59,7 +59,7 @@
         'views/afip_responsability.xml',
         'views/sale_view.xml',
         'views/account_invoice_view.xml',
-        'views/custom_reports.xml',  # por si hay que hacer custom reports
+        # 'views/custom_reports.xml',  # por si hay que hacer custom reports
     ],
     'test': [
     ],
