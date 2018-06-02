@@ -100,4 +100,4 @@ class AccountInvoiceLineReport(models.Model):
         -- INNER JOIN "public"."account_period" "account_period"
         -- ON ("account_invoice"."period_id" = "account_period"."id")
         ORDER BY number ASC
-              )""")
+              )""")  # noqa
