@@ -34,7 +34,8 @@ class AccountInvoiceLineReport(models.Model):
         "account_invoice_line"."id" AS "id",
         "account_invoice_line"."price_unit" AS "price_unit",
         "account_invoice_line"."cost_unit" AS "cost_unit",
-        "account_invoice_line"."price_unit" - "account_invoice_line"."cost_unit" AS "margin_unit",
+        "account_invoice_line"."price_unit" -
+                        "account_invoice_line"."cost_unit" AS "margin_unit",
         "account_invoice_line"."discount" AS "discount",
         "account_invoice_line"."account_analytic_id" AS "account_analytic_id",
         case when "account_invoice"."type" in ('in_refund','out_refund') then
@@ -100,4 +101,4 @@ class AccountInvoiceLineReport(models.Model):
         -- INNER JOIN "public"."account_period" "account_period"
         -- ON ("account_invoice"."period_id" = "account_period"."id")
         ORDER BY number ASC
-              )""")  # noqa
+              )""")
