@@ -8,7 +8,7 @@ class ReportControllerDerived(report.controllers.main.ReportController):
         de salir la odoo default
     """
 
-    # TODO mover esto a un modulo para que se pueda reusar
+    # TODO mover esto a un modulo para que se pueda reusar.
 
     @route(['/report/download'], type='http', auth="user")
     def report_download(self, data, token):
