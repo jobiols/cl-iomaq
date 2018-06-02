@@ -18,7 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------------
-{
+
     'name': 'Iomaq',
     'version': '9.0.2.0.0',
     'license': 'Other OSI approved licence',
