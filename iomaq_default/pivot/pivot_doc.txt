@@ -1,0 +1,28 @@
+price_unit              Precio unitario
+price_subtotal          (price_unit * quantity) * (1-discount/100)
+quantity                qty
+discount                descuento %
+price_gross_subtotal    (price_unit * quantity)
+discount_amount         (price_unit * quantity) * (discount/100)
+date_due                date_due
+number                  numero de factura
+state                   draft,paid,open
+document_type_id
+date
+date_invoice            fecha de la factura
+date_invoice_from
+date_invoice_to
+amount_total            total de la factura iva incluido (suma de todas las lineas)
+barcode                 barcode del producto
+product_id
+name_template           name_template del producto
+partner_id
+customer
+supplier
+journal_id
+type
+user_id
+state_id
+company_id
+product_category_id
+account_analytic_id

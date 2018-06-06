@@ -78,7 +78,15 @@ class AccountInvoiceLineReport(models.Model):
         "account_invoice"."date" AS "date",
         "account_invoice"."date_invoice" AS "date_invoice",
 
-        "account_invoice"."amount_total" AS "amount_total",
+        -- Parche, sin esto cada linea de factura tenia el total de la factura
+        -- ahora divido por la cantidad de lineas sigue estando mal pero suma
+        -- bien.
+        --   "account_invoice"."amount_total" AS "amount_total",
+        "account_invoice"."amount_total" / (
+            select count(*) from "account_invoice_line"
+            where "account_invoice_line"."invoice_id" = "account_invoice"."id"
+          ) AS "amount_total",
+
         "product_product"."barcode" AS "barcode",
         "product_product"."name_template" AS "name_template",
 
