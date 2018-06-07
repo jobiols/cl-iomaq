@@ -62,6 +62,24 @@ class AccountInvoiceLineReport(models.Model):
                                ("price_unit" * "quantity" * ("discount"/100))
                               end as "discount_amount",
 
+        -- Parche, sin esto cada linea de factura tenia el total de la factura
+        -- ahora divido por la cantidad de lineas sigue estando mal pero suma
+        -- bien este valor es siempre positivo asi que lo ponemos negativo en
+        -- las NC
+        -- "account_invoice"."amount_total" AS "amount_total",
+
+        case when "account_invoice"."type" in ('in_refund','out_refund') then
+            - "account_invoice"."amount_total" / (
+                select count(*) from "account_invoice_line"
+                where "account_invoice_line"."invoice_id" = "account_invoice"."id"
+            )
+            else
+            "account_invoice"."amount_total" / (
+                select count(*) from "account_invoice_line"
+                where "account_invoice_line"."invoice_id" = "account_invoice"."id"
+            )
+            end AS "amount_total",
+
         "account_invoice_line"."partner_id" AS "partner_id",--n
         "account_invoice_line"."product_id" AS  "product_id", --n
         "account_invoice"."date_due" AS "date_due",
@@ -77,16 +95,6 @@ class AccountInvoiceLineReport(models.Model):
         "account_invoice"."state" AS "state",
         "account_invoice"."date" AS "date",
         "account_invoice"."date_invoice" AS "date_invoice",
-
-        -- Parche, sin esto cada linea de factura tenia el total de la factura
-        -- ahora divido por la cantidad de lineas sigue estando mal pero suma
-        -- bien.
-        --   "account_invoice"."amount_total" AS "amount_total",
-        "account_invoice"."amount_total" / (
-            select count(*) from "account_invoice_line"
-            where "account_invoice_line"."invoice_id" = "account_invoice"."id"
-          ) AS "amount_total",
-
         "product_product"."barcode" AS "barcode",
         "product_product"."name_template" AS "name_template",
 
