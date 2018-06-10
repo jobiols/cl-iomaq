@@ -1,8 +1,12 @@
-price_unit              Precio unitario
+price_unit              Precio unitario NO ME SIRVE
 price_subtotal          (price_unit * quantity) * (1-discount/100)
+
+
+
+price_gross_subtotal    (price_unit * quantity)
+
 quantity                qty
 discount                descuento %
-price_gross_subtotal    (price_unit * quantity)
 discount_amount         (price_unit * quantity) * (discount/100)
 date_due                date_due
 number                  numero de factura

@@ -16,12 +16,23 @@ class AccountInvoiceLineReport(models.Model):
     #
     # - *margin* es el margen de contribucion entre cost_unit y price_unit
 
-    cost_unit = fields.Float(
-        'Unit Cost',
-        readonly=True
+    price_unit = fields.Float(
+        'Costo +IVA',
+        group_operator="sum",
+        readonly=True,
+        help="Costo +IVA"
     )
+
+    price_subtotal = fields.Float(
+        'Subtotal C/descuento',
+        readonly=True,
+        group_operator="sum",
+        help="Subtotal con descuento"
+    )
+
     margin_unit = fields.Float(
-        'Unit Margin',
+        'Margen',
+        group_operator="sum",
         readonly=True
     )
 
@@ -31,54 +42,60 @@ class AccountInvoiceLineReport(models.Model):
         cr.execute("""
         CREATE OR REPLACE VIEW account_invoice_line_report AS (
         SELECT
-        "account_invoice_line"."id" AS "id",
-        "account_invoice_line"."price_unit" AS "price_unit",
-        "account_invoice_line"."cost_unit" AS "cost_unit",
-        "account_invoice_line"."price_unit" -
-                        "account_invoice_line"."cost_unit" AS "margin_unit",
-        "account_invoice_line"."discount" AS "discount",
-        "account_invoice_line"."account_analytic_id" AS "account_analytic_id",
-        case when "account_invoice"."type" in ('in_refund','out_refund') then
-                               -("account_invoice_line"."quantity")
-                              else
-                               "account_invoice_line"."quantity"
-                              end as "quantity",
-        case when "account_invoice"."type" in ('in_refund','out_refund') then
-                               -("account_invoice_line"."price_subtotal")
-                              else
-                               "account_invoice_line"."price_subtotal"
-                              end as "price_subtotal",
+            "account_invoice_line"."id" AS "id",
 
-      -- Campos Calculados
-        case when "account_invoice"."type" in ('in_refund','out_refund') then
-                               -("price_unit" * "quantity")
-                              else
-                               ("price_unit" * "quantity")
-                              end as "price_gross_subtotal",
+            -- Total de la factura con iva ------------------------------------
+            "account_invoice_line"."price_subtotal_signed" *
+                (1 + "account_invoice_line"."product_iva")
+            AS "amount_total",
 
-        case when "account_invoice"."type" in ('in_refund','out_refund') then
-                               -("price_unit" * "quantity" * ("discount"/100))
-                              else
-                               ("price_unit" * "quantity" * ("discount"/100))
-                              end as "discount_amount",
+            -- Costo +IVA -----------------------------------------------------
+            -- (tapa el campo price_unit) El costo es el precio menos el margen
+            -- o sea tengo el precio en la factura y lo multiplico por
+            -- (1 - margen) del producto. Hago esto porque no tengo el costo
+            -- a la fecha de la venta. y le sumo el IVA
+            "account_invoice_line"."price_unit" *
+                "account_invoice_line"."quantity" *
+                    (1 - "account_invoice_line"."product_margin") *
+                        (1 + "account_invoice_line"."product_iva") *
+                            "account_invoice_line"."sign"
+            AS "price_unit",
 
-        -- Parche, sin esto cada linea de factura tenia el total de la factura
-        -- ahora divido por la cantidad de lineas sigue estando mal pero suma
-        -- bien este valor es siempre positivo asi que lo ponemos negativo en
-        -- las NC
-        -- "account_invoice"."amount_total" AS "amount_total",
+            -- Margen Precio menos costo, ojo que price_unit es el costo ------
+            "account_invoice_line"."price_subtotal_signed" *
+                ( 1 + "account_invoice_line"."product_iva")
+                -
+            "account_invoice_line"."price_unit" *
+                "account_invoice_line"."quantity" *
+                    (1 - "account_invoice_line"."product_margin") *
+                        (1 + "account_invoice_line"."product_iva") *
+                            "account_invoice_line"."sign"
+            AS "margin_unit",
 
-        case when "account_invoice"."type" in ('in_refund','out_refund') then
-            - "account_invoice"."amount_total" / (
-                select count(*) from "account_invoice_line"
-                where "account_invoice_line"."invoice_id" = "account_invoice"."id"
-            )
-            else
-            "account_invoice"."amount_total" / (
-                select count(*) from "account_invoice_line"
-                where "account_invoice_line"."invoice_id" = "account_invoice"."id"
-            )
-            end AS "amount_total",
+            "account_invoice_line"."discount"
+            AS "discount",
+
+            "account_invoice_line"."account_analytic_id"
+            AS "account_analytic_id",
+
+            "account_invoice_line"."quantity" *
+                "account_invoice_line"."sign"
+            As "quantity",
+
+            -- Total de la factura sin iva, incluye el descuento de linea
+            "account_invoice_line"."price_subtotal_signed"
+            As "price_subtotal",
+
+            "account_invoice_line"."price_unit" *
+                "account_invoice_line"."quantity" *
+                    "account_invoice_line"."sign"
+            As "price_gross_subtotal",
+
+            "account_invoice_line"."price_unit" *
+                "account_invoice_line"."quantity" *
+                    "account_invoice_line"."discount"/100 *
+                        "account_invoice_line"."sign"
+            As "discount_amount",
 
         "account_invoice_line"."partner_id" AS "partner_id",--n
         "account_invoice_line"."product_id" AS  "product_id", --n
@@ -98,12 +115,9 @@ class AccountInvoiceLineReport(models.Model):
         "product_product"."barcode" AS "barcode",
         "product_product"."name_template" AS "name_template",
 
-
         "product_template"."categ_id" as "product_category_id", --n
         "res_partner"."customer" AS "customer",
         "res_partner"."supplier" AS "supplier"
-        -- "account_invoice"."period_id" AS "period_id",
-        -- "account_period"."fiscalyear_id" AS "fiscalyear_id"
 
         FROM "account_invoice_line" "account_invoice_line"
         INNER JOIN "account_invoice" "account_invoice"

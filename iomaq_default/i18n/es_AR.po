@@ -4,10 +4,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 9.0c-20180313\n"
+"Project-Id-Version: Odoo Server 9.0c-20180504\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-05-20 15:35+0000\n"
-"PO-Revision-Date: 2018-05-20 15:35+0000\n"
+"POT-Creation-Date: 2018-06-10 14:09+0000\n"
+"PO-Revision-Date: 2018-06-10 14:09+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -24,6 +24,21 @@ msgstr "Administración"
 #: model:res.groups,name:iomaq_default.group_cashier_users
 msgid "Caja"
 msgstr "Caja"
+
+#. module: iomaq_default
+#: model:ir.model.fields,field_description:iomaq_default.field_product_template_difference
+msgid "Difference"
+msgstr "Diferencia"
+
+#. module: iomaq_default
+#: model:ir.model.fields,help:iomaq_default.field_product_template_difference
+msgid "Difference % in cost price between invoce and system, calculated as (invoice_price-system_price)/invoice_pricethis diference is an error and must go towars zero."
+msgstr "Difference % in cost price between invoce and system, calculated as (invoice_price-system_price)/invoice_pricethis diference is an error and must go towars zero."
+
+#. module: iomaq_default
+#: model:ir.model.fields,help:iomaq_default.field_product_template_final_price
+msgid "Final Price. This is the public price with tax"
+msgstr "Precio final. Este es el precio al publico con IVA"
 
 #. module: iomaq_default
 #: model:res.groups,comment:iomaq_default.group_administrative_users
@@ -56,6 +71,11 @@ msgid "Invoice"
 msgstr "Factura"
 
 #. module: iomaq_default
+#: model:ir.model.fields,field_description:iomaq_default.field_account_invoice_line_invoice_discount
+msgid "Invoice Discount"
+msgstr "Descuento en factura"
+
+#. module: iomaq_default
 #: model:ir.model,name:iomaq_default.model_account_invoice_line
 msgid "Invoice Line"
 msgstr "Línea de factura"
@@ -63,7 +83,22 @@ msgstr "Línea de factura"
 #. module: iomaq_default
 #: model:ir.model,name:iomaq_default.model_account_invoice_line_report
 msgid "Invoices Statistics"
-msgstr "Estadísticas de Facturas"
+msgstr "Estadísticas de facturas"
+
+#. module: iomaq_default
+#: model:ir.model,name:iomaq_default.model_account_journal
+msgid "Journal"
+msgstr "Diario"
+
+#. module: iomaq_default
+#: model:ir.model.fields,field_description:iomaq_default.field_account_invoice_line_report_margin_unit
+msgid "Margen"
+msgstr "Margen"
+
+#. module: iomaq_default
+#: model:ir.model.fields,field_description:iomaq_default.field_product_template_margin
+msgid "Margin"
+msgstr "Margen"
 
 #. module: iomaq_default
 #: model:ir.model,name:iomaq_default.model_res_partner
@@ -71,9 +106,24 @@ msgid "Partner"
 msgstr "Partner"
 
 #. module: iomaq_default
+#: model:ir.model.fields,field_description:iomaq_default.field_product_template_final_price
+msgid "Price tax included"
+msgstr "Precio iva incluido"
+
+#. module: iomaq_default
+#: model:ir.model.fields,field_description:iomaq_default.field_account_invoice_line_product_margin
+msgid "Product Margin"
+msgstr "Margen del producto"
+
+#. module: iomaq_default
 #: model:ir.model,name:iomaq_default.model_product_template
 msgid "Product Template"
 msgstr "Plantilla de Producto"
+
+#. module: iomaq_default
+#: model:ir.model.fields,field_description:iomaq_default.field_account_invoice_line_product_iva
+msgid "Product iva"
+msgstr "IVA"
 
 #. module: iomaq_default
 #: model:res.groups,name:iomaq_default.group_salesman_users
@@ -81,7 +131,47 @@ msgid "Sales"
 msgstr "Ventas"
 
 #. module: iomaq_default
+#: model:ir.model.fields,field_description:iomaq_default.field_account_invoice_line_sign
+msgid "Sign"
+msgstr "Firma"
+
+#. module: iomaq_default
 #: model:res.groups,name:iomaq_default.group_supervisor_users
 msgid "Supervisor"
 msgstr "Supervisor"
+
+#. module: iomaq_default
+#: model:ir.model.fields,field_description:iomaq_default.field_product_template_system_cost
+msgid "System cost"
+msgstr "Costo del sistema"
+
+#. module: iomaq_default
+#: model:ir.model.fields,field_description:iomaq_default.field_account_invoice_tag
+msgid "Tags"
+msgstr "Etiquetas"
+
+#. module: iomaq_default
+#: model:ir.model.fields,help:iomaq_default.field_account_invoice_tag
+msgid "This is the first tag found in the partner"
+msgstr "Esta es la primera etiqueta encontrada en el partner"
+
+#. module: iomaq_default
+#: model:ir.model.fields,help:iomaq_default.field_account_invoice_line_product_margin
+msgid "This is the margin between standard price and list_price"
+msgstr "Este es el margen entre costo y precio"
+
+#. module: iomaq_default
+#: model:ir.model.fields,help:iomaq_default.field_account_invoice_line_product_iva
+msgid "This is the product iva"
+msgstr "Este es el iva del producto"
+
+#. module: iomaq_default
+#: model:ir.model.fields,help:iomaq_default.field_product_template_margin
+msgid "bulonfer margin for this product"
+msgstr "bulonfer margin for this product"
+
+#. module: iomaq_default
+#: model:ir.model.fields,help:iomaq_default.field_account_invoice_line_invoice_discount
+msgid "the discount that applied to the purchase price minus the discount line gives the actual purcahse price. If there is noglobal discount then it is 0%"
+msgstr "the discount that applied to the purchase price minus the discount line gives the actual purcahse price. If there is noglobal discount then it is 0%"
 
