@@ -66,8 +66,8 @@ class AccountInvoiceLine(models.Model):
     @api.depends('invoice_id')
     def _compute_sign(self):
         for ail in self:
-            ail.sign = self.invoice_id.type in ['in_refund',
-                                                'out_refund'] and -1 or 1
+            ail.sign = ail.invoice_id.type in ['in_refund',
+                                               'out_refund'] and -1 or 1
 
     @api.model
     def compute_all(self):
@@ -75,4 +75,4 @@ class AccountInvoiceLine(models.Model):
             line._compute_product_margin()
             line._compute_product_iva()
             line._compute_sign()
-            print 'compute'
+
