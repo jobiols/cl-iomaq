@@ -52,7 +52,7 @@
         'kpis_panel',        # muestra tablero de control
         'account_cash_report',  # reporte de cajas
         'product_upload_prices',  # subir planilla con precios de productos
-        'product_prices_update', # actualizar precios con incrementos porcentuales
+        'product_prices_update',  # incrementos de precios porcentuales
     ],
 
     'data': [

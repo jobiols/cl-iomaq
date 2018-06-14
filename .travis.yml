@@ -9,6 +9,9 @@ cache:
 python:
   - "2.7"
 
+install:
+  - pip install "openpyxl >= 2.5.3"
+
 addons:
   apt:
 # only add the two lines below if you need wkhtmltopdf for your tests
