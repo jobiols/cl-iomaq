@@ -53,6 +53,7 @@
         'account_cash_report',  # reporte de cajas
         'product_upload_prices',  # subir planilla con precios de productos
         'product_prices_update',  # incrementos de precios porcentuales
+        'product_autoload'        # replicacion bulonfer
     ],
 
     'data': [
