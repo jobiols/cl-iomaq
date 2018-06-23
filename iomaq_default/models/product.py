@@ -13,6 +13,9 @@ class ProductTemplate(models.Model):
         digits=dp.get_precision('Product Price'),
         help='Final Price. This is the public price with tax',
     )
+    meli_code = fields.Char(
+        string='Meli Publishing Code'
+    )
 
     @api.multi
     def _compute_final_price(self):

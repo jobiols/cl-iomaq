@@ -31,7 +31,7 @@ class AccountInvoiceLineReport(models.Model):
     )
 
     margin_unit = fields.Float(
-        'Margen',
+        'Margin',
         group_operator="sum",
         readonly=True
     )
