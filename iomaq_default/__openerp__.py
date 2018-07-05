@@ -54,7 +54,8 @@
         'product_upload_prices',  # subir planilla con precios de productos
         'product_prices_update',  # incrementos de precios porcentuales
         'product_autoload',        # replicacion bulonfer
-        'simple_meli_publishing'  # publicar precios de mercadolibre
+        'simple_meli_publishing',  # publicar precios de mercadolibre
+        'simple_meshops_publishing'
     ],
 
     'data': [
