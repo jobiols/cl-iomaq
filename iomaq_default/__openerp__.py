@@ -60,9 +60,11 @@
 
     'data': [
         'security/security_groups.xml',
+        'security/ir.model.access.csv',
         'views/product_view.xml',
         'views/afip_responsability.xml',
         'views/sale_view.xml',
+        'views/invoice_analysis.xml'
         # 'views/custom_reports.xml',  # por si hay que hacer custom reports
     ],
     'test': [

@@ -115,5 +115,10 @@
                              ]"/>
         </record>
 
+        <!-- GRUPO NADIE PARA OCULTAR MENUS -->
+        <record id="group_nobody" model="res.groups">
+            <field name="name">This is the Nobody group</field>
+            <field name="comment">Grupo to hide menus</field>
+        </record>
     </data>
 </openerp>

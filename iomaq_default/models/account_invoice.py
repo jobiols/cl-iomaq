@@ -32,7 +32,7 @@ class AccountInvoiceLine(models.Model):
         compute="_compute_product_margin",
         store=True,
         digits=dp.get_precision('Product Price'),
-        help="This is the margin between standard price and list_price"
+        help="This is the margin between standard_price and list_price"
     )
     product_iva = fields.Float(
         compute="_compute_product_iva",
