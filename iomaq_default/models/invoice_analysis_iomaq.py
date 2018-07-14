@@ -49,9 +49,6 @@ class AccountInvoiceLineReportIomaq(models.Model):
         readonly=True,
         group_operator="sum"
     )
-
-
-
     date_due = fields.Date(
         'Due Date',
         readonly=True
