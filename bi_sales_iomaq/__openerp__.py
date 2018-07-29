@@ -19,7 +19,7 @@
 #
 # -----------------------------------------------------------------------------
 {
-    'name': 'IOMAQ Sales Business Intelligence Report',
+    'name': 'Sales Business Intelligence Report',
     'version': '9.0.0.0.0',
     'license': 'AGPL-3',
     'category': 'Tools',
