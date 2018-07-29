@@ -55,16 +55,15 @@
         'product_prices_update',  # incrementos de precios porcentuales
         'product_autoload',        # replicacion bulonfer
         'simple_meli_publishing',  # publicar precios de mercadolibre
-        'simple_meshops_publishing'
+        'simple_meshops_publishing',
+        'bi_sales_iomaq',          # custom bi report for sales
     ],
 
     'data': [
         'security/security_groups.xml',
-        'security/ir.model.access.csv',
         'views/product_view.xml',
         'views/afip_responsability.xml',
         'views/sale_view.xml',
-        'views/invoice_analysis.xml',
         'views/custom_reports.xml',  # por si hay que hacer custom reports
     ],
     'test': [

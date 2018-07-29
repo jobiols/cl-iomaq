@@ -129,7 +129,6 @@
         </field>
     </record>
 
-
         <record id="action_account_invoice_line_report_all_iomaq"
                 model="ir.actions.act_window">
             <field name="name">Invoice Lines Analysis</field>
@@ -144,13 +143,13 @@
         <!-- menu de analisis lineas de factura -->
         <menuitem action="action_account_invoice_line_report_all_iomaq"
                   id="menu_action_account_invoice_line_report_all_iomaq"
-                  name="Custom Invoice Lines Analysis"
+                  name="Sales Invoice Lines Analysis"
                   parent="account.account_reports_business_intelligence_menu"
                   sequence="11"/>
 
-        <!-- ocultar el otro menu -->
+        <!-- ocultar el otro menu
         <menuitem id="l10n_ar_account.menu_action_account_invoice_line_report_all"
                   groups="group_nobody"/>
-
+        -->
     </data>
 </openerp>

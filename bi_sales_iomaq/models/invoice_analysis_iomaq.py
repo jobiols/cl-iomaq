@@ -133,16 +133,19 @@ class AccountInvoiceLineReportIomaq(models.Model):
         'State',
         readonly=True
     )
-    """
-    company_id = fields.Many2one(
-        'res.company',
-        'Company',
-        readonly=True
-    )
-    """
     product_category_id = fields.Many2one(
         'product.category',
         'Category',
+        readonly=True
+    )
+    brand_id = fields.Many2one(
+        'bi_sales_iomaq.brand',
+        'Brand',
+        readonly=True
+    )
+    vendor_id = fields.Many2one(
+        'res_partner',
+        'Vendor',
         readonly=True
     )
     _order = 'id'
@@ -217,20 +220,18 @@ class AccountInvoiceLineReportIomaq(models.Model):
         "account_invoice_line"."partner_id" AS "partner_id",
         "account_invoice_line"."product_id" AS  "product_id",
         "account_invoice"."date_due" AS "date_due",
+
         COALESCE("account_invoice"."document_number",
-        "account_invoice"."number") AS "number",
+            "account_invoice"."number") AS "number",
         "account_invoice"."journal_id" AS "journal_id",
         "account_invoice"."user_id" AS "user_id",--n
----     "account_invoice"."company_id" AS "company_id",
         "account_invoice"."type" AS "type",
         "account_invoice"."state_id" AS "state_id",
         "account_invoice"."document_type_id" AS "document_type_id",
         "account_invoice"."state" AS "state",
         "account_invoice"."date" AS "date",
         "account_invoice"."date_invoice" AS "date_invoice",
-
         "product_product"."name_template" AS "name_template",
-
         "product_template"."categ_id" as "product_category_id",
         "res_partner"."customer" AS "customer",
         "res_partner"."supplier" AS "supplier"
@@ -238,12 +239,16 @@ class AccountInvoiceLineReportIomaq(models.Model):
         FROM "account_invoice_line" "account_invoice_line"
         INNER JOIN "account_invoice" "account_invoice"
         ON ("account_invoice_line"."invoice_id" = "account_invoice"."id")
+
         LEFT JOIN "product_product" "product_product"
         ON ("account_invoice_line"."product_id" = "product_product"."id")
+
         INNER JOIN "res_partner" "res_partner"
         ON ("account_invoice"."partner_id" = "res_partner"."id")
+
         LEFT JOIN "product_template" "product_template"
         ON ("product_product"."product_tmpl_id" = "product_template"."id")
+
         ORDER BY number ASC
         )"""
                    )

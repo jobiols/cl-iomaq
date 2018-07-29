@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <!-- marcas tree -->
+        <record id="brand_tree_iomaq" model="ir.ui.view">
+            <field name="name">BI_SALES: Brand tree</field>
+            <field name="model">bi_sales_iomaq.brand</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="mask"/>
+                    <field name="product_count"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- marcas form -->
+        <record id="brand_form_iomaq" model="ir.ui.view">
+            <field name="name">BI_SALES: Brand form</field>
+            <field name="model">bi_sales_iomaq.brand</field>
+            <field name="arch" type="xml">
+                <form string="Product brands" class="oe_form_configuration">
+                    <header>
+                        <button string="Check mask" type="object"
+                                name="check_mask" class="oe_highlight"/>
+                    </header>
+                    <group col="6" colspan="6">
+                        <field name="name" string="Brand"/>
+                        <field name="mask"/>
+                    </group>
+                    <group>
+                        <field name="product_template_ids" nolabel="1"
+                               create="false" delete="false" editable="false">
+                            <tree limit="20">
+                                <field name="default_code"/>
+                                <field name="name"/>
+                            </tree>
+                        </field>
+                    </group>
+                </form>
+            </field>
+        </record>
+
+        <!-- accion para las marcas -->
+        <record id="action_brand_iomaq" model="ir.actions.act_window">
+            <field name="name">Product brands</field>
+            <field name="res_model">bi_sales_iomaq.brand</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <!-- menu de marcas -->
+        <menuitem action="action_brand_iomaq"
+                  id="menu_action_brand_iomaq"
+                  name="Product brands"
+                  parent="stock.menu_product_in_config_stock"
+                  sequence="11"/>
+
+    </data>
+</openerp>
