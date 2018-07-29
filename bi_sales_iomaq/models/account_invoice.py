@@ -4,6 +4,15 @@ from __future__ import division
 from openerp import fields, models, api
 
 
+class AccountInvoiceLine(models.Model):
+    _inherit = "account.invoice.line"
+
+    vendor_id = fields.Many2one(
+        'res.partner',
+        help="The vendor who sell us this product"
+    )
+
+
 class AccountInvoice(models.Model):
     _inherit = "account.invoice"
 

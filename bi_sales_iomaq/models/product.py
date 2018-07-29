@@ -10,4 +10,5 @@ class ProductTemplate(models.Model):
         'bi_sales_iomaq.brand',
         string='Brand',
         help='Brand of the product',
+        store=True,
     )

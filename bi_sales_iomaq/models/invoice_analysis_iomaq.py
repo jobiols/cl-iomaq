@@ -144,7 +144,7 @@ class AccountInvoiceLineReportIomaq(models.Model):
         readonly=True
     )
     vendor_id = fields.Many2one(
-        'res_partner',
+        'res.partner',
         'Vendor',
         readonly=True
     )
@@ -155,99 +155,112 @@ class AccountInvoiceLineReportIomaq(models.Model):
         cr.execute("""
         CREATE OR REPLACE VIEW account_invoice_line_report_iomaq AS (
         SELECT
-        "account_invoice_line"."id" AS "id",
+        ail.id AS id,
 
         --- PRECIO TOTAL DE LA LINEA DE FACTURA SIN IVA
         --- Esto incluye los descuentos que hubiera en la linea
-        "account_invoice_line"."price_subtotal_signed"
-        AS "price_total",
+        ail.price_subtotal_signed AS price_total,
 
         --- PRECIO TOTAL DE LA LINEA DE FACTURA CON IVA
         --- Es el anterior mas IVA
-        "account_invoice_line"."price_subtotal_signed" *
-                (1 + "account_invoice_line"."product_iva")
-        AS "price_total_taxed",
+        ail.price_subtotal_signed *
+                (1 + ail.product_iva)
+        AS price_total_taxed,
 
         --- COSTO TOTAL DE LA LINEA DE FACTURA SIN IVA
         --- Es el costo que tenia el producto cuando lo compre, no el costo
         --- actual, para encontrarlo multiplico el precio de la factura por
         --- (1 - margen)
-        "account_invoice_line"."price_subtotal_signed" *
-            (1 - "account_invoice_line"."product_margin")
-        AS "cost_total",
+        ail.price_subtotal_signed *
+            (1 - ail.product_margin)
+        AS cost_total,
 
         --- COSTO TOTAL DE LA LINEA DE FACTURA CON IVA
         --- Es el anterior mas iva
-        "account_invoice_line"."price_subtotal_signed" *
-            (1 - "account_invoice_line"."product_margin") *
-                (1 + "account_invoice_line"."product_iva")
-        AS "cost_total_taxed",
+        ail.price_subtotal_signed *
+            (1 - ail.product_margin) *
+                (1 + ail.product_iva)
+        AS cost_total_taxed,
 
         --- MARGEN TOTAL DE LA LINEA DE FACTURA SIN IVA
         --- Es la diferencia entre el precio de venta que se pone en la factura
         --- y el precio al que compramos el producto que se esta vendiendo
         --- calculado como precio * margen
-        "account_invoice_line"."price_subtotal_signed" *
-            "account_invoice_line"."product_margin"
-        AS "margin_total",
+        ail.price_subtotal_signed *
+            ail.product_margin
+        AS margin_total,
 
         --- MARGEN TOTAL DE LA LINEA DE FACTURA CON IVA
         --- Es el anterior mas el iva
-        "account_invoice_line"."price_subtotal_signed" *
-            "account_invoice_line"."product_margin" *
-                (1 + "account_invoice_line"."product_iva")
-        AS "margin_total_taxed",
+        ail.price_subtotal_signed *
+            ail.product_margin *
+                (1 + ail.product_iva)
+        AS margin_total_taxed,
 
         --- DISCOUNT TOTAL DE LA LINEA DE FACTURA SIN IVA
-        "account_invoice_line"."price_unit" *
-            "account_invoice_line"."quantity" *
-                ("account_invoice_line"."discount" / 100) *
-                    (-"account_invoice_line"."sign")
-        AS "discount_total",
+        ail.price_unit *
+            ail.quantity *
+                (ail.discount / 100) *
+                    (-ail.sign)
+        AS discount_total,
 
         --- DISCOUNT TOTAL DE LA LINEA DE FACTURA CON IVA
-        "account_invoice_line"."price_unit" *
-            "account_invoice_line"."quantity" *
-                ("account_invoice_line"."discount" / 100) *
-                    (1 + "account_invoice_line"."product_iva") *
-                        (-"account_invoice_line"."sign")
-        AS "discount_total_taxed",
+        ail.price_unit *
+            ail.quantity *
+                (ail.discount / 100) *
+                    (1 + ail.product_iva) *
+                        (-ail.sign)
+        AS discount_total_taxed,
 
         --- CANTIDAD DE PRODUCTO EN LA LINEA DE FACTURA
-        "account_invoice_line"."quantity"
-        AS "quantity",
+        ail.quantity AS quantity,
 
-        "account_invoice_line"."partner_id" AS "partner_id",
-        "account_invoice_line"."product_id" AS  "product_id",
-        "account_invoice"."date_due" AS "date_due",
+        ail.partner_id AS partner_id,
+        ail.product_id AS  product_id,
+        ai.date_due AS date_due,
 
-        COALESCE("account_invoice"."document_number",
-            "account_invoice"."number") AS "number",
-        "account_invoice"."journal_id" AS "journal_id",
-        "account_invoice"."user_id" AS "user_id",--n
-        "account_invoice"."type" AS "type",
-        "account_invoice"."state_id" AS "state_id",
-        "account_invoice"."document_type_id" AS "document_type_id",
-        "account_invoice"."state" AS "state",
-        "account_invoice"."date" AS "date",
-        "account_invoice"."date_invoice" AS "date_invoice",
-        "product_product"."name_template" AS "name_template",
-        "product_template"."categ_id" as "product_category_id",
-        "res_partner"."customer" AS "customer",
-        "res_partner"."supplier" AS "supplier"
+        COALESCE(ai.document_number, ai.number) AS number,
 
-        FROM "account_invoice_line" "account_invoice_line"
-        INNER JOIN "account_invoice" "account_invoice"
-        ON ("account_invoice_line"."invoice_id" = "account_invoice"."id")
+        ai.journal_id AS journal_id,
 
-        LEFT JOIN "product_product" "product_product"
-        ON ("account_invoice_line"."product_id" = "product_product"."id")
+        ai.user_id AS user_id,
 
-        INNER JOIN "res_partner" "res_partner"
-        ON ("account_invoice"."partner_id" = "res_partner"."id")
+        ai.type AS type,
 
-        LEFT JOIN "product_template" "product_template"
-        ON ("product_product"."product_tmpl_id" = "product_template"."id")
+        ai.state_id AS state_id,
+
+        ai.document_type_id AS document_type_id,
+
+        ai.state AS state,
+
+        ai.date AS date,
+
+        ai.date_invoice AS date_invoice,
+
+        pp.name_template AS name_template,
+
+        pt.categ_id as product_category_id,
+
+        rp.customer AS customer,
+
+        rp.supplier AS supplier,
+
+        pt.brand_id AS brand_id,
+
+        ail.vendor_id AS vendor_id
+
+        FROM account_invoice_line ail
+        INNER JOIN account_invoice ai
+        ON (ail.invoice_id = ai.id)
+
+        LEFT JOIN product_product pp
+        ON (ail.product_id = pp.id)
+
+        INNER JOIN res_partner rp
+        ON (ai.partner_id = rp.id)
+
+        LEFT JOIN product_template pt
+        ON (pp.product_tmpl_id = pt.id)
 
         ORDER BY number ASC
         )"""
