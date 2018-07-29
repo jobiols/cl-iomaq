@@ -5,25 +5,6 @@ from openerp import fields, models, api
 from openerp.addons.decimal_precision import decimal_precision as dp
 
 
-class AccountInvoice(models.Model):
-    _inherit = "account.invoice"
-
-    tag = fields.Char(
-        string='Tags',
-        compute="_compute_tag",
-        readonly=True,
-        store=True,
-        help="This is the first tag found in the partner"
-    )
-
-    @api.multi
-    @api.depends('partner_id.category_id')
-    def _compute_tag(self):
-        for invoice in self:
-            if invoice.partner_id and invoice.partner_id.category_id:
-                invoice.tag = invoice.partner_id.category_id[0].name
-
-
 class AccountInvoiceLine(models.Model):
     _inherit = "account.invoice.line"
 
