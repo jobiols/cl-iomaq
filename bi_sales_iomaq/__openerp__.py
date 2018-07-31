@@ -20,7 +20,7 @@
 # -----------------------------------------------------------------------------
 {
     'name': 'Sales Business Intelligence Report',
-    'version': '9.0.0.0.0',
+    'version': '9.0.0.7.0',
     'license': 'AGPL-3',
     'category': 'Tools',
     'summary': 'Custom BI Sales Report',
