@@ -40,12 +40,11 @@ class ProductTemplate(models.Model):
         # borrar los que estan cerrados
         supp_obj = self.env['product.supplierinfo']
         supp = supp_obj.search([('date_end', '!=', False)])
-        print 'borrando >>>>>', len(supp)
         supp.unlink()
 
-        prods = self.search([('cost_fixed', '=', False)], limit=500)
+        prods = self.search([('cost_fixed', '=', True)], limit=500)
         for prod in prods:
-            prod.cost_fixed = True
+            prod.cost_fixed = False
             # si tengo el costo de la factura lo tomo
             cost = 0
             if prod.system_cost:
@@ -83,3 +82,4 @@ class ProductTemplate(models.Model):
 #                            'date=', quant.in_date, \
 #                            'cost=', cost
                         quant.cost = cost
+        _logger.info('STOP FIXING COSTS')
