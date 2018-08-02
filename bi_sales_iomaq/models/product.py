@@ -45,7 +45,7 @@ class ProductTemplate(models.Model):
         print 'borrando >>>>>', len(supp)
         supp.unlink()
 
-        prods = self.search([('cost_fixed', '=', False)], limit=400)
+        prods = self.search([('cost_fixed', '=', False)], limit=500)
         for prod in prods:
             prod.cost_fixed = True
             # si tengo el costo de la factura lo tomo
