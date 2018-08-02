@@ -21,8 +21,7 @@ class ProductTemplate(models.Model):
 
     @staticmethod
     def check_a_bit_plus(a, b):
-        # Chequea que a sea 20% mayor que b
-        return a > b * 1.2
+        return True
 
     @api.model
     def fix_historic_cost(self):
@@ -35,8 +34,7 @@ class ProductTemplate(models.Model):
             product.seller_ids.supplierinfo.price
             stock.quant.price
 
-            si el precio es mayor que el costo obtenido de la factura o del
-            sistema lo cambia teniendo en cuenta que el costo no sea cero.
+            Plancha los costos con los de la factura
         """
         _logger.info('START FIXING COSTS')
         # borrar los que estan cerrados
