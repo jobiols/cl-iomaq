@@ -5,6 +5,7 @@ import logging
 
 _logger = logging.getLogger(__name__)
 
+
 class ProductTemplate(models.Model):
     _inherit = "product.template"
 
@@ -19,15 +20,9 @@ class ProductTemplate(models.Model):
         default=False
     )
 
-    @staticmethod
-    def check_a_bit_plus(a, b):
-        return True
-
     @api.model
     def fix_historic_cost(self):
-        """ Corrige los precios de costo porque a veces estan 100 veces arriba
-            de lo que debe ser, cosa de mandinga.
-
+        """ Corrige los precios de costo lo mejor que puede.
             recorre todos los productos y verifica en tres lugares:
 
             product.template.bulonfer_cost
@@ -38,13 +33,13 @@ class ProductTemplate(models.Model):
         """
         _logger.info('START FIXING COSTS')
         # borrar los que estan cerrados
-        supp_obj = self.env['product.supplierinfo']
-        supp = supp_obj.search([('date_end', '!=', False)])
-        supp.unlink()
+        #supp_obj = self.env['product.supplierinfo']
+        #supp = supp_obj.search([('date_end', '!=', False)])
+        #supp.unlink()
 
-        prods = self.search([('cost_fixed', '=', True)], limit=500)
+        prods = self.search([('cost_fixed', '=', False)], limit=450)
         for prod in prods:
-            prod.cost_fixed = False
+            prod.cost_fixed = True
             # si tengo el costo de la factura lo tomo
             cost = 0
             if prod.system_cost:
@@ -53,33 +48,16 @@ class ProductTemplate(models.Model):
                 if prod.bulonfer_cost:
                     # si nunca lo compre tomo el costo de hoy
                     cost = prod.bulonfer_cost
-            # arreglo las cosas solo si tengo costo
-            if cost:
-                # si mi costo historico es mayor que el mejor costo, lo corrijo
-                if self.check_a_bit_plus(prod.standard_price, cost):
-                    _logger.info('FIXING PRODUCT %s' % prod.default_code)
-#                    print 'PRODUCT >>>>>>>', prod.default_code, \
-#                        'hist=', prod.standard_price, \
-#                        'hoy=', prod.bulonfer_cost, \
-#                        'cost=', cost
-                    prod.standard_price = cost
 
-                for supplierinfo in prod.seller_ids:
-                    if self.check_a_bit_plus(supplierinfo.price, cost):
-                        _logger.info('FIXING SUPPINFO %s' % prod.default_code)
-#                        print 'SUPPINFO >>>>>>', prod.default_code, \
-#                            'hist=', supplierinfo.price, \
-#                            'date=', supplierinfo.date_start, \
-#                            'cost=', cost
-                        supplierinfo.price = cost
+            # corrijo mi costo historico
+            _logger.info('FIXING PRODUCT %s' % prod.default_code)
+            prod.standard_price = cost
 
-                for quant in self.env['stock.quant'].search(
-                    [('product_id', '=', prod.id)]):
-                    if self.check_a_bit_plus(quant.cost, cost):
-                        _logger.info('FIXING QUANT %s' % prod.default_code)
-#                        print 'QUANT >>>>>>>>>', prod.default_code, \
-#                            'hist=', quant.cost, \
-#                            'date=', quant.in_date, \
-#                            'cost=', cost
-                        quant.cost = cost
+            for supplierinfo in prod.seller_ids:
+                supplierinfo.price = cost
+
+            for quant in self.env['stock.quant'].search([
+                    ('product_tmpl_id', '=', prod.id)]):
+                quant.cost = cost
+
         _logger.info('STOP FIXING COSTS')
