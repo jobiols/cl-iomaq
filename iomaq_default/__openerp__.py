@@ -56,7 +56,8 @@
         'product_autoload',        # replicacion bulonfer
         'simple_meli_publishing',  # publicar precios de mercadolibre
         'simple_meshops_publishing',
-        'bi_sales_iomaq',          # custom bi report for sales
+        'bi_sales_iomaq',           # custom bi report for sales
+        'sales_global_discount' # setea todos los descuentos de la SO
     ],
 
     'data': [
