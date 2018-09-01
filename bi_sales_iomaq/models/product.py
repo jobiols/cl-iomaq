@@ -2,6 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 from openerp import fields, models, api
 import logging
+import openerp.addons.decimal_precision as dp
 
 _logger = logging.getLogger(__name__)
 
