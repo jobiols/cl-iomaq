@@ -27,7 +27,6 @@
     'author': 'jeo Software',
     'depends': [
         'account',
-        'iomaq_default'
     ],
 
     'data': [
