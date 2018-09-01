@@ -26,7 +26,8 @@
     'summary': 'Custom BI Sales Report',
     'author': 'jeo Software',
     'depends': [
-        'account'
+        'account',
+        'iomaq_default'
     ],
 
     'data': [
