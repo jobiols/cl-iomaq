@@ -2,7 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 from __future__ import division
 from openerp import fields, models, api
-
+import openerp.addons.decimal_precision as dp
 
 class AccountInvoiceLine(models.Model):
     _inherit = "account.invoice.line"
