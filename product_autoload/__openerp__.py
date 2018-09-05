@@ -31,7 +31,7 @@
         'sale',
         'purchase',
         'product_multi_barcode',
-        'price_security'  # revisar si esta dependencia esta bien
+        #'price_security'  # revisar si esta dependencia esta bien
     ],
 
     'data': [

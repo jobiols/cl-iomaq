@@ -18,7 +18,6 @@
                         (4, ref('base.group_partner_manager')),
                         (4, ref('sale.group_discount_per_so_line')),
                         (4, ref('base.group_sale_salesman')),
-                        (4, ref('price_security.group_restrict_prices')),
                          ]"/>
         </record>
         <!--
@@ -41,7 +40,6 @@
                             (4, ref('account.group_account_invoice')),
                             (4, ref('sale.group_discount_per_so_line')),
                             (4, ref('account_payment_group.group_choose_payment_type')),
-                            (4, ref('price_security.group_restrict_prices')),
                             (4, ref('stock_picking_auto.group_stock_picking_auto_cashier')),
                                  ]"/>
         </record>
@@ -63,7 +61,6 @@
         stock_picking_auto.group_stock_picking_auto_cashier	Cashier
 
         -->
-
 
         <!-- GRUPO ADMINISTRATIVO -->
         <record id="group_administrative_users" model="res.groups">
@@ -94,7 +91,7 @@
         base.group_sale_manager	Responsable
         purchase.group_purchase_manager	Responsable
         stock.group_stock_manager	Responsable
-                -->
+        -->
 
         <!-- GRUPO SUPERVISOR -->
         <record id="group_supervisor_users" model="res.groups">
