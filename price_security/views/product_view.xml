@@ -31,11 +31,6 @@
             <field name="uom_id" position="attributes">
                 <attribute name="readonly">1</attribute>
             </field>
-
-            <!-- we hide costing -->
-            <label for="standard_product_price" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </label>
             <field name="seller_ids" position="attributes">
                 <attribute name="readonly">1</attribute>
                 <attribute name="invisible">1</attribute>
@@ -44,14 +39,34 @@
                 <attribute name="readonly">1</attribute>
                 <attribute name="invisible">1</attribute>
             </field>
+            <field name="can_modify_prices" position="attributes">
+                <attribute name="readonly">1</attribute>
+            </field>
+        </field>
+    </record>
+
+    <record id="view_product_only_view_sale_hide_form" model="ir.ui.view">
+        <field name="name">PRICE SECURITY hide standard_product_price</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product_currency_fix.view_template_property_form"/>
+        <field name="groups_id" eval="[(6, 0, [ref('group_restrict_prices')])]"/>
+        <field name="arch" type="xml">
             <field name="standard_product_price" position="attributes">
                 <attribute name="readonly">1</attribute>
                 <attribute name="invisible">1</attribute>
             </field>
+        </field>
+    </record>
 
-            <field name="can_modify_prices" position="attributes">
-                <attribute name="readonly">1</attribute>
-            </field>
+    <record id="product_template_form_view_fix" model="ir.ui.view">
+        <field name="name">PRICE SECURITY hide label standard_product_price</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product_currency_fix.product_template_form_view"/>
+        <field name="groups_id" eval="[(6, 0, [ref('group_restrict_prices')])]"/>
+        <field name="arch" type="xml">
+            <xpath expr="//label[@for='standard_product_price']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
         </field>
     </record>
 

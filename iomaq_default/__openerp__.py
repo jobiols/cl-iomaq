@@ -41,6 +41,7 @@
         'base_state_active',  # Deactivate US States
         'account_fix',  # Account Fixes
         'account_invoice_tax_wizard',  # add manual taxes on invoices
+        'product_currency_fix',  # fix para que ande con inventario permanente
         'account_invoice_global_discount',  # descuentos en facturas de compra
         'web_export_view',  # exportar vistas en excel
         'account_clean_cancelled_invoice_number',  # borrar fac canceladas
@@ -48,7 +49,6 @@
         'base_currency_inverse_rate',  # Ver TC al derecho
         'l10n_ar_currency_update',  # Actualizar tipo de cambio
         'sale_order_validity',  # imprimir validez del presupuesto
-        'product_currency_fix',  # fix para que ande con inventario permanente
         'kpis_panel',        # muestra tablero de control
         'account_cash_report',  # reporte de cajas
         'product_upload_prices',  # subir planilla con precios de productos
