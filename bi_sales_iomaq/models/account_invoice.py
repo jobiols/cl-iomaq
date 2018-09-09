@@ -36,7 +36,9 @@ class AccountInvoiceLine(models.Model):
     @api.depends('product_id.standard_price', 'invoice_id.currency_id')
     def _compute_product_margin(self):
         for ail in self:
-            price = ail.product_id.list_price
+            # precio de venta sacado de la linea de factura
+            price = ail.price_unit
+            # precio de costo sacado del producto
             cost = ail.product_id.standard_price
             ail.product_margin = (price - cost) / price if price else 0
 
