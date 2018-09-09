@@ -20,13 +20,14 @@
 # -----------------------------------------------------------------------------
 {
     'name': 'Sales Business Intelligence Report',
-    'version': '9.0.0.7.0',
+    'version': '9.0.0.8.0',
     'license': 'AGPL-3',
     'category': 'Tools',
     'summary': 'Custom BI Sales Report',
     'author': 'jeo Software',
     'depends': [
         'account',
+        'product_currency_fix'
     ],
 
     'data': [
