@@ -289,3 +289,11 @@ class TestBusiness(TransactionCase):
         """ Testear barcode duplicado
         """
         self.manager_obj.run(productcode='productcode_changed.csv')
+
+    def test_12_bloqueo_lista_996(self):
+        """ Testear que bloquee el item 996.
+        """
+        self.manager_obj.run()
+        prod = self.prod_obj.search([('default_code', '=', '996.18.10')])
+        self.assertFalse(prod)
+

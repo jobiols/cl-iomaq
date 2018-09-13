@@ -6,7 +6,7 @@ from datetime import datetime
 import csv
 from mappers import MAP_WRITE_DATE
 from openerp import api, models, fields, registry
-from mappers import ProductMapper
+from mappers import ProductMapper, MAP_DEFAULT_CODE
 
 
 class ExceptionBarcodeDuplicated(Exception):
@@ -157,6 +157,12 @@ class AutoloadMgr(models.Model):
     def load_product(self, data_path):
         """ Carga todos los productos teniendo en cuenta la fecha
         """
+
+        def product_blocked(value):
+            """ Chequea que el producto este bloqueado
+            """
+            return value[MAP_DEFAULT_CODE][:4] == '996.'
+
         bulonfer_id = self.env['res.partner'].search(
             [('ref', '=', 'BULONFER')])
         if not bulonfer_id:
@@ -170,7 +176,8 @@ class AutoloadMgr(models.Model):
         with open(data_path + DATA, 'r') as file_csv:
             reader = csv.reader(file_csv)
             for line in reader:
-                if line and line[MAP_WRITE_DATE] > last_replication:
+                if line and line[MAP_WRITE_DATE] > last_replication and (
+                        not product_blocked(line)):
                     obj = ProductMapper(line, data_path, bulonfer_id.ref)
                     stats = obj.execute(self.env)
 
