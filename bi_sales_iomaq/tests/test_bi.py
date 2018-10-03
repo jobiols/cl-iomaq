@@ -22,7 +22,7 @@ from openerp.tests.common import TransactionCase
 #
 #   Correr el test con:
 #
-#   oe -Q product_currency_fix -c iomaq -d iomaq_test
+#   oe -Q bi_sales_iomaq -c iomaq -d iomaq_test
 #
 
 import os
@@ -174,6 +174,7 @@ class TestBusiness(TransactionCase):
         tmpl = prod.product_tmpl_id
         # forzar al producto en dolares
         tmpl.force_currency_id = 3
+
         tmpl.property_account_income_id = 1
         tmpl.property_account_expense_id = 2
 
@@ -213,14 +214,41 @@ class TestBusiness(TransactionCase):
         self.assertEqual(prod.standard_price, pc.compute(cost1, cc))
         self.assertEqual(prod.standard_product_price, cost1)
 
-        so2 = self.create_so(prod, 1)
-        self.validate_so(so2)
-        # El standard price paso a 6000
-        self.assertEqual(prod.standard_price, pc.compute(cost2, cc))
-        self.assertEqual(prod.standard_product_price, cost2)
+        # so2 = self.create_so(prod, 1)
+        # self.validate_so(so2)
+        ## El standard price paso a 6000
+        # self.assertEqual(prod.standard_price, pc.compute(cost2, cc))
+        # self.assertEqual(prod.standard_product_price, cost2)
 
-        so3 = self.create_so(prod, 1)
-        self.validate_so(so3)
-        # El standard price sigue en a 6000
-        self.assertEqual(prod.standard_price, pc.compute(cost2, cc))
-        self.assertEqual(prod.standard_product_price, cost2)
+        # so3 = self.create_so(prod, 1)
+        # self.validate_so(so3)
+        ## El standard price sigue en a 6000
+        # self.assertEqual(prod.standard_price, pc.compute(cost2, cc))
+        # self.assertEqual(prod.standard_product_price, cost2)
+
+        # Crear las facturas y verificar BI
+
+        id = so1.action_invoice_create()
+        inv = self.env['account.invoice'].browse(id[0])
+        inv.signal_workflow('invoice_open')
+
+        ail_obj = self.env['account.invoice.line']
+        ail = ail_obj.search([('product_id', '=', prod.id)])
+
+        # en la linea de factura precio es el ultimo
+        self.assertEqual(ail.price_subtotal_signed, pc.compute(price2, cc))
+        # costo es el mas antiguo
+        self.assertEqual(ail.product_id.standard_price, pc.compute(cost1,cc))
+        # el margen es mayor que el oficial
+        self.assertAlmostEqual(ail.product_margin, price2 / cost1 - 1,
+                               places=4)
+
+        bi_obj = self.env['account.invoice.line.report.iomaq']
+        bi = bi_obj.search([('product_id', '=', prod.id)])
+
+        # precio
+        self.assertEqual(bi.price_total, pc.compute(price2, cc))
+        # costo
+        self.assertEqual(bi.cost_total, pc.compute(cost1, cc))
+        # margen
+        self.assertEqual(bi.margin_total, pc.compute(price2 - cost1, cc))

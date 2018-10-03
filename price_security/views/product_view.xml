@@ -22,7 +22,8 @@
         <field name="name">View Only sale price template form</field>
         <field name="model">product.template</field>
         <field name="inherit_id" ref="product_template_form_view"/>
-        <field name="groups_id" eval="[(6, 0, [ref('group_restrict_prices')])]"/>
+        <field name="groups_id"
+               eval="[(6, 0, [ref('group_restrict_prices')])]"/>
         <field name="arch" type="xml">
             <!-- we make price readonly -->
             <field name="list_price" position="attributes">
@@ -48,8 +49,10 @@
     <record id="view_product_only_view_sale_hide_form" model="ir.ui.view">
         <field name="name">PRICE SECURITY hide standard_product_price</field>
         <field name="model">product.template</field>
-        <field name="inherit_id" ref="product_currency_fix.view_template_property_form"/>
-        <field name="groups_id" eval="[(6, 0, [ref('group_restrict_prices')])]"/>
+        <field name="inherit_id"
+               ref="product_currency_fix.view_template_property_form"/>
+        <field name="groups_id"
+               eval="[(6, 0, [ref('group_restrict_prices')])]"/>
         <field name="arch" type="xml">
             <field name="standard_product_price" position="attributes">
                 <attribute name="readonly">1</attribute>
@@ -59,12 +62,16 @@
     </record>
 
     <record id="product_template_form_view_fix" model="ir.ui.view">
-        <field name="name">PRICE SECURITY hide label standard_product_price</field>
+        <field name="name">PRICE SECURITY hide label standard_product_price
+        </field>
         <field name="model">product.template</field>
-        <field name="inherit_id" ref="product_currency_fix.product_template_form_view"/>
-        <field name="groups_id" eval="[(6, 0, [ref('group_restrict_prices')])]"/>
+        <field name="inherit_id"
+               ref="product_currency_fix.product_template_form_view"/>
+        <field name="groups_id"
+               eval="[(6, 0, [ref('group_restrict_prices')])]"/>
         <field name="arch" type="xml">
-            <xpath expr="//label[@for='standard_product_price']" position="attributes">
+            <xpath expr="//label[@for='standard_product_price']"
+                   position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
         </field>
@@ -74,7 +81,8 @@
     <record id="view_product_only_view_sale_price_form_1" model="ir.ui.view">
         <field name="name">View Only sale price template form</field>
         <field name="model">product.template</field>
-        <field name="inherit_id" ref="product_autoload.product_template_only_form_view"/>
+        <field name="inherit_id"
+               ref="product_autoload.product_template_only_form_view"/>
         <field name="groups_id"
                eval="[(6, 0, [ref('group_restrict_prices')])]"/>
         <field name="arch" type="xml">
@@ -94,9 +102,11 @@
         <field name="arch" type="xml">
             <field name="standard_price" position="attributes">
                 <attribute name="invisible">1</attribute>
+<!--
                 <field name="difference" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </field>
+-->
             </field>
         </field>
     </record>
@@ -104,14 +114,17 @@
     <record id="product_template_tree_view1" model="ir.ui.view">
         <field name="name">PRICE SECURITY hide other product costs</field>
         <field name="model">product.template</field>
-        <field name="inherit_id" ref="product_autoload.product_template_tree_view"/>
+        <field name="inherit_id"
+               ref="product_autoload.product_template_tree_view"/>
         <field name="groups_id"
                eval="[(6, 0, [ref('group_restrict_prices')])]"/>
         <field name="priority">30</field>
         <field name="arch" type="xml">
+            <!--
             <field name="difference" position="attributes">
                 <attribute name="invisible">1</attribute>
             </field>
+            -->
             <field name="margin" position="attributes">
                 <attribute name="invisible">1</attribute>
             </field>

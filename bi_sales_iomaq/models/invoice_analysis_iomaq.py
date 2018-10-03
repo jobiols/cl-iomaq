@@ -159,7 +159,8 @@ class AccountInvoiceLineReportIomaq(models.Model):
 
         --- PRECIO TOTAL DE LA LINEA DE FACTURA SIN IVA
         --- Esto incluye los descuentos que hubiera en la linea
-        ail.price_subtotal_signed AS price_total,
+        ail.price_subtotal_signed
+        AS price_total,
 
         --- PRECIO TOTAL DE LA LINEA DE FACTURA CON IVA
         --- Es el anterior mas IVA
@@ -169,47 +170,46 @@ class AccountInvoiceLineReportIomaq(models.Model):
 
         --- COSTO TOTAL DE LA LINEA DE FACTURA SIN IVA
         --- Es el costo que tenia el producto cuando lo compre, no el costo
-        --- actual, para encontrarlo multiplico el precio de la factura por
-        --- (1 - margen)
-        ail.price_subtotal_signed *
-            (1 - ail.product_margin)
+        --- actual, es el precio de la factura dividido (1 + margen)
+        ail.price_subtotal_signed /
+            (1 + ail.product_margin)
         AS cost_total,
 
         --- COSTO TOTAL DE LA LINEA DE FACTURA CON IVA
         --- Es el anterior mas iva
-        ail.price_subtotal_signed *
-            (1 - ail.product_margin) *
+        ail.price_subtotal_signed /
+            (1 + ail.product_margin) *
                 (1 + ail.product_iva)
         AS cost_total_taxed,
 
         --- MARGEN TOTAL DE LA LINEA DE FACTURA SIN IVA
         --- Es la diferencia entre el precio de venta que se pone en la factura
         --- y el precio al que compramos el producto que se esta vendiendo
-        --- calculado como precio * margen
-        ail.price_subtotal_signed *
-            ail.product_margin
+        --- calculado como precio * margen / (1+margen)
+        ail.price_subtotal_signed
+            * ail.product_margin /
+                (1 + ail.product_margin)
         AS margin_total,
 
         --- MARGEN TOTAL DE LA LINEA DE FACTURA CON IVA
         --- Es el anterior mas el iva
-        ail.price_subtotal_signed *
-            ail.product_margin *
-                (1 + ail.product_iva)
+        ail.price_subtotal_signed
+            * ail.product_margin /
+                (1 + ail.product_margin) *
+                    (1 + ail.product_iva)
         AS margin_total_taxed,
 
         --- DISCOUNT TOTAL DE LA LINEA DE FACTURA SIN IVA
-        ail.price_unit *
-            ail.quantity *
+        ail.price_subtotal_signed *
                 (ail.discount / 100) *
                     (-ail.sign)
         AS discount_total,
 
         --- DISCOUNT TOTAL DE LA LINEA DE FACTURA CON IVA
-        ail.price_unit *
-            ail.quantity *
+        ail.price_subtotal_signed *
                 (ail.discount / 100) *
-                    (1 + ail.product_iva) *
-                        (-ail.sign)
+                    (-ail.sign) *
+                        (1 + ail.product_iva)
         AS discount_total_taxed,
 
         --- CANTIDAD DE PRODUCTO EN LA LINEA DE FACTURA

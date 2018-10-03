@@ -144,8 +144,10 @@ class ProductMapper(CommonMapper):
             stats = ['prod_created']
             _logger.info('Creating product %s' % self.default_code)
 
-        prod.set_cost(self._vendor_ref, self.bulonfer_cost, self.write_date,
-                      self.wholesaler_bulk, self.default_code)
+        prod.set_prices(self.bulonfer_cost, self._vendor_ref,
+                        date=self.write_date, min_qty=self.wholesaler_bulk,
+                        vendors_code=self.default_code)
+        prod.set_invoice_cost()
 
         tax_obj = env['account.tax']
 

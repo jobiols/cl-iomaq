@@ -107,25 +107,13 @@ class AutoloadMgr(models.Model):
                 item = item_obj.search([('code', '=', values['code'])])
                 if item:
                     if not (item.origin == values['origin'] and
-                                    item.name == values['name'] and
-                                    item.section == values['section'] and
-                                    item.family == values['family'] and
-                                    item.margin == float(values['margin'])):
+                            item.name == values['name'] and
+                            item.section == values['section'] and
+                            item.family == values['family'] and
+                            item.margin == float(values['margin'])):
                         item.write(values)
-
-                        # forzar recalculo de precios.
-                        domain = [('item_code', '=', values['code'])]
-                        prod = prod_obj.search(domain)
-                        if prod:
-                            prod.recalculate_list_price(item.margin)
                 else:
                     item_obj.create(values)
-
-                    # forzar recalculo de precios
-                    domain = [('item_code', '=', values['code'])]
-                    prod = prod_obj.search(domain)
-                    if prod:
-                        prod.recalculate_list_price(item.margin)
 
     def load_productcode(self, data_path, productcode):
         """ Borra la tabla productcode y la vuelve a crear con los datos nuevos
@@ -160,7 +148,10 @@ class AutoloadMgr(models.Model):
 
         def product_blocked(value):
             """ Chequea que el producto este bloqueado
+                996 son productos de outlet
             """
+            # TODO lo que en realidad deberiamos hacer es no permitir que
+            # cambien los precios pero si que aparezcan nuevos productos
             return value[MAP_DEFAULT_CODE][:4] == '996.'
 
         bulonfer_id = self.env['res.partner'].search(
@@ -219,6 +210,7 @@ class AutoloadMgr(models.Model):
 
             _logger.info('REPLICATION: Load disk tables')
             # Cargar en bd las demas tablas
+            # TODO Ver si podemos cargar esto en memoria
             self.load_item(data_path, item)
             self.load_productcode(data_path, productcode)
 
@@ -306,9 +298,6 @@ class AutoloadMgr(models.Model):
                                 email_from, email_to)
                 raise Exception(text)
 
-            # calcular el precio de lista
-            prod.recalculate_list_price(item.margin)
-
             # buscar seccion o crearla en categorias
             sec_id = categ_obj.search([('name', '=', item.section),
                                        ('parent_id', '=', False)])
@@ -395,7 +384,7 @@ class AutoloadMgr(models.Model):
     def process_invoice_discounts(self):
         invoices = self.env['account.invoice'].search(
             [('discount_processed', '=', False),
-             ('partner_id.ref', '=', 'BULONFER'),
+             # ('partner_id.ref', '=', 'BULONFER'),
              ('state', 'in', ['open', 'paid']),
              ('type', '=', 'in_invoice')])
 

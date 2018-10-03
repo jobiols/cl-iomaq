@@ -34,6 +34,7 @@
         'account_accountant',  # permisos para contabilidad
         'l10n_ar_aeroo_stock',
 
+        'product_currency_fix',  # fix para que ande con inventario permanente
         'stock_picking_auto',  # Automatic picking when Invoice is validated.
         'product_unique',
         'account_reconciliation_menu',  # agrega boton en partner
@@ -41,7 +42,6 @@
         'base_state_active',  # Deactivate US States
         'account_fix',  # Account Fixes
         'account_invoice_tax_wizard',  # add manual taxes on invoices
-        'product_currency_fix',  # fix para que ande con inventario permanente
         'account_invoice_global_discount',  # descuentos en facturas de compra
         'web_export_view',  # exportar vistas en excel
         'account_clean_cancelled_invoice_number',  # borrar fac canceladas

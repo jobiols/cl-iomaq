@@ -4,6 +4,7 @@ from __future__ import division
 from openerp import fields, models, api
 import openerp.addons.decimal_precision as dp
 
+
 class AccountInvoiceLine(models.Model):
     _inherit = "account.invoice.line"
 
@@ -18,8 +19,8 @@ class AccountInvoiceLine(models.Model):
         string='Product Margin',
         compute="_compute_product_margin",
         store=True,
-        digits=dp.get_precision('Product Price'),
-        help="This is the margin between standard_price and list_price"
+        help="This is the margin between standard_price and list_price taking "
+             "into account line discounts, is the margin for this line only"
     )
     product_iva = fields.Float(
         compute="_compute_product_iva",
@@ -33,14 +34,27 @@ class AccountInvoiceLine(models.Model):
     )
 
     @api.multi
-    @api.depends('product_id.standard_price', 'invoice_id.currency_id')
+    @api.depends('product_id.standard_price', 'discount', 'price_unit',
+                 'invoice_id.currency_id', 'company_id.currency_id')
     def _compute_product_margin(self):
         for ail in self:
-            # precio de venta sacado de la linea de factura
-            price = ail.price_unit
-            # precio de costo sacado del producto
-            cost = ail.product_id.standard_price
-            ail.product_margin = (price - cost) / price if price else 0
+            if ail.product_id:
+                # precio de venta sacado de la linea de factura, teniendo
+                # en cuenta los descuentos que pudiera haber.
+                disc = ail.discount / 100
+                price = ail.price_unit * (1 - disc)
+
+                # obtener las currencies de invoice y compania.
+                ic = ail.invoice_id.currency_id
+                cc = ail.company_id.currency_id
+
+                # convierte currency de ic a cc
+                price = ic.compute(price, cc, round=False)
+
+                # precio de costo sacado del producto en moneda de la company
+                cost = ail.product_id.standard_price
+
+                ail.product_margin = price / cost - 1 if cost else 0
 
     @api.multi
     @api.depends('product_id.standard_price', 'invoice_id.currency_id')
@@ -87,12 +101,6 @@ class AccountInvoiceLine(models.Model):
                     default_code == '601.MS.1001/2' or \
                     default_code == '76.4.16':
                 line.vendor_id = 16
-
-    @api.model
-    def fix_vendor_id(self):
-        lines = self.env['account.invoice.line'].search(
-            [('invoice_id.type', '=', 'out_invoice')])
-        lines._compute_vendor_id()
 
 
 class AccountInvoice(models.Model):

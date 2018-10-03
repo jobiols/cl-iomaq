@@ -17,10 +17,6 @@ class ProductTemplate(models.Model):
         store=True,
     )
 
-    cost_fixed = fields.Boolean(
-        default=False
-    )
-
     final_price = fields.Float(
         string='Price tax included',
         compute='_compute_final_price',
@@ -31,54 +27,49 @@ class ProductTemplate(models.Model):
     @api.multi
     def _compute_final_price(self):
         for prod in self:
-            # obtener el rate con la divisa del producto
-            rate = prod.currency_id.rate
+            cc = prod.company_id.currency_id
+            pc = prod.currency_id
 
             # obtener el precio de lista en moneda de la compa~nia
-            lp = prod.list_price / rate if rate != 0 else 0
+            lp = pc.compute(prod.list_price, cc, round=False)
 
             # poner el precio iva incluido
-            tax = prod.taxes_id[0].amount if prod.taxes_id else 100
+            tax = prod.taxes_id[0].amount if prod.taxes_id else 0
             prod.final_price = lp * (1 + tax / 100)
 
     @api.model
     def fix_historic_cost(self):
-        """ Corrige los precios de costo lo mejor que puede.
-            recorre todos los productos y verifica en tres lugares:
+        """ Corrige costos de los quants en STIHL
+            recorre todos los productos con currency USD
 
-            product.template.bulonfer_cost
-            product.seller_ids.supplierinfo.price
-            stock.quant.price
-
-            Plancha los costos con los de la factura
+            pone standard price y los quants
+            Para correr a mano
         """
-        _logger.info('START FIXING COSTS')
-        # borrar los que estan cerrados
-        #supp_obj = self.env['product.supplierinfo']
-        #supp = supp_obj.search([('date_end', '!=', False)])
-        #supp.unlink()
-
-        prods = self.search([('cost_fixed', '=', False)], limit=450)
+        prods_obj = self.env['product.template']
+        prods = prods_obj.search([('default_code', 'like', '-STIHL')])
         for prod in prods:
-            prod.cost_fixed = True
-            # si tengo el costo de la factura lo tomo
-            cost = 0
-            if prod.system_cost:
-                cost = prod.system_cost
-            else:
-                if prod.bulonfer_cost:
-                    # si nunca lo compre tomo el costo de hoy
-                    cost = prod.bulonfer_cost
+            cost = prod.bulonfer_cost
+            prod.standard_product_price = cost
 
-            # corrijo mi costo historico
-            _logger.info('FIXING PRODUCT %s' % prod.default_code)
-            prod.standard_price = cost
+            cc = prod.company_id.currency_id
 
             for supplierinfo in prod.seller_ids:
                 supplierinfo.price = cost
 
             for quant in self.env['stock.quant'].search([
-                    ('product_tmpl_id', '=', prod.id)]):
-                quant.cost = cost
+                ('product_tmpl_id', '=', prod.id)]):
+                pc = prod.currency_id.with_context(date=quant.in_date)
 
-        _logger.info('STOP FIXING COSTS')
+                quant.cost = pc.compute(cost, cc, round=False)
+                prod.standard_price = pc.compute(cost, cc, round=False)
+                quant.cost_product = cost
+
+            _logger.info('product like %s' % prod.default_code)
+
+        prods_obj = self.env['product.template']
+        prods = prods_obj.search([('default_code', 'not like', '-STIHL')])
+
+        # TODO Esto tarda a~nos !!!!!!!!!!!!
+        for prod in prods:
+            prod.standard_product_price = prod.standard_price
+            _logger.info('product not like %s' % prod.default_code)

@@ -15,7 +15,7 @@ class ProductTemplate(models.Model):
         select=1
     )
     upv = fields.Integer(
-        help='Agrupacion mayorista'
+        help='Group Wholesaler'
     )
     wholesaler_bulk = fields.Integer(
         help="Bulk Wholesaler quantity of units",
@@ -24,24 +24,28 @@ class ProductTemplate(models.Model):
         help="Bulk retail quantity of units",
     )
     invalidate_category = fields.Boolean(
-        help="Category needs rebuild",
+        help="True if the asociated category needs rebuild",
         default=False
     )
-    difference = fields.Float(
-        help="Difference % in cost price between invoce and bulonfer data, "
-             "calculated as (invoice_price - system_price)/invoice_price"
-             "this diference is an error and must go towards zero."
-    )
+    #    difference = fields.Float(
+    #        help="Difference % in cost price between invoce and bulonfer data, "
+    #             "calculated as:\n"
+    #             "(invoice_cost - system_cost)/invoice_cost",
+    #        compute='_compute_difference'
+    #    )
+    # TODO rename to invoice_cost requiere migracion
     system_cost = fields.Float(
-        compute="_compute_system_cost",
+        # compute="_compute_system_cost",
         help="Cost price based on the purchase invoice"
     )
     margin = fields.Float(
-        help="Bulonfer suggested product margin from last replication"
+        help="Margin % from today cost to list price"
     )
+    # TODO renombrar a today_cost, require migracion
     bulonfer_cost = fields.Float(
-        help="Actual cost from last actualization or from uploading a "
-             "spreadsheet"
+        help="Today cost in product currency, it is automatically updated "
+             "when the prices coming from Bulonfer are processed.\n"
+             "Or when a price sheet is loaded for no Bulonfer vendors"
     )
     cost_history_ids = fields.One2many(
         comodel_name="stock.quant",
@@ -49,33 +53,84 @@ class ProductTemplate(models.Model):
         domain=[('location_id.usage', '=', 'internal')]
     )
 
-    @api.multi
-    @api.depends('bulonfer_cost', 'difference')
-    def _compute_system_cost(self):
-        # Calcula el costo de la factura
-        for prod in self:
-            prod.system_cost = prod.bulonfer_cost / (
-                1 - prod.difference / 100) if prod.difference else False
 
-    @api.multi
-    def recalculate_list_price(self, margin):
-        """ Recalcula los precios, verificando el precio que cargaron en la
-            factura de compra. Estoy seguro de que son solo compras a bulonfer
-            porque son las unicas que tienen discount_processed en True.
+    #    @api.multi
+    #    @api.depends('system_cost', 'system_cost')
+    #    def _compute_difference(self):
+    #        for prod in self:
+    #            ip = prod.system_cost  # invoice_cost
+    #            sp = prod.system_cost
+    #            prod.difference = 100 * (ip - sp) / ip if ip else 0
+
+    #    @api.multi
+    #    @api.depends('bulonfer_cost', 'difference')
+    #    def _compute_system_cost(self):
+    #        """ Calcula el costo de la factura basado en difference
+    #        """
+    #        for prod in self:
+    #            prod.system_cost = prod.bulonfer_cost / (
+    #                1 - prod.difference / 100) if prod.difference else False
+
+    def oldest_quant(self, prod):
+        """ Retorna el quant mas antiguo de este producto.
         """
+        quant_obj = self.env['stock.quant']
+        return quant_obj.search([('product_tmpl_id', '=', prod.id),
+                                 ('location_id.usage', '=', 'internal')],
+                                order='in_date', limit=1)
 
-        # TODO Revisar si esto es valido
-        # buscar la linea de factura de compra que tiene el producto
-        # me traigo la ultima vez que lo compre.
-        invoice_lines_obj = self.env['account.invoice.line']
+    def closest_invoice_line(self, prod):
+        """ Encuentra la linea de factura mas cercana a la fecha de ingreso del
+            ultimo quant del producto. Si no hay stock busca la mas reciente.
+        """
+        in_date = self.oldest_quant(prod).in_date
+        if not in_date:
+            in_date = datetime.today().strftime('%Y-%m-%d')
+
+        # busca el la linea de factura con prod_id mas cercano a in_date
+        # TODO quitar ai.date_invoice para retornar solo los ids
+
+        query = """
+            SELECT ail.id, ai.date_invoice
+            FROM account_invoice_line ail
+            INNER JOIN account_invoice ai
+              ON ail.invoice_id = ai.id
+            INNER JOIN product_product pp
+              on ail.product_id = pp.id
+            INNER JOIN product_template pt
+              on pp.product_tmpl_id = pt.id
+            WHERE pt.id = %d AND
+                  ai.discount_processed = true
+            ORDER BY abs(ai.date_invoice - date '%s')
+            LIMIT 1;
+        """ % (prod.id, in_date)
+
+        self._cr.execute(query)
+        # TODO Renombrar a invoice_line_ids
+        invoice_lines = self._cr.fetchall()
+
+        if invoice_lines:
+            invoice_lines_obj = self.env['account.invoice.line']
+            for invoice_line in invoice_lines:
+                return invoice_lines_obj.browse(invoice_line[0])
+        else:
+            return False
+
+    @api.multi
+    def set_invoice_cost(self):
+        """
+            Intenta calcular el system_cost (future invoice_cost) buscando el
+            costo en la linea de factura mas cercana al quant mas viejo, si
+            no hay stock es la ultima factura.
+
+            Esto vale para cualquier proveedor no solo bulonfer.
+        """
         for prod in self:
-            invoice_line = invoice_lines_obj.search(
-                [('product_id.default_code', '=', prod.default_code),
-                 ('invoice_id.discount_processed', '=', True)],
-                order="id desc",
-                limit=1)
+            # encontrar la factura mas cercana a la fecha de ingreso del quant
+            # mas antiguo, si no hay stock intenta traer la ultima factura
+            invoice_line = self.closest_invoice_line(prod)
 
-            p_dif = False
+            invoice_price = 0
             if invoice_line and invoice_line.price_unit:
                 # precio que cargaron en la factura de compra
                 invoice_price = invoice_line.price_unit
@@ -83,98 +138,120 @@ class ProductTemplate(models.Model):
                 invoice_price *= (1 - invoice_line.discount / 100)
                 # descuento global en la factura
                 invoice_price *= (1 + invoice_line.invoice_discount)
-                # descuento por nota de credito al final del mes
-                invoice_price *= (1 - 0.05)
 
-                # costo que vino de bulonfer (puede ser cero)
-                system_price = prod.bulonfer_cost
-                if invoice_price:
-                    p_dif = (invoice_price - system_price) / invoice_price
+                if invoice_line.invoice_id.partner_id.ref == 'BULONFER':
+                    # descuento por nota de credito al final del mes esto
+                    # vale solo para bulonfer
+                    invoice_price *= (1 - 0.05)
 
-            p_dif *= 100
-            prod.write({
-                'list_price': prod.bulonfer_cost * (1 + margin),
-                'margin': margin * 100,
-                'difference': p_dif
-            })
+            prod.system_cost = invoice_price
+            _logger.info('Setting invoice cost '
+                         '$ %d - %s' % (invoice_price, prod.default_code))
+
+    def insert_historic_cost(self, vendor_ref, min_qty, cost,
+                             vendors_code, date):
+        """ Inserta un registro en el historico de costos del producto
+        """
+        # TODO evitar que se generen registros duplicados aqui
+
+        vendor_id = self.get_vendor_id(vendor_ref)
+        # arma el registro para insertar
+        supplierinfo = {
+            'name': vendor_id.id,
+            'min_qty': min_qty,
+            'price': cost,
+            'product_code': vendors_code,  # vendors product code
+            'product_name': self.name,  # vendors product name
+            'date_start': date,
+            'product_tmpl_id': self.id
+        }
+
+        # obtener los registros abiertos deberia haber solo uno o ninguno
+        sellers = self.seller_ids.search(
+            [('name', '=', vendor_id.id),
+             ('product_tmpl_id', '=', self.id),
+             ('date_end', '=', False)])
+
+        # restar un dia y cerrar los registros
+        for reg in sellers:
+            dt = datetime.strptime(date[0:10], "%Y-%m-%d")
+            dt = datetime.strftime(dt - timedelta(1), "%Y-%m-%d")
+            # asegurarse de que no cierro con fecha < start
+            reg.date_end = dt if dt >= reg.date_start else reg.date_start
+
+        # pongo un registro con el precio del proveedor
+        self.seller_ids = [(0, 0, supplierinfo)]
+
+    def get_vendor_id(self, vendor_ref):
+        # obtiene el vendor_id a partir del vendor_ref
+        vendor_id = self.env['res.partner'].search(
+            [('ref', '=', vendor_ref)])
+        if not vendor_id:
+            raise Exception('Vendor %s not found' % vendor_ref)
+        return vendor_id
 
     @api.multi
-    def set_cost(self, vendor_ref, cost, date, min_qty=1, vendors_code=False):
-        """ Setea el costo del producto, el costo se pone en supplierinfo, no
-            en standard price. El costo viene en la currency del producto.
+    def set_prices(self, cost, vendor_ref, price=False, date=False, min_qty=1,
+                   vendors_code=False):
+        """ Setea el precio, costo y margen (no bulonfer) del producto
 
-            Cuando se hace la orden de compra saca el precio y la cantidad de
-            supplierinfo y luego al validarla y posteriormente ingresar la
-            mercaderia el precio pasa al quant.
-
-            Cuando se egresa mercaderia el standard_price queda al precio del
-            quant que salio y segun la estrategia FIFO sale el mas antiguo.
-
-            Poner el precio que esta en la linea mas antigua de quants en el
-            standard price, si no tengo ninguno pongo el costo de hoy.
-
-            Finalmente actualizo el bulonfer_cost que es el costo de hoy.
+            - Si el costo es cero y es bulonfer se pone obsoleto y termina.
+            - Agrega una linea al historico de costos
+            - Si no hay quants en stock standard_price = cost
+            - bulonfer_cost = cost
+            - Si es bulonfer list_price = cost * (1 + margin)
+            - Si no es bulonfer list_price = price
         """
+        # TODO ver si se puede hacer esto mas arriba o sea cuando recibo el
+        # registro de data.csv para que no llegue aca.
+        # TODO marcar los obsoletos con un color
         self.ensure_one()
         for prod in self:
-            # si el costo es cero no lo pongo
-            if not cost:
+            # si el costo es cero y es bulonfer pongo como obsoleto y termino
+            if not cost and vendor_ref == 'BULONFER':
+                prod.state = 'obsolete'
                 return
-            # obtiene el vendor_id a partir del vendor_ref
-            vendor_id = self.env['res.partner'].search(
-                [('ref', '=', vendor_ref)])
-            if not vendor_id:
-                raise Exception('Vendor %s not found' % vendor_ref)
+            prod.state = 'sellable'
 
-            # arma el registro para insertar
-            supplierinfo = {
-                'name': vendor_id.id,
-                'min_qty': min_qty,
-                'price': cost,
-                'product_code': vendors_code,  # vendors product code
-                'product_name': self.name,  # vendors product name
-                'date_start': date,
-                'product_tmpl_id': self.id
-            }
+            if not date:
+                date = datetime.today().strftime('%Y-%m-%d')
 
-            # obtener los registros abiertos deberia haber solo uno
-            sellers = self.seller_ids.search(
-                [('name', '=', vendor_id.id),
-                 ('product_tmpl_id', '=', self.id),
-                 ('date_end', '=', False)])
+            # agrega una linea al historico de costos
+            self.insert_historic_cost(vendor_ref, min_qty, cost, vendors_code,
+                                      date)
 
-            # restar un dia y cerrar los registros
-            for reg in sellers:
-                dt = datetime.strptime(date[0:10], "%Y-%m-%d")
-                dt = datetime.strftime(dt - timedelta(1), "%Y-%m-%d")
-                # asegurarse de que no cierro con fecha < start
-                reg.date_end = dt if dt >= reg.date_start else reg.date_start
-
-            # pongo un registro con el precio del proveedor
-            self.seller_ids = [(0, 0, supplierinfo)]
-
-            # buscar el quant mas antiguo de este producto, (puede no haber)
-            quant_obj = self.env['stock.quant']
-            quant = quant_obj.search([('product_tmpl_id', '=', prod.id),
-                                      ('location_id.usage', '=', 'internal')],
-                                     order='in_date', limit=1)
+            # buscar si hay quants
+            quant = self.oldest_quant(prod)
             self.fix_quant_data(quant, prod, cost)
+
+            prod.bulonfer_cost = cost
+
+            if vendor_ref == 'BULONFER':
+                item_obj = self.env['product_autoload.item']
+                item = item_obj.search([('code', '=', prod.item_code)])
+
+                prod.margin = 100 * item.margin
+                prod.list_price = cost * (item.margin + 1)
+            else:
+                prod.list_price = price
+                prod.margin = 100 * (price / cost - 1) if cost != 0 else 0
 
     def fix_quant_data(self, quant, prod, cost):
         """ Overrideable function
         """
         if quant:
+            pass
             # si el quant cost esta en cero es critico, le pongo el costo
             # esto no debiera pasar, encima hay que hacerlo con sudo
-            if not quant.cost:
-                quant.sudo().write({'cost': cost})
-                _logger.error('Zero cost QUANT for %s' % quant.product_id.default_code)
+            # TODO QUITAR ESTO
+            # if not quant.cost:
+            #    quant.sudo().write({'cost': cost})
+            #    _logger.error(
+            #        'Zero cost QUANT for %s' % quant.product_id.default_code)
 
             # actualizar el standard_price a este precio
-            prod.standard_price = quant.cost
+            # TODO QUITAR ESTO, esto lo hace odoo
+            # prod.standard_price = quant.cost
         else:
-            # no tengo stock le pongo el costo de hoy
+            # si no hay quants el costo es el de hoy
             prod.standard_price = cost
-
-        # el costo hoy
-        prod.bulonfer_cost = cost

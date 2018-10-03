@@ -29,11 +29,11 @@ class PurchaseOrderLine(models.Model):
     @api.multi
     def _create_stock_moves(self, picking):
 
+        # TODO agregar tambien en vendor aqui
         moves = self.env['stock.move']
         done = self.env['stock.move'].browse()
         for line in self:
             price_unit, price_product_unit = line._get_stock_move_price_unit()
-
             template = {
                 'name': line.name or '',
                 'product_id': line.product_id.id,

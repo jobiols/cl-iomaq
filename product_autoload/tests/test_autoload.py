@@ -8,8 +8,8 @@ from openerp.tests.common import TransactionCase
 from ..models.mappers import ProductMapper, MAP_NAME, MAP_UPV, \
     MAP_STANDARD_PRICE, MAP_WEIGHT
 
-#    Forma de correr el test
-#    -----------------------
+#   Forma de correr el test
+#   -----------------------
 #
 #   Definir un subpackage tests que será inspeccionado automáticamente por
 #   modulos de test los modulos de test deben empezar con test_ y estar
@@ -46,11 +46,9 @@ class TestBusiness(TransactionCase):
         self.env['ir.config_parameter'].set_param('data_path', self._data_path)
 
         self._vendor = self.env['res.partner'].search(
-            [('name', 'like', 'Bulonfer')])
+            [('ref', '=', 'BULONFER')])
 
         self._supinfo = self.env['product.supplierinfo']
-
-        self.env['res.partner'].create({'name': 'Bulonfer'})
 
         # definimos una linea del archivo para probar
         self.line = [
@@ -71,6 +69,13 @@ class TestBusiness(TransactionCase):
 
         self.manager_obj = self.env['product_autoload.manager']
         self.prod_obj = self.env['product.template']
+
+        account_journal_obj = self.env['account.journal']
+        journal = account_journal_obj.create({
+            'name': 'inventario',
+            'type': 'general',
+            'code': 'INV'
+        })
 
     def test_01_product_mapper(self):
         """ Chequear creacion de ProductMapper ------------------------------01
@@ -200,8 +205,7 @@ class TestBusiness(TransactionCase):
         self.env['ir.config_parameter'].set_param(
             'last_replication', '2018-02-26 16:13:21')
         # pero aca lo estoy forzando a que replique
-        self.env['ir.config_parameter'].set_param(
-            'import_only_new', False)
+        self.env['ir.config_parameter'].set_param('import_only_new', False)
 
         self.manager_obj.run()
         prod = self.prod_obj.search([('default_code', '=', '102.AF')])
@@ -215,10 +219,15 @@ class TestBusiness(TransactionCase):
         prod_obj = self.env['product.template']
 
         self.manager_obj.run()
+
+        # verificar precios
         prod = prod_obj.search([('default_code', '=', '102.B.12')])
         self.assertEqual(prod.bulonfer_cost, 2.2372)
+        self.assertAlmostEqual(prod.list_price, 2.2372 * 1.5, places=2)
+
         prod = prod_obj.search([('default_code', '=', '106.32')])
         self.assertAlmostEqual(prod.bulonfer_cost, 15.0620, places=12)
+        self.assertAlmostEqual(prod.list_price, 15.0620 * 1.5, places=2)
 
         self.manager_obj.update_categories()
 
@@ -260,12 +269,6 @@ class TestBusiness(TransactionCase):
         self.assertEqual(categ.property_stock_valuation_account_id.code,
                          u'1.1.05.01.010')
 
-        # verificar precios de lista
-        prod = prod_obj.search([('default_code', '=', '102.B.12')])
-        self.assertAlmostEqual(prod.list_price, 2.2372 * 1.5, places=2)
-        prod = prod_obj.search([('default_code', '=', '106.32')])
-        self.assertAlmostEqual(prod.list_price, 15.0620 * 1.5, places=2)
-
     def test_10_cambia_margen(self):
         """ Testear cambio de margen de ganancia-----------------------------10
         """
@@ -286,14 +289,97 @@ class TestBusiness(TransactionCase):
                                places=2)
 
     def test_11_barcodes(self):
-        """ Testear barcode duplicado
+        """ Testear barcode duplicado ---------------------------------------11
         """
         self.manager_obj.run(productcode='productcode_changed.csv')
 
     def test_12_bloqueo_lista_996(self):
-        """ Testear que bloquee el item 996.
+        """ Testear que bloquee el item 996. --------------------------------12
         """
         self.manager_obj.run()
         prod = self.prod_obj.search([('default_code', '=', '996.18.10')])
         self.assertFalse(prod)
+
+    def test_13_costos(self):
+        """ Testear que cargue bien los costos ------------------------------13
+        """
+        self.manager_obj.run()
+        self.manager_obj.update_categories()
+        prod = self.prod_obj.search([('default_code', '=', '102.7811')])
+        self.assertAlmostEqual(prod.bulonfer_cost, 8.98, places=2)
+        self.assertAlmostEqual(prod.standard_price, 8.98, places=2)
+
+    def test_14_closest_invoice_line(self):
+        """ Testear la funcion ----------------------------------------------14
+            date_in 15/09/2018 13:39:12
+        """
+        # agregar cuentas contables
+        account_account_obj = self.env['account.account']
+        account = account_account_obj.create({
+            'internal_type': 'payable',
+            'name': 'cuenta',
+            'code': '6464',
+            'user_type_id': 2,
+            'reconcile': True
+        })
+
+        # agregar un journal
+        account_journal_obj = self.env['account.journal']
+        journal_id = account_journal_obj.create({
+            'name': 'ventas',
+            'type': 'sale',
+            'point_of_sale_type': 'manual',
+            'point_of_sale_number': 1,
+            'code': 'VEN01'
+        })
+
+        # obtener el producto
+        prod_prod = self.env['product.product'].search([('id', '=', 12)])
+
+        # crear la linea de la factura
+        invoice_line_ids = {
+            'product_id': prod_prod.id,
+            'quantity': 1,
+            'account_id': account.id,
+            'price_unit': 123,
+            'name': 'producto vendido'
+        }
+
+        # crear tres facturas en tres fechas distintas
+        account_invoice_object = self.env['account.invoice']
+        ai1 = account_invoice_object.create({
+            'partner_id': 6,
+            'date_invoice': '2018-09-01',
+            'invoice_line_ids': [(0, 0, invoice_line_ids)],
+            'journal_id': journal_id.id,
+            'account_id': account.id,
+        })
+        ai2 = account_invoice_object.create({
+            'partner_id': 6,
+            'date_invoice': '2018-09-10',
+            'invoice_line_ids': [(0, 0, invoice_line_ids)],
+            'journal_id': journal_id.id,
+            'account_id': account.id,
+        })
+        ai3 = account_invoice_object.create({
+            'partner_id': 6,
+            'date_invoice': '2018-09-20',
+            'invoice_line_ids': [(0, 0, invoice_line_ids)],
+            'journal_id': journal_id.id,
+            'account_id': account.id,
+        })
+        ai1.discount_processed = True
+        ai2.discount_processed = True
+        ai3.discount_processed = True
+
+        # ajustar la fecha del ultimo quant cercana a la fac '2018-09-10'
+        tmpl = prod_prod.product_tmpl_id
+
+        q = self.prod_obj.oldest_quant(tmpl)
+        q.in_date = '2018-09-12'
+
+        # obtener la linea de la factura con la fecha mas cercana al quant
+        # mas viejo.
+        invoice_line = self.prod_obj.closest_invoice_line(tmpl)
+        self.assertEqual(invoice_line.id, ai2.invoice_line_ids.id)
 
