@@ -54,7 +54,7 @@ class AccountInvoiceLine(models.Model):
                 # precio de costo sacado del producto en moneda de la company
                 cost = ail.product_id.standard_price
 
-                ail.product_margin = price / cost - 1 if cost else 0
+                ail.product_margin = price / cost - 1 if cost and price else 0
 
     @api.multi
     @api.depends('product_id.standard_price', 'invoice_id.currency_id')
