@@ -27,12 +27,6 @@ class ProductTemplate(models.Model):
         help="True if the asociated category needs rebuild",
         default=False
     )
-    #    difference = fields.Float(
-    #        help="Difference % in cost price between invoce and bulonfer data, "
-    #             "calculated as:\n"
-    #             "(invoice_cost - system_cost)/invoice_cost",
-    #        compute='_compute_difference'
-    #    )
     # TODO rename to invoice_cost requiere migracion
     system_cost = fields.Float(
         # compute="_compute_system_cost",
@@ -52,24 +46,6 @@ class ProductTemplate(models.Model):
         inverse_name="product_tmpl_id",
         domain=[('location_id.usage', '=', 'internal')]
     )
-
-
-    #    @api.multi
-    #    @api.depends('system_cost', 'system_cost')
-    #    def _compute_difference(self):
-    #        for prod in self:
-    #            ip = prod.system_cost  # invoice_cost
-    #            sp = prod.system_cost
-    #            prod.difference = 100 * (ip - sp) / ip if ip else 0
-
-    #    @api.multi
-    #    @api.depends('bulonfer_cost', 'difference')
-    #    def _compute_system_cost(self):
-    #        """ Calcula el costo de la factura basado en difference
-    #        """
-    #        for prod in self:
-    #            prod.system_cost = prod.bulonfer_cost / (
-    #                1 - prod.difference / 100) if prod.difference else False
 
     def oldest_quant(self, prod):
         """ Retorna el quant mas antiguo de este producto.
@@ -239,19 +215,6 @@ class ProductTemplate(models.Model):
     def fix_quant_data(self, quant, prod, cost):
         """ Overrideable function
         """
-        if quant:
-            pass
-            # si el quant cost esta en cero es critico, le pongo el costo
-            # esto no debiera pasar, encima hay que hacerlo con sudo
-            # TODO QUITAR ESTO
-            # if not quant.cost:
-            #    quant.sudo().write({'cost': cost})
-            #    _logger.error(
-            #        'Zero cost QUANT for %s' % quant.product_id.default_code)
-
-            # actualizar el standard_price a este precio
-            # TODO QUITAR ESTO, esto lo hace odoo
-            # prod.standard_price = quant.cost
-        else:
+        if not quant:
             # si no hay quants el costo es el de hoy
             prod.standard_price = cost
