@@ -55,13 +55,14 @@ class ProductTemplate(models.Model):
                                  ('location_id.usage', '=', 'internal')],
                                 order='in_date', limit=1)
 
-    def closest_invoice_line(self, prod):
+    def closest_invoice_line(self, prod, date_invoice):
         """ Encuentra la linea de factura mas cercana a la fecha de ingreso del
-            ultimo quant del producto. Si no hay stock busca la mas reciente.
+            ultimo quant del producto. Si no hay stock busca la mas cercana
+            a date_invoice
         """
         in_date = self.oldest_quant(prod).in_date
         if not in_date:
-            in_date = datetime.today().strftime('%Y-%m-%d')
+            in_date = date_invoice
 
         # busca el la linea de factura con prod_id mas cercano a in_date
         # TODO quitar ai.date_invoice para retornar solo los ids
@@ -104,7 +105,9 @@ class ProductTemplate(models.Model):
         for prod in self:
             # encontrar la factura mas cercana a la fecha de ingreso del quant
             # mas antiguo, si no hay stock intenta traer la ultima factura
-            invoice_line = self.closest_invoice_line(prod)
+            invoice_line = self.closest_invoice_line(
+                prod,
+                datetime.today().strftime('%Y-%m-%d'))
 
             invoice_price = 0
             if invoice_line and invoice_line.price_unit:

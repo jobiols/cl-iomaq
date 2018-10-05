@@ -45,31 +45,42 @@ class ProductTemplate(models.Model):
             pone standard price y los quants
             Para correr a mano
         """
-        prods_obj = self.env['product.template']
-        prods = prods_obj.search([('default_code', 'like', '-STIHL')])
-        for prod in prods:
-            cost = prod.bulonfer_cost
-            prod.standard_product_price = cost
 
-            cc = prod.company_id.currency_id
+        cc = self.env['res.currency'].search([('name', '=', 'ARS')])
+        ail_obj = self.env['account.invoice.line']
+        ails = ail_obj.search(
+            [('product_id.default_code', 'not like', '-STIHL'),
+             ('invoice_id.type', '=', 'out_invoice')],
+            order='id')
 
-            for supplierinfo in prod.seller_ids:
-                supplierinfo.price = cost
+        for ail in ails:
+            tmpl = ail.product_id.product_tmpl_id
+            invoice_line = tmpl.closest_invoice_line(
+                tmpl, ail.invoice_id.date_invoice)
 
-            for quant in self.env['stock.quant'].search([
-                ('product_tmpl_id', '=', prod.id)]):
-                pc = prod.currency_id.with_context(date=quant.in_date)
+            invoice_price = 0
+            if invoice_line and invoice_line.price_unit:
+                # precio que cargaron en la factura de compra
+                invoice_price = invoice_line.price_unit
+                # descuento en la linea de factura
+                invoice_price *= (1 - invoice_line.discount / 100)
+                # descuento global en la factura
+                invoice_price *= (1 + invoice_line.invoice_discount)
 
-                quant.cost = pc.compute(cost, cc, round=False)
-                prod.standard_price = pc.compute(cost, cc, round=False)
-                quant.cost_product = cost
+                if invoice_line.invoice_id.partner_id.ref == 'BULONFER':
+                    # descuento por nota de credito al final del mes esto
+                    # vale solo para bulonfer
+                    invoice_price *= (1 - 0.05)
 
-            _logger.info('product like %s' % prod.default_code)
+                pc = tmpl.currency_id.with_context(
+                    date=ail.invoice_id.date_invoice)
+                standard_price = invoice_price
+                standard_product_price = invoice_price
 
-        prods_obj = self.env['product.template']
-        prods = prods_obj.search([('default_code', 'not like', '-STIHL')])
+                # recalcular el margen del producto
+                if ail.product_id.standard_price > standard_price:
+                    ail.product_id.standard_price = standard_price
+                    ail.product_id.standard_product_price = standard_product_price
+                    print '>>>'
 
-        # TODO Esto tarda a~nos !!!!!!!!!!!!
-        for prod in prods:
-            prod.standard_product_price = prod.standard_price
-            _logger.info('product not like %s' % prod.default_code)
+                _logger.info('product like %s' % tmpl.default_code)
