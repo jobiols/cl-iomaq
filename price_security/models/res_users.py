@@ -41,9 +41,8 @@ class Users(models.Model):
         string='Discount Restrictions')
 
     @api.multi
-    def check_discount(
-        self, discount, pricelist_id,
-        so_line=False, do_not_raise=False):
+    def check_discount(self, discount, pricelist_id, so_line=False,
+                       do_not_raise=False):
         """
         We add do_not_raise for compatibility with other modules
         """

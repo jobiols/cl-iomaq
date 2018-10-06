@@ -12,16 +12,14 @@ class SaleOrderLine(models.Model):
     # por alguna razon que no entiendo esto solo funciona si la funcion
     # check_discount se llama de otra forma que no sea check_discount
 
-    @api.one
-    @api.constrains(
-        'discount',
-        'product_id',
-        # this is a related none stored field
-        # 'product_can_modify_prices'
-    )
+    @api.multi
+    @api.constrains('discount', 'product_id',
+                    # this is a related none stored field
+                    # 'product_can_modify_prices'
+                    )
     def check_discount_sale(self):
-        if (self.user_has_groups('price_security.group_restrict_prices'
-                                 ) and not self.product_can_modify_prices):
-            self.env.user.check_discount(
-                self.discount,
-                self.order_id.pricelist_id.id)
+        for reg in self:
+            if (reg.user_has_groups('price_security.group_restrict_prices'
+                                    ) and not reg.product_can_modify_prices):
+                reg.env.user.check_discount(reg.discount,
+                                            reg.order_id.pricelist_id.id)

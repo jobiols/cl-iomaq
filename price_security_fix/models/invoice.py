@@ -14,12 +14,10 @@ class AccountInvoiceLine(models.Model):
     # check_discount se llama de otra forma que no sea check_discount
 
     @api.multi
-    @api.constrains(
-        'discount',
-        'product_id'
-        # this is a related none stored field
-        # 'product_can_modify_prices'
-    )
+    @api.constrains('discount', 'product_id'
+                    # this is a related none stored field
+                    # 'product_can_modify_prices'
+                    )
     def check_discount_invoice(self):
         precision = self.env['decimal.precision'].precision_get(
             'Product Unit of Measure')
