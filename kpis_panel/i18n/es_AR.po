@@ -4,10 +4,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 9.0c-20180504\n"
+"Project-Id-Version: Odoo Server 9.0c-20180827\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-06-16 16:57+0000\n"
-"PO-Revision-Date: 2018-06-16 16:57+0000\n"
+"POT-Creation-Date: 2018-10-06 19:41+0000\n"
+"PO-Revision-Date: 2018-10-06 19:41+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -18,7 +18,7 @@ msgstr ""
 #. module: kpis_panel
 #: model:ir.model.fields,field_description:kpis_panel.field_kpis_panel_kpis_count
 msgid "Count"
-msgstr "Articulos"
+msgstr "Cantidad de productos"
 
 #. module: kpis_panel
 #: model:ir.model.fields,field_description:kpis_panel.field_kpis_panel_kpis_create_uid
@@ -34,6 +34,11 @@ msgstr "Creado el"
 #: model:ir.model.fields,field_description:kpis_panel.field_kpis_panel_kpis_display_name
 msgid "Display Name"
 msgstr "Mostrar Nombre"
+
+#. module: kpis_panel
+#: model:res.groups,comment:kpis_panel.group_kpis_users
+msgid "Habilita ver los kpis"
+msgstr "Habilita ver los indicadores"
 
 #. module: kpis_panel
 #: model:ir.model.fields,field_description:kpis_panel.field_kpis_panel_kpis_id
@@ -58,17 +63,17 @@ msgstr "Última actualizacón el"
 #. module: kpis_panel
 #: model:ir.model.fields,field_description:kpis_panel.field_kpis_panel_kpis_stock_valuation
 msgid "Stock valuation (sale price w/tax)"
-msgstr "Valuacion de stock (P.Venta +IVA)"
+msgstr "Valuacion de stock (precio de venta +IVA)"
 
 #. module: kpis_panel
-#: model:ir.ui.view,arch_db:kpis_panel.kpis_tree
+#: model:ir.ui.view,arch_db:kpis_panel.kpis_tree_view
 msgid "Survey"
-msgstr "Survey"
+msgstr "Encuesta"
 
 #. module: kpis_panel
 #: model:ir.model.fields,field_description:kpis_panel.field_kpis_panel_kpis_total_payable
 msgid "Total payable"
-msgstr "Costo"
+msgstr "Deuda total"
 
 #. module: kpis_panel
 #: model:ir.model.fields,field_description:kpis_panel.field_kpis_panel_kpis_vendor_id
@@ -82,7 +87,11 @@ msgid "Vendors Report"
 msgstr "Reporte de proveedores"
 
 #. module: kpis_panel
+#: model:res.groups,name:kpis_panel.group_kpis_users
+msgid "kpis"
+msgstr "Indicadores"
+
+#. module: kpis_panel
 #: model:ir.model,name:kpis_panel.model_kpis_panel_kpis
 msgid "kpis_panel.kpis"
 msgstr "kpis_panel.kpis"
-
