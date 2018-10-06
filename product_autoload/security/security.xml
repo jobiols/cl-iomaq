@@ -4,6 +4,8 @@
         <!-- grupo con acceso total a precios (muestra el precio de los quants) -->
         <record model="res.groups" id="group_show_history_cost">
             <field name="name">Acceso al historial de costos</field>
+            <field name="comment">Permite ver el costo historico de la
+                mercaderia en stock, en la ficha del producto</field>
         </record>
     </data>
 </openerp>

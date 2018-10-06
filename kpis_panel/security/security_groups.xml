@@ -3,8 +3,9 @@
     <data>
         <!-- GRUPO KPIS -->
         <record id="group_kpis_users" model="res.groups">
-            <field name="name">kpis</field>
-            <field name="comment">Habilita ver los kpis</field>
+            <field name="name">Reporte de proveedore</field>
+            <field name="comment">Habilita ver el reporte de proveedores que
+            esta en Facturacion / Asesor / Reporte de proveedores</field>
          </record>
     </data>
 </openerp>
