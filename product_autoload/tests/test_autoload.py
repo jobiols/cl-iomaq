@@ -380,6 +380,6 @@ class TestBusiness(TransactionCase):
 
         # obtener la linea de la factura con la fecha mas cercana al quant
         # mas viejo.
-        invoice_line = self.prod_obj.closest_invoice_line(tmpl)
+        invoice_line = self.prod_obj.closest_invoice_line(tmpl, 'not-a-date')
         self.assertEqual(invoice_line.id, ai2.invoice_line_ids.id)
 
