@@ -17,6 +17,12 @@ class AccountInvoiceLine(models.Model):
              "global discount then it is 0%"
     )
 
+    date_invoice = fields.Date(
+        related="invoice_id.date_invoice",
+        help="helper para corregir costos",
+        store=True
+    )
+
 
 class AccountInvoice(models.Model):
     _inherit = "account.invoice"

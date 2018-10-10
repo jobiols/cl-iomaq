@@ -5,6 +5,98 @@ from openerp import fields, models, api
 import openerp.addons.decimal_precision as dp
 
 
+class FakeStock(object):
+    def __init__(self):
+        self._stock = []
+
+    def append(self, quant):
+        self._stock.append(quant)
+
+    def push(self, qty, price):
+        """ Mete un quant con cantidad y precio
+        """
+        self._stock.append({'qty': qty,
+                            'price': price})
+
+    def pop(self, qty):
+        """ Saca qty productos ajustndo los quants y devolviendo el precio
+        """
+        num = 0
+        # calcular cuantos quants estan afectados, habra que quitar
+        # num -1 y corregir o no el ultimo
+        for quant in self._stock:
+            num += 1
+            if self.qty(n=num) >= qty:
+                break
+
+        # obtener la cantidad de producto que hay en los num-1 quants
+        quitados = self.qty(n=num - 1)
+
+        # mover los num-1 quants a out
+        out = FakeStock()
+        for x in range(0, num - 1):
+            q = self._stock.pop(0)
+            out.append(q)
+
+        # obtener la cantidad de producto a corregir en el ultimo quant
+        corregir = qty - quitados
+
+        # apuntar al ultimo
+        if self._stock:
+            quant = self._stock[0]
+        else:
+            print '----------------------Error Stock Negativo'
+            return 0
+
+        # corregir la cantidad en este quant
+        quant['qty'] -= corregir
+
+        # meter el pedazo de quant en out si es que no es cero la cantidad
+        # y con el mismo precio
+        if corregir:
+            out.push(corregir, quant['price'])
+
+        # en el caso de que la correccion me lleve a un quant en cero lo mato
+        if quant['qty'] == 0:
+            self._stock.pop(0)
+
+        return out._price()
+
+    def qty(self, n=-1):
+        """ Devuelve la cantidad en los n quants primeros para salir si es
+            False los suma todos
+        """
+        if n == 0:
+            return 0
+        qty = 0
+        for e in self._stock:
+            qty += e['qty']
+            if n != -1:
+                n -= 1
+            if n >= 0 and n == 0:
+                return qty
+        return qty
+
+    def _price(self, n=-1):
+        """ Devuelve el promedio ponderado del precio de los n quants primeros
+            para salir.
+        """
+        price = qty = 0
+        for e in self._stock:
+            price += e['price'] * e['qty']
+            qty += e['qty']
+
+            if n:
+                n -= 1
+            if n >= 0 and n == 0:
+                return price / qty if qty else 0
+
+        return price / qty if qty else 0
+
+
+# #############################################################################
+
+
 class AccountInvoiceLine(models.Model):
     _inherit = "account.invoice.line"
 
@@ -17,8 +109,8 @@ class AccountInvoiceLine(models.Model):
 
     product_margin = fields.Float(
         string='Product Margin',
-        compute="_compute_product_margin",
-        store=True,
+        # compute="_compute_product_margin",
+        # store=True,
         help="This is the margin between standard_price and list_price taking "
              "into account line discounts, is the margin for this line only"
     )
@@ -34,11 +126,9 @@ class AccountInvoiceLine(models.Model):
     )
 
     @api.multi
-    @api.depends('product_id.standard_price', 'discount', 'price_unit',
-                 'invoice_id.currency_id', 'company_id.currency_id')
     def _compute_product_margin(self):
         for ail in self:
-            if ail.product_id:
+            if ail.product_id and ail.invoice_id.type == 'out_invoice':
                 # precio de venta sacado de la linea de factura, teniendo
                 # en cuenta los descuentos que pudiera haber.
                 disc = ail.discount / 100
@@ -102,6 +192,56 @@ class AccountInvoiceLine(models.Model):
                     default_code == '76.4.16':
                 line.vendor_id = 16
 
+    @api.model
+    def fix_margin(self, prods):
+        for prod in prods:
+            self.fix_product_margin(prod)
+
+    def fix_product_margin(self, default_code):
+        _stock = FakeStock()
+
+        ail_obj = self.env['account.invoice.line']
+        ails = ail_obj.search(
+            [('product_id.default_code', '=', default_code)],
+            order="date_invoice")
+        cost = 0
+        for ail in ails:
+            print 'fixing ', ail.product_id.default_code
+            cc = ail.company_id.currency_id
+            # busco facturas de compra
+            if ail.invoice_id.type == 'in_invoice':
+                # acumulo stock
+                cost = ail.price_unit * (1 + ail.invoice_discount)
+                ic = ail.currency_id.with_context(date=ail.date_invoice)
+                cost = ic.compute(cost, cc)
+                _stock.push(ail.quantity, cost)
+
+            # busco facturas de venta o reembolso
+            if ail.invoice_id.type == 'out_refund':
+                # bajo el stock
+                _stock.pop(ail.quantity)
+                ail.product_margin = 0
+
+            if ail.invoice_id.type == 'out_invoice':
+                # bajo el stock, si hay errores de stock negativo intento ponerle
+                # el ultimo precio que tengo.
+                the_cost = _stock.pop(ail.quantity)
+                if not the_cost:
+                    the_cost = cost
+
+                # tengo en cuenta el tipo de cambio del dia de la factura
+                pc = ail.product_id.currency_id
+                cc = ail.company_id.currency_id.with_context(
+                    date=ail.date_invoice)
+
+                ail.product_id.standard_price = the_cost
+                ail.product_id.standard_product_price = cc.compute(the_cost,
+                                                                   pc)
+                ail._compute_product_margin()
+            else:
+                # in_invoice, in_refund
+                ail.product_margin = 0
+
 
 class AccountInvoice(models.Model):
     _inherit = "account.invoice"
@@ -111,9 +251,9 @@ class AccountInvoice(models.Model):
         compute="_compute_tag",
         readonly=True,
         store=True,
-        help="This is the first tag found in the partner, it adds a Tags field"
-             "in the account.invoice model in order to filter invoices and"
-             "to use it as a new dimension in pivot tables"
+        help="This is the first tag found in the partner, it adds a Tags "
+             "field in the account.invoice model in order to filter invoices "
+             "and to use it as a new dimension in pivot tables"
     )
 
     @api.multi
@@ -122,3 +262,11 @@ class AccountInvoice(models.Model):
         for invoice in self:
             if invoice.partner_id and invoice.partner_id.category_id:
                 invoice.tag = invoice.partner_id.category_id[0].name
+
+    @api.multi
+    def write(self, vals):
+        for inv in self:
+            for line in inv.invoice_line_ids:
+                line._compute_product_margin()
+
+        return super(AccountInvoice, self).write(vals)
