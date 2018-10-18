@@ -28,6 +28,9 @@ class AccountInvoiceLineReportIomaq(models.Model):
         'Cost +tax',
         readonly=True,
     )
+    margin_percent = fields.Float(
+
+    )
     margin_total = fields.Float(
         'Margin',
         readonly=True,
@@ -181,6 +184,10 @@ class AccountInvoiceLineReportIomaq(models.Model):
             (1 + ail.product_margin) *
                 (1 + ail.product_iva)
         AS cost_total_taxed,
+
+        --- MARGEN PORCENTUAL
+        ail.product_margin * 100
+        As margin_percent,
 
         --- MARGEN TOTAL DE LA LINEA DE FACTURA SIN IVA
         --- Es la diferencia entre el precio de venta que se pone en la factura

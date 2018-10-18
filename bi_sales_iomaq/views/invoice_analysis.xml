@@ -94,6 +94,10 @@
                 <filter string="This year"
                         name="this_year"
                         domain="[('date_invoice', '&gt;=', context_today().strftime('%Y-01-01')), ('date_invoice', '&lt;', (context_today()+relativedelta(years=1)).strftime('%Y-01-01'))]"/>
+                <separator/>
+                <filter string="Crazy Margin"
+                        name="crazy_margin"
+                        domain="[('margin_percent', '&lt;=', 10)]"/>
 
                 <field name="date_invoice_from" filter_domain="[('date_invoice','&gt;=',self)]"/>
                 <field name="date_invoice_to" filter_domain="[('date_invoice','&lt;=',self)]"/>
