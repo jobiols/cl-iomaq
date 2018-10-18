@@ -3,6 +3,9 @@
 from __future__ import division
 from openerp import fields, models, api
 import openerp.addons.decimal_precision as dp
+import logging
+
+_logger = logging.getLogger(__name__)
 
 
 class FakeStock(object):
@@ -194,19 +197,22 @@ class AccountInvoiceLine(models.Model):
 
     @api.model
     def fix_margin(self, prods):
-        for prod in prods:
-            self.fix_product_margin(prod)
+        self.fix_product_margin()
 
-    def fix_product_margin(self, default_code):
+    def fix_product_margin(self):
         _stock = FakeStock()
 
         ail_obj = self.env['account.invoice.line']
-        ails = ail_obj.search(
-            [('product_id.default_code', '=', default_code)],
+        ails = ail_obj.search([('product_id.seller_ids', '!=', False)],
             order="date_invoice")
+
         cost = 0
         for ail in ails:
-            print 'fixing ', ail.product_id.default_code
+            if 16 != ail.product_id.seller_ids[0].name.id:
+                continue
+
+            _logger.info('Fixing %s' % ail.product_id.default_code)
+
             cc = ail.company_id.currency_id
             # busco facturas de compra
             if ail.invoice_id.type == 'in_invoice':
