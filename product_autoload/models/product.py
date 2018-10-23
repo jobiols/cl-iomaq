@@ -46,6 +46,9 @@ class ProductTemplate(models.Model):
         inverse_name="product_tmpl_id",
         domain=[('location_id.usage', '=', 'internal')]
     )
+    parent_price_product = fields.Char(
+        help='default_code of the product to get prices from'
+    )
 
     def oldest_quant(self, prod):
         """ Retorna el quant mas antiguo de este producto.
@@ -221,3 +224,23 @@ class ProductTemplate(models.Model):
         if not quant:
             # si no hay quants el costo es el de hoy
             prod.standard_price = cost
+
+    @api.model
+    def get_price_from_product(self):
+        """ Procesar los productos que tienen el parent_price_product asignado
+            Se lanza desde cron despues de que corre el autoload
+        """
+        prod_obj = self.env['product.template']
+
+        # Busco los que tienen parent price product
+        prods = prod_obj.search([('parent_price_product', '!=', False)])
+        for prod in prods:
+            default_code = prod.parent_price_product
+            parent = prod_obj.search([('default_code', '=', default_code)])
+            # si ya tiene bien el precio no lo proceso para que no me quede
+            # en el historico de precios.
+            if parent and parent.list_price != prod.list_price:
+                # imaginamos que el costo es la decima parte.
+                cost = parent.list_price / 10
+                prod.set_prices(cost, 'EFACEC', price=parent.list_price)
+                _logger.info('setting price product %s' % prod.default_code)
