@@ -40,5 +40,22 @@
             </field>
         </record>
 
+        <!-- mostrar el parent product price -->
+        <record id="product_template_form_view_procurement_button"
+                model="ir.ui.view">
+            <field name="name">PRODUCT UPLOAD: parent price</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id"
+                   ref="stock.product_template_form_view_procurement_button"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//group[@name='sale_condition']" position="after">
+                    <group>
+                        <field name="parent_price_product"/>
+                    </group>
+                </xpath>
+            </field>
+        </record>
+
     </data>
 </openerp>
