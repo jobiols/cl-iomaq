@@ -213,7 +213,7 @@ class ProductTemplate(models.Model):
                 prod.list_price = cost * (item.margin + 1)
             else:
                 prod.list_price = price
-                prod.margin = 100 * (price / cost - 1) if cost != 0 else 0
+                prod.margin = 100 * (price / cost - 1) if cost != 0 else 1e10
 
     def fix_quant_data(self, quant, prod, cost):
         """ Overrideable function
