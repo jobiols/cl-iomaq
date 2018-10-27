@@ -6,6 +6,7 @@ from __future__ import division
 
 from openerp.tests.common import TransactionCase
 
+
 #    Forma de correr el test
 #    -----------------------
 #
@@ -24,8 +25,6 @@ from openerp.tests.common import TransactionCase
 #
 #   oe -Q bi_sales_iomaq -c iomaq -d iomaq_test
 #
-
-import os
 
 
 class TestBusiness(TransactionCase):
@@ -70,7 +69,7 @@ class TestBusiness(TransactionCase):
 
         # agregar un journal
         account_journal_obj = self.env['account.journal']
-        journal_id = account_journal_obj.create({
+        account_journal_obj.create({
             'name': 'ventas',
             'type': 'sale',
             'point_of_sale_type': 'manual',
@@ -166,7 +165,6 @@ class TestBusiness(TransactionCase):
         price1 = 7000.0
         cost2 = 6000.0
         price2 = 8400.0
-        margin = 40
 
         # obtener el producto para comprar y vender
         prod = self.env['product.product'].search(
@@ -214,18 +212,6 @@ class TestBusiness(TransactionCase):
         self.assertEqual(prod.standard_price, pc.compute(cost1, cc))
         self.assertEqual(prod.standard_product_price, cost1)
 
-        # so2 = self.create_so(prod, 1)
-        # self.validate_so(so2)
-        ## El standard price paso a 6000
-        # self.assertEqual(prod.standard_price, pc.compute(cost2, cc))
-        # self.assertEqual(prod.standard_product_price, cost2)
-
-        # so3 = self.create_so(prod, 1)
-        # self.validate_so(so3)
-        ## El standard price sigue en a 6000
-        # self.assertEqual(prod.standard_price, pc.compute(cost2, cc))
-        # self.assertEqual(prod.standard_product_price, cost2)
-
         # Crear las facturas y verificar BI
 
         id = so1.action_invoice_create()
@@ -238,7 +224,7 @@ class TestBusiness(TransactionCase):
         # en la linea de factura precio es el ultimo
         self.assertEqual(ail.price_subtotal_signed, pc.compute(price2, cc))
         # costo es el mas antiguo
-        self.assertEqual(ail.product_id.standard_price, pc.compute(cost1,cc))
+        self.assertEqual(ail.product_id.standard_price, pc.compute(cost1, cc))
         # el margen es mayor que el oficial
         self.assertAlmostEqual(ail.product_margin, price2 / cost1 - 1,
                                places=4)

@@ -30,7 +30,7 @@
         'stock',
         'stock_account',
         'purchase',
-        'product_autoload' # quitar esta dependencia
+        'product_autoload'  # quitar esta dependencia
     ],
     'data': [
         'views/product_template_view.xml'

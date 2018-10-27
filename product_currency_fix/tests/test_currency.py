@@ -70,7 +70,7 @@ class TestBusiness(TransactionCase):
 
         # agregar un journal
         account_journal_obj = self.env['account.journal']
-        journal_id = account_journal_obj.create({
+        account_journal_obj.create({
             'name': 'ventas',
             'type': 'sale',
             'point_of_sale_type': 'manual',
@@ -166,7 +166,6 @@ class TestBusiness(TransactionCase):
         price1 = 7000.0
         cost2 = 6000.0
         price2 = 8400.0
-        margin = 40
 
         # obtener el producto para comprar y vender
         prod = self.env['product.product'].search(

@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 from openerp import api, fields, models, _, SUPERUSER_ID
-from openerp.tools.float_utils import float_compare, float_round
+from openerp.tools.float_utils import float_round
 from datetime import datetime
-from openerp.exceptions import UserError, AccessError
-from openerp.tools import DEFAULT_SERVER_DATETIME_FORMAT, \
-    DEFAULT_SERVER_DATE_FORMAT
+from openerp.exceptions import UserError
+from openerp.tools import DEFAULT_SERVER_DATETIME_FORMAT
 
 import logging
 
@@ -85,9 +84,7 @@ class StockMove(models.Model):
                           }, context=ctx)
         self.write(cr, uid, [move.id], {
             'price_unit': average_valuation_price,
-            'price_product_unit': average_prod_val_price
-        },
-                   context=context)
+            'price_product_unit': average_prod_val_price}, context=context)
 
 
 class StockQuant(models.Model):

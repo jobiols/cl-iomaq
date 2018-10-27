@@ -87,10 +87,10 @@ class Users(models.Model):
                             net_discount > disc_restriction.max_discount):
                     error = _(
                         'The applied discount is not allowed. Discount must be'
-                        'between %s and %s for pricelist "%s"') % (
-                                disc_restriction.min_discount + pricelist_disc,
-                                disc_restriction.max_discount + pricelist_disc,
-                                pricelist.name)
+                        'between %s and %s for pricelist "%s"') % \
+                            (disc_restriction.min_discount + pricelist_disc,
+                             disc_restriction.max_discount + pricelist_disc,
+                             pricelist.name)
                     # if pricelist_disc then we have a soline and e product
                     if pricelist_disc:
                         error += ' and product "%s"' % (

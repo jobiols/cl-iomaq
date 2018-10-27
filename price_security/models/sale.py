@@ -81,8 +81,8 @@ class SaleOrder(models.Model):
         if self.order_line and pricelist != self._origin.pricelist_id:
             self.partner_id = self._origin.partner_id
             return {'warning':
-                        {'title': "Warning",
-                         'message': "You can"
+                        {"title": "Warning",
+                         "message": "You can"
                                     " not change partner if there are sale "
                                     "lines and pricelist is going to be "
                                     "changed"}}

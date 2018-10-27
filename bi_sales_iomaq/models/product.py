@@ -72,15 +72,13 @@ class ProductTemplate(models.Model):
                     # vale solo para bulonfer
                     invoice_price *= (1 - 0.05)
 
-                pc = tmpl.currency_id.with_context(
-                    date=ail.invoice_id.date_invoice)
                 standard_price = invoice_price
                 standard_product_price = invoice_price
 
                 # recalcular el margen del producto
                 if ail.product_id.standard_price > standard_price:
                     ail.product_id.standard_price = standard_price
-                    ail.product_id.standard_product_price = standard_product_price
-                    print '>>>'
+                    ail.product_id.standard_product_price = \
+                        standard_product_price
 
                 _logger.info('product like %s' % tmpl.default_code)

@@ -219,7 +219,7 @@ class AccountInvoiceLine(models.Model):
                 _stock = FakeStock()
 
             _logger.info('Fixing %s on %s' % (
-            ail.product_id.default_code, ail.date_invoice))
+                ail.product_id.default_code, ail.date_invoice))
 
             cc = ail.company_id.currency_id
             # busco facturas de compra
@@ -237,8 +237,8 @@ class AccountInvoiceLine(models.Model):
                 ail.product_margin = 0
 
             if ail.invoice_id.type == 'out_invoice':
-                # bajo el stock, si hay errores de stock negativo intento ponerle
-                # el ultimo precio que tengo.
+                # bajo el stock, si hay errores de stock negativo intento
+                # ponerle el ultimo precio que tengo.
                 the_cost = _stock.pop(ail.quantity)
                 if not the_cost:
                     the_cost = cost
