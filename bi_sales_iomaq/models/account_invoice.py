@@ -201,18 +201,25 @@ class AccountInvoiceLine(models.Model):
         self.fix_product_margin()
 
     def fix_product_margin(self):
-        _stock = FakeStock()
+        new_prod = False
 
         ail_obj = self.env['account.invoice.line']
+        # ordenar la lista por producto y luego por fecha
         ails = ail_obj.search([('product_id.seller_ids', '!=', False)],
-            order="date_invoice")
+                              order="product_id,date_invoice")
 
         cost = 0
         for ail in ails:
             if 16 != ail.product_id.seller_ids[0].name.id:
                 continue
 
-            _logger.info('Fixing %s' % ail.product_id.default_code)
+            # Si cambia el producto recrear el fake stock
+            if new_prod != ail.product_id:
+                new_prod = ail.product_id
+                _stock = FakeStock()
+
+            _logger.info('Fixing %s on %s' % (
+            ail.product_id.default_code, ail.date_invoice))
 
             cc = ail.company_id.currency_id
             # busco facturas de compra
