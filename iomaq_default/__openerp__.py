@@ -65,8 +65,6 @@
     'data': [
         # 'security/security_groups.xml',
         'views/product_view.xml',
-        # 'views/afip_responsability.xml',
-        # 'views/sale_view.xml',
         'views/custom_reports.xml',  # por si hay que hacer custom reports
     ],
     'test': [

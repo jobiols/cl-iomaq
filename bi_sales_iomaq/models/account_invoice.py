@@ -48,7 +48,7 @@ class FakeStock(object):
         if self._stock:
             quant = self._stock[0]
         else:
-            print '----------------------Error Stock Negativo'
+            _logger.error('STOCK NEGATIVO')
             return 0
 
         # corregir la cantidad en este quant
