@@ -46,7 +46,6 @@ class ProductTemplate(models.Model):
             Para correr a mano
         """
 
-        cc = self.env['res.currency'].search([('name', '=', 'ARS')])
         ail_obj = self.env['account.invoice.line']
         ails = ail_obj.search(
             [('product_id.default_code', 'not like', '-STIHL'),

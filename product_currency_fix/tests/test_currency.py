@@ -25,8 +25,6 @@ from openerp.tests.common import TransactionCase
 #   oe -Q product_currency_fix -c iomaq -d iomaq_test
 #
 
-import os
-
 
 class TestBusiness(TransactionCase):
     """ Cada metodo de test corre en su propia transacción y se hace rollback
