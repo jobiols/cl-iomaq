@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-from openerp import api, fields, models, _, SUPERUSER_ID
-from openerp.tools.float_utils import float_is_zero, float_compare
+from openerp import api, models, _
+from openerp.tools.float_utils import float_compare
 
 
 class PurchaseOrderLine(models.Model):

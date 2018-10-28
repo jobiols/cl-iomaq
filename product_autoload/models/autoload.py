@@ -88,7 +88,6 @@ class AutoloadMgr(models.Model):
         """ Carga los datos en un modelo, chequeando por modificaciones
             Si cambio el margen recalcula todos precios de los productos
         """
-        prod_obj = self.env['product.template']
         item_obj = self.env['product_autoload.item']
         _logger.info('REPLICATION: loading items')
 
