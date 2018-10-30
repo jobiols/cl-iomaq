@@ -197,8 +197,43 @@ class AccountInvoiceLine(models.Model):
                 line.vendor_id = 16
 
     @api.model
-    def fix_margin(self, prods):
+    def fix_margin(self):
         self.fix_product_margin()
+
+    @api.model
+    def fix_996(self):
+        """ Para correr a mano, corrije el margen de ail de los productos 996
+            basado en standard_price y list_price de la ficha del producto.
+            Ademas corrije el costo historico.
+            Sabemos que los precios estan en ARS asi que no tenemos en cuenta
+            multimoneda
+        """
+        product_obj = self.env['product.template']
+        products = product_obj.search([('default_code', '=like', '996%')])
+        for product in products:
+            cost = product.standard_product_price
+            product.standard_price = cost
+
+            # corregir costo en stock
+            for history in product.cost_history_ids:
+                history.cost = cost
+                history.cost_product = cost
+                _logger.info('Fixing %s on %s' % (product.default_code, cost))
+
+        ail_obj = self.env['account.invoice.line']
+        # seleccionar productos 996, que sean facturas de venta
+        # ordenar la lista por producto y luego por fecha
+        ails = ail_obj.search([('product_id.default_code', '=like', '996.%'),
+                               ('invoice_id.type', '=', 'out_invoice')],
+                              order="product_id,date_invoice")
+
+        for ail in ails:
+            cost = ail.product_id.standard_product_price
+            ail.product_id.standard_price = cost
+            ail._compute_product_margin()
+            _logger.info('Fixing %s on %s' % (
+                ail.product_id.default_code,
+                ail.product_id.list_price / cost - 1))
 
     def fix_product_margin(self):
         new_prod = False
@@ -210,6 +245,7 @@ class AccountInvoiceLine(models.Model):
 
         cost = 0
         for ail in ails:
+            # si no es bulonfer no lo proceso
             if 16 != ail.product_id.seller_ids[0].name.id:
                 continue
 

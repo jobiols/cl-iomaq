@@ -35,7 +35,7 @@ class ProductBrand(models.Model):
             prod_obj = self.env['product.product']
             cr = prod_obj.env.cr
             cr.execute("SELECT id FROM product_product "
-                       "WHERE default_code LIKE '%s'" % rec.mask)
+                       "WHERE default_code LIKE %s", (rec.mask,))
 
             pids = [x[0] for x in cr.fetchall()]
             prods = prod_obj.browse(pids)
