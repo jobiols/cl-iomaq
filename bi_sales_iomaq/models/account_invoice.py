@@ -197,10 +197,6 @@ class AccountInvoiceLine(models.Model):
                 line.vendor_id = 16
 
     @api.model
-    def fix_margin(self):
-        self.fix_product_margin()
-
-    @api.model
     def fix_996(self):
         """ Para correr a mano, corrije el margen de ail de los productos 996
             basado en standard_price y list_price de la ficha del producto.
@@ -235,12 +231,53 @@ class AccountInvoiceLine(models.Model):
                 ail.product_id.default_code,
                 ail.product_id.list_price / cost - 1))
 
-    def fix_product_margin(self):
+    @api.model
+    def fix_product_historic(self, data):
+        """ Para correr a mano, corrije el costo historioco del producto
+            basado en standard_product_price y list_price de la ficha del
+            producto. no tiene en cuenta multimoneda.
+            regenera el product_margin
+        """
+
+        product_obj = self.env['product.template']
+        products = product_obj.search([('default_code', 'in', data)])
+        for product in products:
+            cost = product.standard_product_price
+            product.standard_price = cost
+
+            # corregir costo en stock
+            for history in product.cost_history_ids:
+                history.cost = cost
+                history.cost_product = cost
+                _logger.info('Fixing %s on %s' % (product.default_code, cost))
+
+        ail_obj = self.env['account.invoice.line']
+        # seleccionar que sean facturas de venta
+        # ordenar la lista por producto y luego por fecha
+        ails = ail_obj.search([('product_id.default_code', 'in', data),
+                               ('invoice_id.type', '=', 'out_invoice')],
+                              order="product_id,date_invoice")
+
+        for ail in ails:
+            cost = ail.product_id.standard_product_price
+            ail.product_id.standard_price = cost
+            ail._compute_product_margin()
+            _logger.info('Fixing %s on %s' % (
+                ail.product_id.default_code,
+                ail.product_id.list_price / cost - 1))
+
+    @api.model
+    def fix_product_margin(self, products):
+        """ Corrije el margen de un producto teniendo en cuenta las facturas
+            de compra y venta y usando un fake stock para calcular el margen
+            real. No toca el historic.
+            Si no hay facturas de compra toma el precio standard.
+        """
         new_prod = False
 
         ail_obj = self.env['account.invoice.line']
         # ordenar la lista por producto y luego por fecha
-        ails = ail_obj.search([('product_id.seller_ids', '!=', False)],
+        ails = ail_obj.search([('product_id.default_code', 'in', products)],
                               order="product_id,date_invoice")
 
         cost = 0
@@ -278,6 +315,10 @@ class AccountInvoiceLine(models.Model):
                 the_cost = _stock.pop(ail.quantity)
                 if not the_cost:
                     the_cost = cost
+                    # si el cost es cero es porque no encontro facturas de
+                    # compra, entonces tomo el standard product price
+                    if not cost:
+                        the_cost = ail.product_id.standard_product_price
 
                 # tengo en cuenta el tipo de cambio del dia de la factura
                 pc = ail.product_id.currency_id
