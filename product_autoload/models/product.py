@@ -68,10 +68,8 @@ class ProductTemplate(models.Model):
             in_date = date_invoice
 
         # busca el la linea de factura con prod_id mas cercano a in_date
-        # TODO quitar ai.date_invoice para retornar solo los ids
-
         query = """
-            SELECT ail.id, ai.date_invoice
+            SELECT ail.id
             FROM account_invoice_line ail
             INNER JOIN account_invoice ai
               ON ail.invoice_id = ai.id
@@ -79,19 +77,17 @@ class ProductTemplate(models.Model):
               on ail.product_id = pp.id
             INNER JOIN product_template pt
               on pp.product_tmpl_id = pt.id
-            WHERE pt.id = %d AND
+            WHERE pt.id = %s AND
                   ai.discount_processed = true
-            ORDER BY abs(ai.date_invoice - date '%s')
+            ORDER BY abs(ai.date_invoice - date %s)
             LIMIT 1;
-        """ % (prod.id, in_date)
+        """
+        self._cr.execute(query, (prod.id, in_date,))
+        invoice_line_ids = self._cr.fetchall()
 
-        self._cr.execute(query)
-        # TODO Renombrar a invoice_line_ids
-        invoice_lines = self._cr.fetchall()
-
-        if invoice_lines:
+        if invoice_line_ids:
             invoice_lines_obj = self.env['account.invoice.line']
-            for invoice_line in invoice_lines:
+            for invoice_line in invoice_line_ids:
                 return invoice_lines_obj.browse(invoice_line[0])
         else:
             return False
@@ -131,7 +127,7 @@ class ProductTemplate(models.Model):
                          '$ %d - %s' % (invoice_price, prod.default_code))
 
     def insert_historic_cost(self, vendor_ref, min_qty, cost,
-                             vendors_code, date):
+        vendors_code, date):
         """ Inserta un registro en el historico de costos del producto
         """
         # TODO evitar que se generen registros duplicados aqui
@@ -174,7 +170,7 @@ class ProductTemplate(models.Model):
 
     @api.multi
     def set_prices(self, cost, vendor_ref, price=False, date=False, min_qty=1,
-                   vendors_code=False):
+        vendors_code=False):
         """ Setea el precio, costo y margen (no bulonfer) del producto
 
             - Si el costo es cero y es bulonfer se pone obsoleto y termina.
