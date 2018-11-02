@@ -141,17 +141,9 @@ class AutoloadMgr(models.Model):
                          line[PC_PRODUCT_CODE].strip())
                     )
 
-    def load_product(self, data_path):
+    def load_product(self, data_path, data):
         """ Carga todos los productos teniendo en cuenta la fecha
         """
-
-        def product_blocked(value):
-            """ Chequea que el producto este bloqueado
-                996 son productos de outlet
-            """
-            # TODO lo que en realidad deberiamos hacer es no permitir que
-            # cambien los precios pero si que aparezcan nuevos productos
-            return value[MAP_DEFAULT_CODE][:4] == '996.'
 
         bulonfer_id = self.env['res.partner'].search(
             [('ref', '=', 'BULONFER')])
@@ -163,11 +155,10 @@ class AutoloadMgr(models.Model):
                      'with timestamp > {}'.format(last_replication))
 
         prod_processed = prod_created = barc_changed = barc_created = 0
-        with open(data_path + DATA, 'r') as file_csv:
+        with open(data_path + data, 'r') as file_csv:
             reader = csv.reader(file_csv)
             for line in reader:
-                if line and line[MAP_WRITE_DATE] > last_replication and (
-                        not product_blocked(line)):
+                if line and line[MAP_WRITE_DATE] > last_replication:
                     obj = ProductMapper(line, data_path, bulonfer_id.ref)
                     stats = obj.execute(self.env)
 
@@ -186,8 +177,13 @@ class AutoloadMgr(models.Model):
                     'prod_created': prod_created}
 
     @api.model
-    def run(self, item=ITEM, productcode=PRODUCTCODE):
-        """ Actualiza todos los productos.
+    def run(self, item=ITEM, productcode=PRODUCTCODE, data=DATA):
+        """
+           Actualiza los datos de los productos
+        :param item: nombre del archivo item
+        :param productcode: nombre del archivo productcode
+        :param data: nombre del archivo data
+        :return: none
         """
         config_obj = self.env['ir.config_parameter']
         email_from = config_obj.get_param('email_from', '')
@@ -216,7 +212,7 @@ class AutoloadMgr(models.Model):
             # Aca carga solo los productos que tienen fecha de modificacion
             # posterior a la fecha de proceso y los actualiza o los crea segun
             # sea necesario
-            stats = self.load_product(data_path)
+            stats = self.load_product(data_path, data)
 
             # terminamos de contar el tiempo de proceso
             elapsed_time = time.time() - start_time

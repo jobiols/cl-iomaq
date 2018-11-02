@@ -46,7 +46,15 @@
     'test': [
     ],
     'demo': [
-        'data/demo_data.xml'
+        'data/demo_data.xml',
+#   TODO ver como hacer para que no genere el errror de unused file
+#        'data/section.csv',
+#        'data/family.csv',
+#        'data/productcode_changed.csv',
+#        'data/productcode.csv',
+#        'data/data.csv',
+#        'data/item_changed.csv',
+#        'data/item.csv',
     ],
     'installable': True,
     'application': False,

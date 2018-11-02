@@ -135,6 +135,11 @@ class ProductMapper(CommonMapper):
 
         product_obj = env['product.template']
         prod = product_obj.search([('default_code', '=', self.default_code)])
+
+        # no permitir que modifique los 996.
+        if prod and prod.default_code[0:4] == '996.':
+            return []
+
         if prod:
             prod.write(self.values())
             stats = ['prod_processed']
