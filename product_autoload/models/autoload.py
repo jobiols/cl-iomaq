@@ -5,8 +5,7 @@ import time
 from datetime import datetime
 import csv
 from openerp import api, models, fields, registry
-from openerp.addons.product_autoload.models.mappers import MAP_WRITE_DATE, \
-    ProductMapper
+from .mappers import MAP_WRITE_DATE, ProductMapper
 
 
 class ExceptionBarcodeDuplicated(Exception):
