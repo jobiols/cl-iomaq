@@ -395,8 +395,6 @@ class TestBusiness(TransactionCase):
         prod = prod_obj.search([('default_code', '=', '996.18.10')])
         self.assertAlmostEqual(prod.bulonfer_cost, 0.1077, places=2)
 
-        import wdb; wdb.set_trace()
-
         # vuelve a cargar los productos donde hay nuevos productos 996 y los
         # anteriores modificaron sus precios
         self.manager_obj.run(data='data_changed.csv')
