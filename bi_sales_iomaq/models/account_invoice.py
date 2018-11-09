@@ -233,7 +233,7 @@ class AccountInvoiceLine(models.Model):
 
     @api.model
     def fix_product_historic(self, data):
-        """ Para correr a mano, corrije el costo historioco del producto
+        """ Para correr a mano, corrije el costo historico del producto
             basado en standard_product_price y list_price de la ficha del
             producto. no tiene en cuenta multimoneda.
             regenera el product_margin
@@ -268,17 +268,44 @@ class AccountInvoiceLine(models.Model):
 
     @api.model
     def fix_product_margin(self, products):
-        """ Corrije el margen de un producto teniendo en cuenta las facturas
+        """ Para los productos con stock en cero pone el precio standard igual
+            al costo hoy.
+
+            Corrije el margen de un producto teniendo en cuenta las facturas
             de compra y venta y usando un fake stock para calcular el margen
             real. No toca el historic.
+
             Si no hay facturas de compra toma el precio standard.
         """
         new_prod = False
+        _logger.info('fix_product_margin %s' % products)
+
+        prod_obj = self.env['product.template']
+        if products:
+            domain = [('virtual_available', '=', 0),
+                      ('default_code', 'in', products)]
+        else:
+            domain = [('virtual_available', '=', 0)]
+
+        for prod in prod_obj.search(domain):
+
+            pc = prod.currency_id
+            cc = prod.company_id.currency_id
+            if prod.standard_price != pc.compute(prod.bulonfer_cost, cc) or \
+                prod.standard_product_price != prod.bulonfer_cost:
+                _logger.info('ZERO STOCK Fixing %s' % (prod.default_code))
+
+                prod.standard_price = pc.compute(prod.bulonfer_cost, cc)
+                prod.standard_product_price = prod.bulonfer_cost
+
+        if products:
+            domain = [('product_id.default_code', 'in', products)]
+        else:
+            domain = []
 
         ail_obj = self.env['account.invoice.line']
         # ordenar la lista por producto y luego por fecha
-        ails = ail_obj.search([('product_id.default_code', 'in', products)],
-                              order="product_id,date_invoice")
+        ails = ail_obj.search(domain, order="product_id,date_invoice")
 
         cost = 0
         for ail in ails:
@@ -300,6 +327,7 @@ class AccountInvoiceLine(models.Model):
                 # acumulo stock
                 cost = ail.price_unit * (1 + ail.invoice_discount)
                 ic = ail.currency_id.with_context(date=ail.date_invoice)
+                # lo pasamos del ic al cc
                 cost = ic.compute(cost, cc)
                 _stock.push(ail.quantity, cost)
 
