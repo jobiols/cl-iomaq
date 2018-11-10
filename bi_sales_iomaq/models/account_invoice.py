@@ -310,6 +310,9 @@ class AccountInvoiceLine(models.Model):
         cost = 0
         for ail in ails:
             # si no es bulonfer no lo proceso
+            if not ail.product_id.seller_ids:
+                continue
+
             if 16 != ail.product_id.seller_ids[0].name.id:
                 continue
 
