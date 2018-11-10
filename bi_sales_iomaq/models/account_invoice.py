@@ -51,8 +51,10 @@ class FakeStock(object):
             _logger.error('STOCK NEGATIVO')
             return 0
 
-        # corregir la cantidad en este quant
+        # corregir la cantidad en este quant pero no permitir cero
         quant['qty'] -= corregir
+        if quant['qty'] <= 0:
+            quant['qty'] = 0
 
         # meter el pedazo de quant en out si es que no es cero la cantidad
         # y con el mismo precio
@@ -268,10 +270,7 @@ class AccountInvoiceLine(models.Model):
 
     @api.model
     def fix_product_margin(self, products):
-        """ Para los productos con stock en cero pone el precio standard igual
-            al costo hoy.
-
-            Corrije el margen de un producto teniendo en cuenta las facturas
+        """ Corrije el margen de un producto teniendo en cuenta las facturas
             de compra y venta y usando un fake stock para calcular el margen
             real. No toca el historic.
 
@@ -279,6 +278,9 @@ class AccountInvoiceLine(models.Model):
         """
         new_prod = False
         _logger.info('fix_product_margin %s' % products)
+
+        """
+        Si no tengo stock el costo es el de hoy.
 
         prod_obj = self.env['product.template']
         if products:
@@ -297,6 +299,7 @@ class AccountInvoiceLine(models.Model):
 
                 prod.standard_price = pc.compute(prod.bulonfer_cost, cc)
                 prod.standard_product_price = prod.bulonfer_cost
+        """
 
         if products:
             domain = [('product_id.default_code', 'in', products)]
