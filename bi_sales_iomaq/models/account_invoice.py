@@ -199,6 +199,16 @@ class AccountInvoiceLine(models.Model):
                 line.vendor_id = 16
 
     @api.model
+    def fix_recalculate_invoice_discount(self):
+        """ Fuerza el recalculo de invoice discounts.
+        """
+        _logger.info('fix_recalculate_invoice_discount')
+
+        ai_obj = self.env['account.invoice']
+        ais = ai_obj.search([])
+        ais.write({'discount_processed': False})
+
+    @api.model
     def fix_996(self):
         """ Para correr a mano, corrije el margen de ail de los productos 996
             basado en standard_price y list_price de la ficha del producto.
