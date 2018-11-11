@@ -269,6 +269,49 @@ class AccountInvoiceLine(models.Model):
                 ail.product_id.list_price / cost - 1))
 
     @api.model
+    def fix_simule_sale(self, products):
+        """ Pone el precio del quant mas viejo en standard_price y product_
+            standard_price como si se vendiera el producto
+        """
+        _logger.info('fix_simule_sale %s' % products)
+
+        domain = [('virtual_available', '!=', 0)]
+        if products:
+            domain += [('default_code', 'in', products)]
+
+        product_obj = self.env['product.template']
+
+        for prod in product_obj.search(domain):
+            quant = product_obj.oldest_quant(prod)
+            prod.standard_price = quant.cost
+            prod.standard_product_price = quant.cost_product
+            _logger.info('fix_prod %s' % prod.default_code)
+
+    @api.model
+    def fix_no_hay_stock(self, products):
+        """ Si el producto no tiene stock entonces pongo
+            el costo hoy en standard_cost y standard_product_cost
+        """
+        _logger.info('fix_no_hay_stock %s' % products)
+
+        prod_obj = self.env['product.template']
+        domain = [('virtual_available', '=', 0)]
+
+        if products:
+            domain += [('default_code', 'in', products)]
+
+        for prod in prod_obj.search(domain):
+            pc = prod.currency_id
+            cc = prod.company_id.currency_id
+            diff = prod.standard_price - pc.compute(prod.bulonfer_cost, cc) + \
+                   prod.standard_product_price - prod.bulonfer_cost
+            if diff > 1:
+                _logger.info('ZERO STOCK Fixing %s' % (prod.default_code))
+
+                prod.standard_price = pc.compute(prod.bulonfer_cost, cc)
+                prod.standard_product_price = prod.bulonfer_cost
+
+    @api.model
     def fix_product_margin(self, products):
         """ Corrije el margen de un producto teniendo en cuenta las facturas
             de compra y venta y usando un fake stock para calcular el margen
@@ -276,30 +319,12 @@ class AccountInvoiceLine(models.Model):
 
             Si no hay facturas de compra toma el precio standard.
         """
+
+        self.fix_no_hay_stock(products)
+        self.fix_simule_sale(products)
+
         new_prod = False
         _logger.info('fix_product_margin %s' % products)
-
-        """
-        Si no tengo stock el costo es el de hoy.
-
-        prod_obj = self.env['product.template']
-        if products:
-            domain = [('virtual_available', '=', 0),
-                      ('default_code', 'in', products)]
-        else:
-            domain = [('virtual_available', '=', 0)]
-
-        for prod in prod_obj.search(domain):
-
-            pc = prod.currency_id
-            cc = prod.company_id.currency_id
-            if prod.standard_price != pc.compute(prod.bulonfer_cost, cc) or \
-                prod.standard_product_price != prod.bulonfer_cost:
-                _logger.info('ZERO STOCK Fixing %s' % (prod.default_code))
-
-                prod.standard_price = pc.compute(prod.bulonfer_cost, cc)
-                prod.standard_product_price = prod.bulonfer_cost
-        """
 
         if products:
             domain = [('product_id.default_code', 'in', products)]
