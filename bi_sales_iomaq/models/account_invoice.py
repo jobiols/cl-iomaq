@@ -348,6 +348,7 @@ class AccountInvoiceLine(models.Model):
             if new_prod != ail.product_id:
                 new_prod = ail.product_id
                 _stock = FakeStock()
+                cost = 0
 
             _logger.info('Fixing %s on %s' % (
                 ail.product_id.default_code, ail.date_invoice))
