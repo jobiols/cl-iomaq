@@ -376,16 +376,13 @@ class AutoloadMgr(models.Model):
 
     @api.model
     def process_invoice_discounts(self):
+        _logger.info('Start processing invoice discounts')
+
         invoices = self.env['account.invoice'].search(
             [('discount_processed', '=', False),
-             # ('partner_id.ref', '=', 'BULONFER'),
              ('state', 'in', ['open', 'paid']),
              ('type', '=', 'in_invoice')])
-
-        for invoice in invoices:
-            _logger.info('processing discounts on invoice '
-                         '{}'.format(invoice.document_number))
-            invoice.compute_invoice_discount()
+        invoices.compute_invoice_discount()
 
     @api.model
     def check_cost(self):
