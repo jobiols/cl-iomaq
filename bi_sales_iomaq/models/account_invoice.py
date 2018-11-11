@@ -330,8 +330,8 @@ class AccountInvoiceLine(models.Model):
             Si no hay facturas de compra toma el precio standard.
         """
 
+        # por las dudas aunque ya deberia estar corregido
         self.fix_no_hay_stock(products)
-        self.fix_simule_sale(products)
 
         new_prod = False
         _logger.info('fix_product_margin %s' % products)
@@ -367,7 +367,12 @@ class AccountInvoiceLine(models.Model):
             # busco facturas de compra
             if ail.invoice_id.type == 'in_invoice':
                 # acumulo stock
-                cost = ail.price_unit * (1 + ail.invoice_discount)
+                # descuento de linea
+                ldisc = (1 - ail.discount / 100)
+                # descuento global
+                idisc = (1 + ail.invoice_discount)
+
+                cost = ail.price_unit * ldisc * idisc
                 ic = ail.currency_id.with_context(date=ail.date_invoice)
                 # lo pasamos del ic al cc
                 cost = ic.compute(cost, cc)
@@ -402,6 +407,9 @@ class AccountInvoiceLine(models.Model):
             else:
                 # in_invoice, in_refund
                 ail.product_margin = 0
+
+        # esto para que vuelva a tomar el primer quant como costo.
+        self.fix_simule_sale(products)
 
 
 class AccountInvoice(models.Model):
