@@ -4,10 +4,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 9.0c-20180504\n"
+"Project-Id-Version: Odoo Server 9.0c-20180827\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-11 01:18+0000\n"
-"PO-Revision-Date: 2018-08-11 01:18+0000\n"
+"POT-Creation-Date: 2018-11-11 23:22+0000\n"
+"PO-Revision-Date: 2018-11-11 23:22+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -16,14 +16,9 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: product_autoload
-#: model:ir.model.fields,help:product_autoload.field_product_template_bulonfer_cost
-msgid "Actual cost from last actualization or from uploading a spreadsheet"
-msgstr "Costo actual de la ultima replicacion o de la carga por planilla"
-
-#. module: product_autoload
-#: model:ir.model.fields,help:product_autoload.field_product_template_upv
-msgid "Agrupacion mayorista"
-msgstr "Agrupacion mayorista"
+#: model:res.groups,name:product_autoload.group_show_history_cost
+msgid "Acceso al historial de costos"
+msgstr "Acceso al historial de costos"
 
 #. module: product_autoload
 #: model:ir.ui.view,arch_db:product_autoload.view_check_prices_form
@@ -71,7 +66,7 @@ msgstr "Precio Bulonfer"
 #. module: product_autoload
 #: model:ir.model.fields,field_description:product_autoload.field_product_template_bulonfer_cost
 msgid "Bulonfer cost"
-msgstr "Costo Bulonfer"
+msgstr "Bulonfer cost"
 
 #. module: product_autoload
 #: model:ir.ui.view,arch_db:product_autoload.purchase_order_form
@@ -82,11 +77,6 @@ msgstr "Calcular precios"
 #: model:ir.ui.view,arch_db:product_autoload.view_custom_config_settings
 msgid "Cancel"
 msgstr "Cancelar"
-
-#. module: product_autoload
-#: model:ir.model.fields,help:product_autoload.field_product_template_invalidate_category
-msgid "Category needs rebuild"
-msgstr "La categoria requiere reprocesarse"
 
 #. module: product_autoload
 #: code:addons/product_autoload/models/purchase.py:35
@@ -157,11 +147,6 @@ msgid "Date and time of last replication"
 msgstr "Fecha hora de la ultima replicacion"
 
 #. module: product_autoload
-#: model:ir.ui.view,arch_db:product_autoload.product_template_tree_view1
-msgid "Dif%"
-msgstr "Dif%"
-
-#. module: product_autoload
 #: model:ir.model.fields,field_description:product_autoload.field_purchase_order_line_discount
 msgid "Discount (%)"
 msgstr "Descuento (%)"
@@ -179,6 +164,23 @@ msgstr "Descuento procesado"
 #: model:ir.model.fields,field_description:product_autoload.field_product_autoload_settings_display_name
 msgid "Display Name"
 msgstr "Mostrar Nombre"
+
+#. module: product_autoload
+#: model:ir.ui.view,arch_db:product_autoload.view_check_prices_form
+msgid "El proceso de calcular precios se aplica a cada linea\n"
+"                            de la orden de compra entre las columnas <strong>Precio Unitario</strong>\n"
+"                            y <strong>Precio Bulonfer</strong>.<br/>\n"
+"                            Calcula <strong>Precio Bulonfer</strong> a partir del <strong>Precio Unitario</strong>\n"
+"                            aplicando el descuento de cada linea mas el descuento global.<br/>\n"
+"                            Si se deja en cero el <strong>Precio Unitario</strong> en alguna linea, funciona al reves\n"
+"                            calculando este a partir del <strong>Precio Bulonfer</strong>"
+msgstr "El proceso de calcular precios se aplica a cada linea\n"
+"                            de la orden de compra entre las columnas <strong>Precio Unitario</strong>\n"
+"                            y <strong>Precio Bulonfer</strong>.<br/>\n"
+"                            Calcula <strong>Precio Bulonfer</strong> a partir del <strong>Precio Unitario</strong>\n"
+"                            aplicando el descuento de cada linea mas el descuento global.<br/>\n"
+"                            Si se deja en cero el <strong>Precio Unitario</strong> en alguna linea, funciona al reves\n"
+"                            calculando este a partir del <strong>Precio Bulonfer</strong>"
 
 #. module: product_autoload
 #: model:ir.model.fields,field_description:product_autoload.field_product_autoload_manager_elapsed_time
@@ -206,11 +208,6 @@ msgid "Family"
 msgstr "Familia"
 
 #. module: product_autoload
-#: model:ir.ui.view,arch_db:product_autoload.view_check_prices_form
-msgid "Global Discount"
-msgstr "Descuento Global"
-
-#. module: product_autoload
 #: model:ir.model.fields,field_description:product_autoload.field_product_autoload_check_prices_global_discount
 msgid "Global discount"
 msgstr "Descuento Global"
@@ -219,6 +216,11 @@ msgstr "Descuento Global"
 #: model:ir.model.fields,help:product_autoload.field_product_autoload_check_prices_global_discount
 msgid "Global discount % from Bulonfer"
 msgstr "Descuento Global % de Bulonfer"
+
+#. module: product_autoload
+#: model:ir.model.fields,help:product_autoload.field_product_template_upv
+msgid "Group Wholesaler"
+msgstr "Group Wholesaler"
 
 #. module: product_autoload
 #: model:ir.model.fields,field_description:product_autoload.field_product_autoload_check_prices_id
@@ -250,9 +252,14 @@ msgid "Invoice"
 msgstr "Factura"
 
 #. module: product_autoload
-#: model:ir.ui.view,arch_db:product_autoload.product_template_tree_view1
+#: model:ir.ui.view,arch_db:product_autoload.product_template_tree_view
 msgid "Invoice Cost"
 msgstr "Costo de factura"
+
+#. module: product_autoload
+#: model:ir.model.fields,field_description:product_autoload.field_account_invoice_line_date_invoice
+msgid "Invoice Date"
+msgstr "Fecha de factura"
 
 #. module: product_autoload
 #: model:ir.model,name:product_autoload.model_account_invoice_line
@@ -299,7 +306,7 @@ msgstr "Última actualizacón el"
 #. module: product_autoload
 #: model:ir.model.fields,field_description:product_autoload.field_product_autoload_settings_last_replication
 msgid "Last replication"
-msgstr "Ultima replicacion"
+msgstr "Last replication"
 
 #. module: product_autoload
 #: model:ir.model,name:product_autoload.model_product_autoload_manager
@@ -312,7 +319,7 @@ msgid "Margin"
 msgstr "Margen"
 
 #. module: product_autoload
-#: model:ir.ui.view,arch_db:product_autoload.product_template_tree_view1
+#: model:ir.ui.view,arch_db:product_autoload.product_template_tree_view
 msgid "Margin%"
 msgstr "Margen%"
 
@@ -331,6 +338,18 @@ msgstr "No Categorizado"
 #: model:ir.model.fields,field_description:product_autoload.field_product_autoload_item_origin
 msgid "Origin"
 msgstr "Origen"
+
+#. module: product_autoload
+#: model:ir.model.fields,field_description:product_autoload.field_product_template_parent_price_product
+msgid "Parent price product"
+msgstr "Parent price product"
+
+#. module: product_autoload
+#: model:res.groups,comment:product_autoload.group_show_history_cost
+msgid "Permite ver el costo historico de la\n"
+"                mercaderia en stock, en la ficha del producto"
+msgstr "Permite ver el costo historico de la\n"
+"                mercaderia en stock, en la ficha del producto"
 
 #. module: product_autoload
 #: model:ir.model.fields,field_description:product_autoload.field_product_autoload_manager_processed
@@ -358,7 +377,7 @@ msgstr "Codigo de producto"
 #. module: product_autoload
 #: model:ir.model.fields,help:product_autoload.field_product_autoload_item_margin
 msgid "Profit margin suggested by the vendor for this item"
-msgstr "Margen de ganancia sugerido por el proveedor para este item"
+msgstr "Margen de ganancia sugerido por el proveedor de este item"
 
 #. module: product_autoload
 #: model:ir.model,name:product_autoload.model_purchase_order
@@ -392,8 +411,8 @@ msgstr "Escriba emails separados por coma para que reciban notificaciones."
 
 #. module: product_autoload
 #: model:ir.model.fields,help:product_autoload.field_account_invoice_discount_processed
-msgid "Shows wether this invoice was processed with invoice_discounts"
-msgstr "Muestra si esta factura fue procesada con descuentos calculados"
+msgid "Shows whether this invoice was processed with invoice_discounts"
+msgstr "Muestra si esta factura fue procesada con invoice_discounts"
 
 #. module: product_autoload
 #: model:ir.model.fields,field_description:product_autoload.field_product_autoload_manager_start_time
@@ -416,9 +435,23 @@ msgid "The item code must be unique !"
 msgstr "El codigo de item debe ser unico !"
 
 #. module: product_autoload
-#: model:ir.ui.view,arch_db:product_autoload.product_template_tree_view1
+#: model:ir.ui.view,arch_db:product_autoload.product_template_tree_view
 msgid "Today Cost"
 msgstr "Costo hoy"
+
+#. module: product_autoload
+#: model:ir.model.fields,help:product_autoload.field_product_template_bulonfer_cost
+msgid "Today cost in product currency, it is automatically updated when the prices coming from Bulonfer are processed.\n"
+"Or when a price sheet is loaded for no Bulonfer vendors"
+msgstr "Costo hoy en la moneda del producto.\n"
+    "Se actualiza automaticamente cuando se procesan los precios que vienen "
+    "de Bulonfer, o cuando se carga una planilla con precios de otros "
+    "proveedores"
+
+#. module: product_autoload
+#: model:ir.model.fields,help:product_autoload.field_product_template_invalidate_category
+msgid "True if the asociated category needs rebuild"
+msgstr "True si la categoria asociada requiere reconstruirse"
 
 #. module: product_autoload
 #: model:ir.model.fields,field_description:product_autoload.field_product_template_upv
@@ -439,6 +472,16 @@ msgstr "Mayorista"
 #: model:ir.ui.view,arch_db:product_autoload.view_check_prices_form
 msgid "_Cancel"
 msgstr "_Cancelar"
+
+#. module: product_autoload
+#: model:ir.model.fields,help:product_autoload.field_product_template_parent_price_product
+msgid "default_code of the product to get prices from"
+msgstr "codigo del producto del cual obtener el precio"
+
+#. module: product_autoload
+#: model:ir.model.fields,help:product_autoload.field_account_invoice_line_date_invoice
+msgid "helper para corregir costos"
+msgstr "helper para corregir costos"
 
 #. module: product_autoload
 #: model:ir.ui.view,arch_db:product_autoload.view_check_prices_form
@@ -485,3 +528,4 @@ msgstr "unidades por bulto"
 #: model:ir.model.fields,help:product_autoload.field_product_autoload_item_origin
 msgid "where the product was made"
 msgstr "Donde fue hecho el producto"
+

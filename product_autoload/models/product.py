@@ -108,7 +108,6 @@ class ProductTemplate(models.Model):
                 prod,
                 datetime.today().strftime('%Y-%m-%d'))
 
-            invoice_price = 0
             if invoice_line and invoice_line.price_unit:
                 # precio que cargaron en la factura de compra
                 invoice_price = invoice_line.price_unit
@@ -122,9 +121,16 @@ class ProductTemplate(models.Model):
                     # vale solo para bulonfer
                     invoice_price *= (1 - 0.05)
 
-            prod.system_cost = invoice_price
-            _logger.info('Setting invoice cost '
-                         '$ %d - %s' % (invoice_price, prod.default_code))
+                invoice_date = invoice_line.invoice_id.date_invoice
+                ic = invoice_line.currency_id.with_context(date=invoice_date)
+                pc = prod.currency_id
+                # poner el costo de factura en moneda del producto
+                prod.system_cost = ic.compute(invoice_price, pc)
+                _logger.info('Setting invoice cost '
+                             '$ %d - %s' % (invoice_price, prod.default_code))
+            else:
+                # no hay factura de compra, se pone en cero.
+                prod.system_cost = 0
 
     def insert_historic_cost(self, vendor_ref, min_qty, cost,
         vendors_code, date):

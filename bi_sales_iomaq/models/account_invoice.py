@@ -298,9 +298,18 @@ class AccountInvoiceLine(models.Model):
             _logger.info('fix_prod %s' % prod.default_code)
 
     @api.model
+    def fix_recalculate_invoice_cost(self, products):
+        domain = []
+        if products:
+            domain += [('default_code', 'in', products)]
+
+        product_obj = self.env['product.template']
+        product_obj.search(domain).set_invoice_cost()
+
+    @api.model
     def fix_no_hay_stock(self, products):
         """ Si el producto no tiene stock entonces pongo
-            el costo hoy en standard_cost y standard_product_cost
+            el costo hoy en standard_cost y standard_product_cost.
         """
         _logger.info('fix_no_hay_stock %s' % products)
 
@@ -330,6 +339,8 @@ class AccountInvoiceLine(models.Model):
             Si no hay facturas de compra toma el precio standard.
         """
 
+        self.fix_recalculate_invoice_cost(products)
+
         # por las dudas aunque ya deberia estar corregido
         self.fix_no_hay_stock(products)
 
@@ -347,13 +358,6 @@ class AccountInvoiceLine(models.Model):
 
         cost = 0
         for ail in ails:
-            # si no es bulonfer no lo proceso
-            if not ail.product_id.seller_ids:
-                continue
-
-            if 16 != ail.product_id.seller_ids[0].name.id:
-                continue
-
             # Si cambia el producto recrear el fake stock
             if new_prod != ail.product_id:
                 new_prod = ail.product_id
