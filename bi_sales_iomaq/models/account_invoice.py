@@ -279,6 +279,18 @@ class AccountInvoiceLine(models.Model):
                 ail.product_id.list_price / cost - 1))
 
     @api.model
+    def fix_supplierinfo_currency(self):
+        """ para correr a mano arregla el currency en supplierinfo
+        """
+        supp_info_obj = self.env['product.supplierinfo']
+        for info in supp_info_obj.search([]):
+            curr = info.product_tmpl_id.currency_id
+            if info.currency_id != curr:
+                info.currency_id = curr
+                _logger.info('Fixing currency %s' %
+                             info.product_tmpl_id.default_code)
+
+    @api.model
     def fix_simule_sale(self, products):
         """ Pone el precio del quant mas viejo en standard_price y product_
             standard_price como si se vendiera el producto
