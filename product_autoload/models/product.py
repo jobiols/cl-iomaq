@@ -136,6 +136,7 @@ class ProductTemplate(models.Model):
         vendors_code, date):
         """ Inserta un registro en el historico de costos del producto
         """
+        self.ensure_one()
         # TODO evitar que se generen registros duplicados aqui
 
         vendor_id = self.get_vendor_id(vendor_ref)
@@ -144,10 +145,11 @@ class ProductTemplate(models.Model):
             'name': vendor_id.id,
             'min_qty': min_qty,
             'price': cost,
+            'currency_id': self.currency_id.id,
             'product_code': vendors_code,  # vendors product code
             'product_name': self.name,  # vendors product name
             'date_start': date,
-            'product_tmpl_id': self.id
+            'product_tmpl_id': self.id,
         }
 
         # obtener los registros abiertos deberia haber solo uno o ninguno
