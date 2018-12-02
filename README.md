@@ -4,3 +4,5 @@ Customización Iomaq SA
 [![Maintainability](https://api.codeclimate.com/v1/badges/ce7376b7b5129e2f9605/maintainability)](https://codeclimate.com/github/jobiols/cl-iomaq/maintainability)
 
 [![Total alerts](https://img.shields.io/lgtm/alerts/g/jobiols/cl-iomaq.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/jobiols/cl-iomaq/alerts/)
+
+[![CodeFactor](https://www.codefactor.io/repository/github/jobiols/cl-iomaq/badge)](https://www.codefactor.io/repository/github/jobiols/cl-iomaq)
