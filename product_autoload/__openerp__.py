@@ -43,16 +43,6 @@
         'wizard/check_prices_view.xml',
         'security/security.xml'
     ],
-    'test': [
-        'data/section.csv',
-        'data/family.csv',
-        'data/productcode_changed.csv',
-        'data/productcode.csv',
-        'data/data.csv',
-        'data/item_changed.csv',
-        'data/item.csv',
-        'data/data_changed.csv'
-    ],
     'demo': [
         'data/demo_data.xml',
     ],
