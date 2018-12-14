@@ -56,8 +56,9 @@ class TestBusiness(TransactionCase):
         print 'chequeando archivos en directorio '
         print
         print
-        print
-        print
+        print self._data_path
+        files = os.listdir(self._data_path)
+        print files
         print
         print
         print
