@@ -52,6 +52,27 @@ class TestBusiness(TransactionCase):
 
         self._supinfo = self.env['product.supplierinfo']
 
+        print '---------------------------------------------------------------'
+        print 'chequeando archivos en directorio '
+        print
+        print
+        print
+        print
+        print
+        print
+        print
+
+
+
+
+
+
+
+
+
+
+
+
         # definimos una linea del archivo para probar
         self.line = [
             '123456',  # Código del producto
