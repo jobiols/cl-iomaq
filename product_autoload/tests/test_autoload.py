@@ -41,8 +41,13 @@ class TestBusiness(TransactionCase):
         super(TestBusiness, self).setUp()
         # obtener el path al archivo de datos
         self._data_path = os.path.realpath(__file__)
+        _logger.info('ARCHIVO FUENTE %s' % self._data_path)
+
         self._data_path = self._data_path.replace('tests/test_autoload.py',
                                                   'data/')
+
+        _logger.info('REPLACE %s' % self._data_path)
+
         self.env['ir.config_parameter'].set_param('data_path', self._data_path)
         self.env['ir.config_parameter'].set_param('email_notification',
                                                   'zz@pp.com')
@@ -83,11 +88,6 @@ class TestBusiness(TransactionCase):
     def test_01_product_mapper(self):
         """ Chequear creacion de ProductMapper ------------------------------01
         """
-        _logger.info('DIIIRRR %s' % self._data_path)
-        _logger.info('DIIIRRR %s' % self._data_path)
-        _logger.info('DIIIRRR %s' % self._data_path)
-        _logger.info('DIIIRRR %s' % self._data_path)
-
 
         # creamos un dict con los valores pasados por el prod
         val = {
