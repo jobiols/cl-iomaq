@@ -35,5 +35,8 @@
     'data': [
         'views/product_template_view.xml'
     ],
+    'test': [
+        'data/product.xml'
+    ],
     'installable': True,
 }

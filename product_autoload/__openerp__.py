@@ -44,7 +44,6 @@
         'security/security.xml'
     ],
     'test': [
-#   TODO ver como hacer para que no genere el errror de unused file
         'data/section.csv',
         'data/family.csv',
         'data/productcode_changed.csv',
@@ -52,6 +51,7 @@
         'data/data.csv',
         'data/item_changed.csv',
         'data/item.csv',
+        'data/data_changed.csv'
     ],
     'demo': [
         'data/demo_data.xml',
