@@ -52,28 +52,6 @@ class TestBusiness(TransactionCase):
 
         self._supinfo = self.env['product.supplierinfo']
 
-        print '---------------------------------------------------------------'
-        print 'chequeando archivos en directorio '
-        print
-        print
-        print self._data_path
-        files = os.listdir(self._data_path)
-        print files
-        print
-        print
-        print
-
-
-
-
-
-
-
-
-
-
-
-
         # definimos una linea del archivo para probar
         self.line = [
             '123456',  # Código del producto
@@ -104,6 +82,10 @@ class TestBusiness(TransactionCase):
     def test_01_product_mapper(self):
         """ Chequear creacion de ProductMapper ------------------------------01
         """
+
+        files = os.listdir(self._data_path)
+        self.assertEqual('',files)
+
 
         # creamos un dict con los valores pasados por el prod
         val = {
