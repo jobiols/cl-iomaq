@@ -27,7 +27,8 @@ from ..models.mappers import ProductMapper, MAP_NAME, MAP_UPV, \
 #
 
 import os
-
+import logging
+_logger = logging.getLogger(__name__)
 
 class TestBusiness(TransactionCase):
     """ Cada metodo de test corre en su propia transacción y se hace rollback
@@ -82,9 +83,10 @@ class TestBusiness(TransactionCase):
     def test_01_product_mapper(self):
         """ Chequear creacion de ProductMapper ------------------------------01
         """
-
-        files = os.listdir(self._data_path)
-        self.assertEqual('',files)
+        _logger.info('DIIIRRR %s' % self._data_path)
+        _logger.info('DIIIRRR %s' % self._data_path)
+        _logger.info('DIIIRRR %s' % self._data_path)
+        _logger.info('DIIIRRR %s' % self._data_path)
 
 
         # creamos un dict con los valores pasados por el prod
