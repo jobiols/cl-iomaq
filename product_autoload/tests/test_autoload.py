@@ -43,6 +43,9 @@ class TestBusiness(TransactionCase):
         self._data_path = self._data_path.replace('tests/test_autoload.py',
                                                   'data/')
         self.env['ir.config_parameter'].set_param('data_path', self._data_path)
+        self.env['ir.config_parameter'].set_param('email_notification',
+                                                  'zz@pp.com')
+        self.env['ir.config_parameter'].set_param('email_from', 'zz@pp.com')
 
         self._vendor = self.env['res.partner'].search(
             [('ref', '=', 'BULONFER')])
