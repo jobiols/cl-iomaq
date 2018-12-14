@@ -27,8 +27,7 @@ from ..models.mappers import ProductMapper, MAP_NAME, MAP_UPV, \
 #
 
 import os
-import logging
-_logger = logging.getLogger(__name__)
+
 
 class TestBusiness(TransactionCase):
     """ Cada metodo de test corre en su propia transacción y se hace rollback
@@ -41,14 +40,8 @@ class TestBusiness(TransactionCase):
         super(TestBusiness, self).setUp()
         # obtener el path al archivo de datos
         self._data_path = os.path.abspath(__file__)
-        _logger.info('ARCHIVO FUENTE %s' % self._data_path)
-
         self._data_path = os.path.dirname(self._data_path)
-        _logger.info('PATH %s' % self._data_path)
-
         self._data_path = self._data_path.replace('tests', 'data/')
-
-        _logger.info('PATH A DATOS %s' % self._data_path)
 
         self.env['ir.config_parameter'].set_param('data_path', self._data_path)
         self.env['ir.config_parameter'].set_param('email_notification',
