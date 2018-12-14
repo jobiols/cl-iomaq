@@ -64,6 +64,7 @@
     'data': [
         'views/product_view.xml',
         'views/custom_reports.xml',  # por si hay que hacer custom reports
+        'views/stock_view.xml',
     ],
     'test': [
     ],
