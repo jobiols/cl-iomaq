@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+        <!-- agregar comentarios en ajuste de inventario -->
+        <record id="view_inventory_form" model="ir.ui.view">
+            <field name="name">IOMAQ DEFAULT: agregar comentarios</field>
+            <field name="model">stock.inventory</field>
+            <field name="inherit_id" ref="stock.view_inventory_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='line_ids']" position="before">
+                    <field name="description"/>
+                </xpath>
+            </field>
+        </record>
+</odoo>
