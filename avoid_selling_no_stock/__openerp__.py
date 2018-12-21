@@ -20,7 +20,7 @@
 ##############################################################################
 
 {
-    'name': 'Evitar vender sin stock',
+    'name': 'Evitar ventas sin stock',
     'version': '9.0.0.0.0',
     'category': 'Tools',
     'summary': "Module summary",
@@ -28,6 +28,7 @@
     'website': 'http://github.com/jobiols/cl-iomaq',
     'license': 'AGPL-3',
     'depends': [
+        'sale',
     ],
     'data': [
     ],

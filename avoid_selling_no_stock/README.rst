@@ -8,6 +8,7 @@
    :target: https://www.gnu.org/licenses/agpl
    :alt: License: AGPL-3
 
+
 ===========================
 AVOID SELLING WITH NO STOCK
 ===========================
