@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- GRUPO PRODUCT_CREATE -->
+        <record id="group_sell_negative_stock_users" model="res.groups">
+            <field name="name">Sell with negative stock</field>
+            <field name="comment">Permite a este usuario vender con stock negativo</field>
+         </record>
+    </data>
+</odoo>

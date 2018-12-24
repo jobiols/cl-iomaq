@@ -31,6 +31,7 @@
         'sale',
     ],
     'data': [
+        'views/sale_order_line_view.xml'
     ],
     'installable': True,
     'application': False,

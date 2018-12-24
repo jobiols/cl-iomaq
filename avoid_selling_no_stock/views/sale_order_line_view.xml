@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <data>
+        <!-- Manejo de stock negativo -->
+
+        <record id="view_order_form" model="ir.ui.view">
+            <field name="name">AVOID SELLING NO STOCK</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+
+                <!-- aviso cuando hay lineas de stock negativo
+                     esto solo debe pasar en draft -->
+
+                <xpath expr="//header" position="before">
+                    <field name="is_available" invisible="0"/>
+                    <div class="alert alert-info"
+                         attrs="{'invisible': [('is_available', '!=', False)]}">
+                        <span><strong>ATENCION</strong>: Este presupuesto no se
+                            puede validar porque tiene productos con stock
+                            negativo. Los productos que no estan disponibles
+                            para la venta aparecen en rojo.
+                        </span>
+                        <br/>
+                        <span>Corrija los productos y/o las cantidades o
+                            escale el problema a un usuario que tenga permisos
+                            para generar stock negativo.
+                        </span>
+                    </div>
+                </xpath>
+
+                <!-- poner lineas en rojo si estan negativas
+                     esto solo debe pasar en draft -->
+                <xpath expr="//tree/field[@name='qty_to_invoice']"
+                       position="after">
+                    <field name="is_available" invisible="0"/>
+                </xpath>
+
+                <xpath expr="//tree" position="attributes">
+                    <attribute name="colors">red:is_available==False</attribute>
+                </xpath>
+
+            </field>
+        </record>
+    </data>
+</odoo>
