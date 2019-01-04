@@ -20,7 +20,7 @@
 # -----------------------------------------------------------------------------
 {
     'name': 'Sales Business Intelligence Report',
-    'version': '9.0.0.9.0',
+    'version': '9.0.0.9.1',
     'license': 'AGPL-3',
     'category': 'Tools',
     'summary': 'Custom BI Sales Report',
@@ -31,6 +31,7 @@
     ],
 
     'data': [
+        'security/security_groups.xml',
         'security/ir.model.access.csv',
         'views/invoice_analysis.xml',
         'views/product_view.xml',
