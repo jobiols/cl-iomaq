@@ -151,11 +151,15 @@
                   id="menu_action_account_invoice_line_report_all_iomaq"
                   name="Sales Invoice Lines Analysis"
                   parent="account.account_reports_business_intelligence_menu"
+                  groups="group_bi_users"
                   sequence="11"/>
 
-        <!-- ocultar el otro menu
+        <!-- ocultar el otro menu -->
+        <menuitem id="account.menu_action_account_invoice_report_all"
+                  groups="group_bi_users"/>
+        <!--
         <menuitem id="l10n_ar_account.menu_action_account_invoice_line_report_all"
-                  groups="group_nobody"/>
-        -->
+                  groups="group_bi_users"/>
+-->
     </data>
 </openerp>
