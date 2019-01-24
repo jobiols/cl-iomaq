@@ -10,8 +10,6 @@
             <field name="parent_id" ref="base.module_category_tools"/>
         </record>
 
-        <!-- TODO deberiamos renombrar y migrar id de group_restrict_prices a group_only_view_sale_price -->
-        <!-- <record model="res.groups" id="group_only_view_sale_price"> -->
         <record model="res.groups" id="group_restrict_prices">
             <field name="category_id" ref="module_prices_management"/>
             <field name="name">Solo ver: precio de venta</field>
@@ -19,9 +17,7 @@
 
         <record model="res.groups" id="group_only_view">
             <field name="category_id" ref="module_prices_management"/>
-            <field name="implied_ids"
-                   eval="[(4, ref('group_restrict_prices'))]"/>
-            <!-- <field name="implied_ids" eval="[(4, ref('group_only_view_sale_price'))]"/> -->
+            <field name="implied_ids" eval="[(4, ref('group_restrict_prices'))]"/>
             <field name="name">Solo ver: precio venta y compra</field>
         </record>
 
