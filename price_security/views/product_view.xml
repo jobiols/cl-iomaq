@@ -1,25 +1,28 @@
 <odoo>
 
-    <!-- add can modify prices LO OCULTAMOS -->
+    <!-- add can modify prices LO QUITAMOS no lo vamos a usar y es candidato
+        a eliminarse completamente
+
     <record id="product_template_form_view" model="ir.ui.view">
-        <field name="name">price_security.product.form</field>
+        <field name="name">PRICE SECURITY product.form</field>
         <field name="model">product.template</field>
         <field name="inherit_id" ref="product.product_template_form_view"/>
         <field name="priority">30</field>
         <field name="arch" type="xml">
             <field name="list_price" position="after">
-                <field name="can_modify_prices" invisible="1"/>
+                <field name="can_modify_prices"/>
             </field>
         </field>
     </record>
+-->
 
-    <!-- GROUP_RESTRICT_PRICES
-    -->
+    <!-- GROUP_RESTRICT_PRICES -->
+
 
     <!-- Solo ver: precio de venta: oculta costos y planned, deja ver list
          price en readonly -->
     <record id="view_product_only_view_sale_price_form" model="ir.ui.view">
-        <field name="name">View Only sale price template form</field>
+        <field name="name">PRICE SECURITY View Only sale price template form</field>
         <field name="model">product.template</field>
         <field name="inherit_id" ref="product_template_form_view"/>
         <field name="groups_id"
