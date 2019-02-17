@@ -31,14 +31,3 @@ class Item(models.Model):
     _sql_constraints = [
         ('uniq_code', 'unique(code)', "The item code must be unique !"),
     ]
-
-    # NO SE PORQUE ESTO NO FUNCIONA
-    # @api.onchange('margin')
-    # def onchange_margin(self):
-    #    import wdb;wdb.set_trace()
-
-    # forzar recalculo de precios y categorias
-    #    prod_obj = self.env['product.template']
-    #    prod = prod_obj.search([('item_code', '=', self.code)])
-    #    if prod:
-    #        prod.invalidate_category = True
