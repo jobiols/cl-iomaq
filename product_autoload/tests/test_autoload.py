@@ -38,6 +38,14 @@ class TestBusiness(TransactionCase):
         """ Este setup corre antes de cada método ---------------------------00
         """
         super(TestBusiness, self).setUp()
+
+        # Agregar al admin al grupo de crear productos para que funcione
+        # el test.
+        create_prod_group = self.env['res.groups'].search(
+            [('name', '=', 'Create products manually')])
+        admin = self.env['res.users'].search([('id', '=', 1)])
+        create_prod_group.users += admin
+
         # obtener el path al archivo de datos
         self._data_path = os.path.abspath(__file__)
         self._data_path = os.path.dirname(self._data_path)
@@ -443,7 +451,6 @@ class TestBusiness(TransactionCase):
         self.manager_obj.run()
         prod = self.prod_obj.search([('default_code', '=', '102.AF')])
         self.assertAlmostEqual(prod.bulonfer_cost, 7.7832)
-
 
         # hay stock
         self.add_quant(prod)
