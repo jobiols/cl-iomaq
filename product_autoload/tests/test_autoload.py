@@ -38,6 +38,14 @@ class TestBusiness(TransactionCase):
         """ Este setup corre antes de cada método ---------------------------00
         """
         super(TestBusiness, self).setUp()
+
+        # Agregar al admin al grupo de crear productos para que funcione
+        # el test.
+        create_prod_group = self.env['res.groups'].search(
+            [('name', '=', 'Create products manually')])
+        admin = self.env['res.users'].search([('id', '=', 1)])
+        create_prod_group.users += admin
+
         # obtener el path al archivo de datos
         self._data_path = os.path.abspath(__file__)
         self._data_path = os.path.dirname(self._data_path)
@@ -79,6 +87,14 @@ class TestBusiness(TransactionCase):
             'type': 'general',
             'code': 'INV'
         })
+
+    def add_quant(self, prod):
+        quant_obj = self.env['stock.quant']
+        quant_obj.create({'product_tmpl_id': prod.id,
+                          'location_id.usage': 'internal',
+                          'location_id': 12,
+                          'qty': 1,
+                          'product_id': prod.product_variant_ids.id})
 
     def test_01_product_mapper(self):
         """ Chequear creacion de ProductMapper ------------------------------01
@@ -403,3 +419,69 @@ class TestBusiness(TransactionCase):
         # verificar que se carga el nuevo 996
         prod = prod_obj.search([('default_code', '=', '996.100.325')])
         self.assertAlmostEqual(prod.bulonfer_cost, 1478.50, places=2)
+
+    def test_16_(self):
+        """ Si baja el precio sin stock hay que actualizar y poner en oferta
+        """
+        # replicar todo
+        self.env['ir.config_parameter'].set_param(
+            'import_only_new', False)
+
+        # chequear el precio original
+        self.manager_obj.run()
+        prod = self.prod_obj.search([('default_code', '=', '102.AF')])
+        self.assertAlmostEqual(prod.bulonfer_cost, 7.7832)
+
+        # cargar de nuevo y con precio rebajado
+        self.manager_obj.run(data='data_baja_precios.csv')
+
+        # como no hay stock se baja el precio y se pone en oferta
+        prod = self.prod_obj.search([('default_code', '=', '102.AF')])
+        self.assertAlmostEqual(prod.bulonfer_cost, 7.0)
+        self.assertEqual(prod.product_variant_ids.state, 'offer')
+
+    def test_17_(self):
+        """ Si baja el precio con stock NO hay que actualizar y poner en oferta
+        """
+        # replicar todo
+        self.env['ir.config_parameter'].set_param(
+            'import_only_new', False)
+
+        # chequear el precio original
+        self.manager_obj.run()
+        prod = self.prod_obj.search([('default_code', '=', '102.AF')])
+        self.assertAlmostEqual(prod.bulonfer_cost, 7.7832)
+
+        # hay stock
+        self.add_quant(prod)
+
+        # cargar de nuevo y chequear el precio rebajado
+        self.manager_obj.run(data='data_baja_precios.csv')
+        prod = self.prod_obj.search([('default_code', '=', '102.AF')])
+        self.assertAlmostEqual(prod.bulonfer_cost, 7.7832)
+        self.assertEqual(prod.product_variant_ids.state, 'offer')
+
+    def test_18_(self):
+        """ Si el producto esta en oferta y sube el precio sacar de oferta
+            no importa el stock
+        """
+        # replicar todo
+        self.env['ir.config_parameter'].set_param(
+            'import_only_new', False)
+
+        # iniciamos con el producto normal
+        self.manager_obj.run(data='data.csv')
+        prod = self.prod_obj.search([('default_code', '=', '102.AF')])
+        self.assertEqual(prod.product_variant_ids.state, 'sellable')
+
+        # el producto entra en oferta sin stock
+        self.manager_obj.run(data='data_baja_precios.csv')
+        prod = self.prod_obj.search([('default_code', '=', '102.AF')])
+        self.assertEqual(prod.product_variant_ids.state, 'offer')
+        self.assertAlmostEqual(prod.bulonfer_cost, 7.0)
+
+        # el precio sube, corregir y sacar de oferta
+        self.manager_obj.run()
+        prod = self.prod_obj.search([('default_code', '=', '102.AF')])
+        self.assertAlmostEqual(prod.bulonfer_cost, 7.7832)
+        self.assertEqual(prod.product_variant_ids.state, 'sellable')

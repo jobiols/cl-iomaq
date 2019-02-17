@@ -26,6 +26,7 @@
     'summary': 'Customización IOMAQ SA',
     'author': 'jeo Software',
     'depends': [
+        'avoid_selling_no_stock',   # evitar que se venda con stock negativo
         'support_branding_jeosoft',
 
         # aplicaciones instaladas

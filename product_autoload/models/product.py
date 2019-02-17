@@ -49,6 +49,10 @@ class ProductTemplate(models.Model):
     parent_price_product = fields.Char(
         help='default_code of the product to get prices from'
     )
+    state = fields.Selection(
+        selection_add=[
+            ('offer', 'Offer')
+        ])
 
     def oldest_quant(self, prod):
         """ Retorna el quant mas antiguo de este producto.
@@ -188,6 +192,17 @@ class ProductTemplate(models.Model):
             - Si es bulonfer list_price = cost * (1 + margin)
             - Si no es bulonfer list_price = price
         """
+
+        def decreased_cost(cost):
+            """ Verificar que bajo el costo bulonfer frente al nuevo costo,
+                tener en cuenta que en el alta de producto el costo bulonfer
+                es cero.
+            """
+            # agregamos 0.05 para evitar errores de redondeo
+            condition = self.bulonfer_cost + 0.05 > cost
+            # tener en cuenta el caso del alta.
+            return condition if self.bulonfer_cost != 0 else False
+
         # TODO ver si se puede hacer esto mas arriba o sea cuando recibo el
         # registro de data.csv para que no llegue aca.
         # TODO marcar los obsoletos con un color
@@ -208,6 +223,20 @@ class ProductTemplate(models.Model):
 
             # buscar si hay quants
             quant = self.oldest_quant(prod)
+
+            # si tengo stock y el costo disminuye, pongo oferta y no
+            # actualizo el costo.
+            if quant and decreased_cost(cost):
+                prod.state = 'offer'
+                return
+
+            # si NO tengo stock y el costo disminuye, pongo oferta y actualizo
+            # el costo.
+            if not quant and decreased_cost(cost):
+                prod.state = 'offer'
+
+            # aqui ajusta el costo hoy pero se puede heredar para
+            # hacer otras cosas!
             self.fix_quant_data(quant, prod, cost)
 
             prod.bulonfer_cost = cost
