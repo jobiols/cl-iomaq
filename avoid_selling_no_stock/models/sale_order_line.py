@@ -5,6 +5,8 @@ from openerp import api, fields, models, _
 from openerp import api, fields, models, _
 from openerp.tools import DEFAULT_SERVER_DATETIME_FORMAT, float_compare
 
+enabled = 'avoid_selling_no_stock.group_sell_negative_stock_users'
+
 
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
@@ -19,7 +21,7 @@ class SaleOrder(models.Model):
     def action_confirm(self):
         """ Esto atrapa los botones action_confirm y action_confirm_send
         """
-        enabled = 'avoid_selling_no_stock.group_sell_negative_stock_users'
+        # TODO Deberia desaparecer los botones en lugar de hacer esto.
         for order in self:
             if order.is_available or self.env.user.has_group(enabled):
                 super(SaleOrder, self).action_confirm()
@@ -27,6 +29,10 @@ class SaleOrder(models.Model):
     @api.onchange('order_line')
     def _compute_is_available(self):
         for so in self:
+            if self.env.user.has_group(enabled):
+                so.is_available = True
+                return
+
             if so.state in ['draft', 'sent']:
                 is_available = True
                 for sol in self.order_line:
