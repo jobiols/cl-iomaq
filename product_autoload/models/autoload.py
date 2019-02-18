@@ -105,10 +105,10 @@ class AutoloadMgr(models.Model):
                 item = item_obj.search([('code', '=', values['code'])])
                 if item:
                     if not (item.origin == values['origin'] and
-                            item.name == values['name'] and
-                            item.section == values['section'] and
-                            item.family == values['family'] and
-                            item.margin == float(values['margin'])):
+                                    item.name == values['name'] and
+                                    item.section == values['section'] and
+                                    item.family == values['family'] and
+                                    item.margin == float(values['margin'])):
                         item.write(values)
                 else:
                     item_obj.create(values)
@@ -243,7 +243,7 @@ class AutoloadMgr(models.Model):
 
                     self.with_env(new_env).create({
                         'name': '#{} ERROR {}'.format(rec.id, ex.name),
-                        'statistics':'',
+                        'statistics': '',
                     })  # isolated transaction to commit
 
                     self.with_env(new_env).send_email(
@@ -455,3 +455,40 @@ class AutoloadMgr(models.Model):
             if rec.date_end < rec.date_start:
                 rec.date_end = rec.date_start
                 _logger.info('FIX INFO: %s' % rec.date_start)
+
+    @api.model
+    def fix_prices_down(self):
+        """ corrige precios que bulonfer bajo y no deben estar bajos en iomaq
+        """
+        _logger.info('FIX: START --------------------------------------------')
+
+        # obtener productos bulonfer
+        prod_supp_obj = self.env['product.supplierinfo']
+        prod_tmpl = self.env['product.template']
+        item_obj = self.env['product_autoload.item']
+        # lineas de suppinfo que son de bulonfer
+        prods = prod_supp_obj.search([('name', '=', 16)])
+
+        # obtener todos los templates de productos que son bulonfer sin repetir
+        for prod in prods:
+            if not prod.product_tmpl_id in prod_tmpl:
+                prod_tmpl += prod.product_tmpl_id
+
+        # por cada producto bulonfer revisar los precios
+        for prod in prod_tmpl:
+            pinfo = prod.seller_ids.search([('product_tmpl_id', '=', prod.id)],
+                                           order='date_start desc', limit=2)
+            if len(pinfo) > 1 and pinfo[1].price > pinfo[
+                0].price and prod.virtual_available:
+                _logger.info('FIX: "{:10}","{:5}","{:5}"'.format(
+                                                prod.default_code,
+                                                pinfo[0].price,
+                                                pinfo[1].price))
+
+                prod.bulonfer_cost = pinfo[1].price
+                prod.state = 'offer'
+                item = item_obj.search([('code', '=', prod.item_code)])
+                prod.margin = 100 * item.margin
+                prod.list_price = pinfo[1].price * (item.margin + 1)
+
+        _logger.info('FIX: END ----------------------------------------------')
