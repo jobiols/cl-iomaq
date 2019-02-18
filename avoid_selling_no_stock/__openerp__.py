@@ -31,7 +31,8 @@
         'sale',
     ],
     'data': [
-        'views/sale_order_line_view.xml'
+        'views/sale_order_line_view.xml',
+        'security/security_groups.xml'
     ],
     'installable': True,
     'application': False,
