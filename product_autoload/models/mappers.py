@@ -140,6 +140,10 @@ class ProductMapper(CommonMapper):
         if prod and prod.default_code[0:4] == '996.':
             return []
 
+        # no permitir que modifique 170.C.350.10
+        if prod and prod.default_code == '170.C.350.10':
+            return []
+
         if prod:
             prod.write(self.values())
             stats = ['prod_processed']
