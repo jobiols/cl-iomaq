@@ -60,6 +60,7 @@
         'sale_global_discount',  # setea todos los descuentos de la SO
         'document_page',  # documentacion y ayuda
         'product_upload',  # cargar productos desde planilla excel
+        'triplicate_picking',  # imprime el remito por triplicado
     ],
 
     'data': [
