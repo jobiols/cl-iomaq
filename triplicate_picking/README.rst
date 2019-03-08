@@ -15,8 +15,9 @@ TRIPLICATE PICKING
 Este modulo imprime los remitos tres veces con las leyendas ORIGINAL, DUPLICADO
 y TRIPLICADO.
 Se requiere que en el remito aeroo se pongan tres copias y que
-se agregen las keys imprimir_original imprimir_duplicado, imprimir_triplicado
+se agregen las keys print_original print_duplicado, print_triplicado
 de tipo boolean.
+Ademas poner triplicate_picking/stock_picking.odt en la ruta / controlador
 
 Installation
 ============
