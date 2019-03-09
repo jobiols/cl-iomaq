@@ -114,8 +114,6 @@ class AccountInvoiceLine(models.Model):
 
     product_margin = fields.Float(
         string='Product Margin',
-        # compute="_compute_product_margin",
-        # store=True,
         help="This is the margin between standard_price and list_price taking "
              "into account line discounts, is the margin for this line only"
     )
@@ -133,7 +131,7 @@ class AccountInvoiceLine(models.Model):
     @api.multi
     def _compute_product_margin(self):
         for ail in self:
-            if ail.product_id and ail.invoice_id.type == 'out_invoice':
+            if ail.product_id and ail.invoice_id.type in ['out_invoice','out_refund']:
                 # precio de venta sacado de la linea de factura, teniendo
                 # en cuenta los descuentos que pudiera haber.
                 disc = ail.discount / 100
@@ -198,10 +196,11 @@ class AccountInvoiceLine(models.Model):
                     default_code == '76.4.16':
                 line.vendor_id = 16
 
+    """
     @api.model
     def fix_recalculate_invoice_discount(self):
-        """ Fuerza el recalculo de invoice discounts.
-        """
+        "" " Fuerza el recalculo de invoice discounts.
+        "" "
         _logger.info('fix_recalculate_invoice_discount')
 
         ai_obj = self.env['account.invoice']
@@ -210,12 +209,12 @@ class AccountInvoiceLine(models.Model):
 
     @api.model
     def fix_996(self):
-        """ Para correr a mano, corrije el margen de ail de los productos 996
+        "" " Para correr a mano, corrije el margen de ail de los productos 996
             basado en standard_price y list_price de la ficha del producto.
             Ademas corrije el costo historico.
             Sabemos que los precios estan en ARS asi que no tenemos en cuenta
             multimoneda
-        """
+        "" "
         product_obj = self.env['product.template']
         products = product_obj.search([('default_code', '=like', '996%')])
         for product in products:
@@ -245,11 +244,11 @@ class AccountInvoiceLine(models.Model):
 
     @api.model
     def fix_product_historic(self, data):
-        """ Para correr a mano, corrije el costo historico del producto
+        "" " Para correr a mano, corrije el costo historico del producto
             basado en standard_product_price y list_price de la ficha del
             producto. no tiene en cuenta multimoneda.
             regenera el product_margin
-        """
+        "" "
 
         product_obj = self.env['product.template']
         products = product_obj.search([('default_code', 'in', data)])
@@ -280,8 +279,8 @@ class AccountInvoiceLine(models.Model):
 
     @api.model
     def fix_supplierinfo_currency(self):
-        """ para correr a mano arregla el currency en supplierinfo
-        """
+        "" " para correr a mano arregla el currency en supplierinfo
+        "" "
         supp_info_obj = self.env['product.supplierinfo']
         for info in supp_info_obj.search([]):
             curr = info.product_tmpl_id.currency_id
@@ -292,9 +291,9 @@ class AccountInvoiceLine(models.Model):
 
     @api.model
     def fix_simule_sale(self, products):
-        """ Pone el precio del quant mas viejo en standard_price y product_
+        "" " Pone el precio del quant mas viejo en standard_price y product_
             standard_price como si se vendiera el producto
-        """
+        "" "
         _logger.info('fix_simule_sale %s' % products)
 
         domain = [('virtual_available', '!=', 0)]
@@ -320,9 +319,9 @@ class AccountInvoiceLine(models.Model):
 
     @api.model
     def fix_no_hay_stock(self, products):
-        """ Si el producto no tiene stock entonces pongo
+        "" " Si el producto no tiene stock entonces pongo
             el costo hoy en standard_cost y standard_product_cost.
-        """
+        "" "
         _logger.info('fix_no_hay_stock %s' % products)
 
         prod_obj = self.env['product.template']
@@ -344,12 +343,12 @@ class AccountInvoiceLine(models.Model):
 
     @api.model
     def fix_product_margin(self, products):
-        """ Corrije el margen de un producto teniendo en cuenta las facturas
+        "" " Corrije el margen de un producto teniendo en cuenta las facturas
             de compra y venta y usando un fake stock para calcular el margen
             real. No toca el historic.
 
             Si no hay facturas de compra toma el precio standard.
-        """
+        "" "
 
         self.fix_recalculate_invoice_cost(products)
 
@@ -426,6 +425,19 @@ class AccountInvoiceLine(models.Model):
 
         # esto para que vuelva a tomar el primer quant como costo.
         self.fix_simule_sale(products)
+    """
+
+    @api.model
+    def fix_compute_margin(self):
+        """ Para correr a mano recalcula product margin. a los que le falta
+        """
+        ail_obj = self.env['account.invoice.line']
+        ails = ail_obj.search([('product_margin', '=', 0),
+                               ('invoice_id.type', 'in', ['out_invoice','out_refund'])])
+        for ail in ails:
+            ail._compute_product_margin()
+            _logger.info('Fixing %s on %s' % (ail.product_id.default_code, ail.date_invoice))
+
 
 
 class AccountInvoice(models.Model):
