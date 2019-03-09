@@ -27,6 +27,7 @@
     'license': 'AGPL-3',
     'depends': [
         'sale',
+        'stock',
         'product_autoload',
         'product_currency_fix'
     ],
@@ -39,6 +40,7 @@
         'views/invoice_view.xml',
         'views/partner_view.xml',
         'views/account_view.xml',
+        'views/stock_view.xml'
     ],
     'installable': True,
 }

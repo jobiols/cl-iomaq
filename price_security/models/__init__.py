@@ -8,3 +8,4 @@ from . import product
 from . import sale
 from . import invoice
 from . import account
+from . import stock_inventory

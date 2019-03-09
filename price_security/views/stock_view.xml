@@ -2,7 +2,7 @@
 <odoo>
         <!-- agregar comentarios en ajuste de inventario -->
         <record id="view_inventory_form" model="ir.ui.view">
-            <field name="name">IOMAQ DEFAULT: agregar comentarios</field>
+            <field name="name">PRICE SECURITY: agregar comentarios</field>
             <field name="model">stock.inventory</field>
             <field name="inherit_id" ref="stock.view_inventory_form"/>
             <field name="arch" type="xml">
