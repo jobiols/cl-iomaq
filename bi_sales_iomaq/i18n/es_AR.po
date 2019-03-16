@@ -4,16 +4,21 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 9.0c-20180504\n"
+"Project-Id-Version: Odoo Server 9.0c-20180827\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-07-31 05:52+0000\n"
-"PO-Revision-Date: 2018-07-31 05:52+0000\n"
+"POT-Creation-Date: 2019-03-16 14:57+0000\n"
+"PO-Revision-Date: 2019-03-16 14:57+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
+
+#. module: bi_sales_iomaq
+#: model:ir.model.fields,field_description:bi_sales_iomaq.field_account_invoice_line_report_iomaq_date
+msgid "Accounting Date"
+msgstr "Fecha Contable"
 
 #. module: bi_sales_iomaq
 #: model:ir.model.fields,field_description:bi_sales_iomaq.field_account_invoice_line_report_iomaq_brand_id
@@ -38,9 +43,19 @@ msgid "Brand of the product"
 msgstr "Marca del producto"
 
 #. module: bi_sales_iomaq
-#: model:ir.model.fields,help:bi_sales_iomaq.field_product_template_margin
-msgid "Bulonfer suggested product margin from last replication"
-msgstr "Margen sugerido por Bulonfer de la ultima replicacion"
+#: model:res.groups,name:bi_sales_iomaq.group_bi_users
+msgid "Business Intelligence"
+msgstr "Inteligencia de negocios"
+
+#. module: bi_sales_iomaq
+#: selection:account.invoice.line.report.iomaq,state:0
+msgid "Cancelled"
+msgstr "Cancelado"
+
+#. module: bi_sales_iomaq
+#: model:ir.model.fields,field_description:bi_sales_iomaq.field_account_invoice_line_report_iomaq_product_category_id
+msgid "Category"
+msgstr "Categoría"
 
 #. module: bi_sales_iomaq
 #: model:ir.ui.view,arch_db:bi_sales_iomaq.brand_form_iomaq
@@ -48,9 +63,29 @@ msgid "Check mask"
 msgstr "Chequear mascara"
 
 #. module: bi_sales_iomaq
-#: model:ir.model.fields,help:bi_sales_iomaq.field_product_template_system_cost
-msgid "Cost price based on the purchase invoice"
-msgstr "Precio de costo basado en la factura de compra"
+#: model:ir.model.fields,help:bi_sales_iomaq.field_account_invoice_line_report_iomaq_customer
+msgid "Check this box if this contact is a customer."
+msgstr "Marque esta casilla si el contacto es un cliente."
+
+#. module: bi_sales_iomaq
+#: model:ir.model.fields,help:bi_sales_iomaq.field_account_invoice_line_report_iomaq_supplier
+msgid "Check this box if this contact is a supplier. If it's not checked,purchase people will not see it when encoding a purchase order."
+msgstr "Marque esta casilla si el contacto es un proveedor. Si no está marcada, el equipo de compras no lo verá cuando esté haciendo una orden de compra."
+
+#. module: bi_sales_iomaq
+#: model:ir.model.fields,field_description:bi_sales_iomaq.field_account_invoice_line_report_iomaq_cost_total
+msgid "Cost"
+msgstr "Coste"
+
+#. module: bi_sales_iomaq
+#: model:ir.model.fields,field_description:bi_sales_iomaq.field_account_invoice_line_report_iomaq_cost_total_taxed
+msgid "Cost +tax"
+msgstr "Costo +IVA"
+
+#. module: bi_sales_iomaq
+#: model:ir.ui.view,arch_db:bi_sales_iomaq.view_account_invoice_line_report_search_iomaq
+msgid "Crazy Margin"
+msgstr "Margen menor que 10%"
 
 #. module: bi_sales_iomaq
 #: model:ir.model.fields,field_description:bi_sales_iomaq.field_bi_sales_iomaq_brand_create_uid
@@ -60,27 +95,54 @@ msgstr "Creado por"
 #. module: bi_sales_iomaq
 #: model:ir.model.fields,field_description:bi_sales_iomaq.field_bi_sales_iomaq_brand_create_date
 msgid "Created on"
-msgstr "Creado el"
+msgstr "Creado en"
 
 #. module: bi_sales_iomaq
+#: model:ir.model.fields,field_description:bi_sales_iomaq.field_account_invoice_line_report_iomaq_customer
 #: model:ir.ui.view,arch_db:bi_sales_iomaq.view_account_invoice_line_report_search_iomaq
 msgid "Customer"
 msgstr "Cliente"
 
 #. module: bi_sales_iomaq
-#: model:ir.model.fields,field_description:bi_sales_iomaq.field_product_template_difference
-msgid "Difference"
-msgstr "Diferencia"
+#: selection:account.invoice.line.report.iomaq,type:0
+msgid "Customer Invoice"
+msgstr "Factura de cliente"
 
 #. module: bi_sales_iomaq
-#: model:ir.model.fields,help:bi_sales_iomaq.field_product_template_difference
-msgid "Difference % in cost price between invoce and bulonfer data, calculated as (invoice_price - system_price)/invoice_pricethis diference is an error and must go towards zero."
-msgstr "Difference % in cost price between invoce and bulonfer data, calculated as (invoice_price - system_price)/invoice_pricethis diference is an error and must go towards zero."
+#: selection:account.invoice.line.report.iomaq,type:0
+msgid "Customer Refund"
+msgstr "Nota de credito de cliente"
 
 #. module: bi_sales_iomaq
+#: model:ir.model.fields,field_description:bi_sales_iomaq.field_account_invoice_line_report_iomaq_date_invoice
+msgid "Date Invoice"
+msgstr "Fecha de Factura"
+
+#. module: bi_sales_iomaq
+#: model:ir.model.fields,field_description:bi_sales_iomaq.field_account_invoice_line_report_iomaq_date_invoice_from
+msgid "Date Invoice from"
+msgstr "Fecha de factura desde"
+
+#. module: bi_sales_iomaq
+#: model:ir.model.fields,field_description:bi_sales_iomaq.field_account_invoice_line_report_iomaq_date_invoice_to
+msgid "Date Invoice to"
+msgstr "Fecha de factura hasta"
+
+#. module: bi_sales_iomaq
+#: model:ir.model.fields,field_description:bi_sales_iomaq.field_account_invoice_line_report_iomaq_discount_total
+msgid "Discount"
+msgstr "Descuento"
+
+#. module: bi_sales_iomaq
+#: model:ir.model.fields,field_description:bi_sales_iomaq.field_account_invoice_line_report_iomaq_discount_total_taxed
+msgid "Discount +tax"
+msgstr "Descuento +IVA"
+
+#. module: bi_sales_iomaq
+#: model:ir.model.fields,field_description:bi_sales_iomaq.field_account_invoice_line_report_iomaq_display_name
 #: model:ir.model.fields,field_description:bi_sales_iomaq.field_bi_sales_iomaq_brand_display_name
 msgid "Display Name"
-msgstr "Mostrar Nombre"
+msgstr "Nombrem mostrado"
 
 #. module: bi_sales_iomaq
 #: model:ir.ui.view,arch_db:bi_sales_iomaq.view_account_invoice_line_report_search_iomaq
@@ -88,6 +150,17 @@ msgid "Document Type"
 msgstr "Tipo de Documento"
 
 #. module: bi_sales_iomaq
+#: model:ir.model.fields,field_description:bi_sales_iomaq.field_account_invoice_line_report_iomaq_document_type_id
+msgid "Document type id"
+msgstr "ID del tipo de documento"
+
+#. module: bi_sales_iomaq
+#: selection:account.invoice.line.report.iomaq,state:0
+msgid "Done"
+msgstr "Finalizado"
+
+#. module: bi_sales_iomaq
+#: selection:account.invoice.line.report.iomaq,state:0
 #: model:ir.ui.view,arch_db:bi_sales_iomaq.view_account_invoice_line_report_search_iomaq
 msgid "Draft"
 msgstr "Borrador"
@@ -95,12 +168,27 @@ msgstr "Borrador"
 #. module: bi_sales_iomaq
 #: model:ir.ui.view,arch_db:bi_sales_iomaq.view_account_invoice_line_report_search_iomaq
 msgid "Draft Invoices"
-msgstr "Facturas en borrador"
+msgstr "Facturas borrador"
+
+#. module: bi_sales_iomaq
+#: model:ir.model.fields,field_description:bi_sales_iomaq.field_account_invoice_line_report_iomaq_date_due
+msgid "Due Date"
+msgstr "Fecha de vencimiento"
+
+#. module: bi_sales_iomaq
+#: model:res.groups,comment:bi_sales_iomaq.group_bi_users
+msgid "Enable to see business intelligence"
+msgstr "Habilitar vista de la inteligencia de negocio"
+
+#. module: bi_sales_iomaq
+#: model:ir.model.fields,help:bi_sales_iomaq.field_product_template_final_price
+msgid "Final Price. This is the public price with tax"
+msgstr "Precio final. Este es el precio al publico con IVA"
 
 #. module: bi_sales_iomaq
 #: model:ir.ui.view,arch_db:bi_sales_iomaq.view_account_invoice_line_report_search_iomaq
 msgid "Group By..."
-msgstr "Agrupar Por..."
+msgstr "Agrupar por..."
 
 #. module: bi_sales_iomaq
 #: model:ir.model.fields,field_description:bi_sales_iomaq.field_bi_sales_iomaq_brand_id
@@ -128,7 +216,12 @@ msgstr "Análisis de líneas de facturas"
 #. module: bi_sales_iomaq
 #: model:ir.ui.view,arch_db:bi_sales_iomaq.view_account_invoice_line_report_tree_iomaq
 msgid "Invoice My Lines Analysis"
-msgstr "Invoice My Lines Analysis"
+msgstr "Analisis de mis lineas de factura"
+
+#. module: bi_sales_iomaq
+#: model:ir.model.fields,field_description:bi_sales_iomaq.field_account_invoice_line_report_iomaq_state
+msgid "Invoice State"
+msgstr "Estado de la Factura"
 
 #. module: bi_sales_iomaq
 #: model:ir.ui.view,arch_db:bi_sales_iomaq.view_account_invoice_line_report_search_iomaq
@@ -141,6 +234,7 @@ msgid "Invoices Statistics"
 msgstr "Estadísticas de facturas"
 
 #. module: bi_sales_iomaq
+#: model:ir.model.fields,field_description:bi_sales_iomaq.field_account_invoice_line_report_iomaq_journal_id
 #: model:ir.ui.view,arch_db:bi_sales_iomaq.view_account_invoice_line_report_search_iomaq
 msgid "Journal"
 msgstr "Diario"
@@ -151,19 +245,20 @@ msgid "Journal Type"
 msgstr "Tipo de diario"
 
 #. module: bi_sales_iomaq
+#: model:ir.model.fields,field_description:bi_sales_iomaq.field_account_invoice_line_report_iomaq___last_update
 #: model:ir.model.fields,field_description:bi_sales_iomaq.field_bi_sales_iomaq_brand___last_update
 msgid "Last Modified on"
-msgstr "Última modificación el"
+msgstr "Última modificación en"
 
 #. module: bi_sales_iomaq
 #: model:ir.model.fields,field_description:bi_sales_iomaq.field_bi_sales_iomaq_brand_write_uid
 msgid "Last Updated by"
-msgstr "Última actualización por"
+msgstr "Última actualización realizada por"
 
 #. module: bi_sales_iomaq
 #: model:ir.model.fields,field_description:bi_sales_iomaq.field_bi_sales_iomaq_brand_write_date
 msgid "Last Updated on"
-msgstr "Última actualizacón el"
+msgstr "Última actualización el"
 
 #. module: bi_sales_iomaq
 #: model:ir.ui.view,arch_db:bi_sales_iomaq.view_account_invoice_line_report_search_iomaq
@@ -176,9 +271,19 @@ msgid "Last year"
 msgstr "Ultimo año"
 
 #. module: bi_sales_iomaq
-#: model:ir.model.fields,field_description:bi_sales_iomaq.field_product_template_margin
+#: model:ir.model.fields,field_description:bi_sales_iomaq.field_account_invoice_line_report_iomaq_margin_total
 msgid "Margin"
 msgstr "Margen"
+
+#. module: bi_sales_iomaq
+#: model:ir.model.fields,field_description:bi_sales_iomaq.field_account_invoice_line_report_iomaq_margin_total_taxed
+msgid "Margin +tax"
+msgstr "Margen +IVA"
+
+#. module: bi_sales_iomaq
+#: model:ir.model.fields,field_description:bi_sales_iomaq.field_account_invoice_line_report_iomaq_margin_percent
+msgid "Margin percent"
+msgstr "Margen porcentual"
 
 #. module: bi_sales_iomaq
 #: model:ir.model.fields,field_description:bi_sales_iomaq.field_bi_sales_iomaq_brand_mask
@@ -191,16 +296,48 @@ msgid "Name"
 msgstr "Nombre"
 
 #. module: bi_sales_iomaq
+#: model:ir.model.fields,field_description:bi_sales_iomaq.field_account_invoice_line_report_iomaq_number
+msgid "Number"
+msgstr "Número"
+
+#. module: bi_sales_iomaq
+#: selection:account.invoice.line.report.iomaq,state:0
+msgid "Open"
+msgstr "Abierto"
+
+#. module: bi_sales_iomaq
 #: model:ir.ui.view,arch_db:bi_sales_iomaq.view_account_invoice_line_report_search_iomaq
 msgid "Open and Paid Invoices"
 msgstr "Facturas abiertas y pagadas"
 
 #. module: bi_sales_iomaq
+#: model:ir.model.fields,field_description:bi_sales_iomaq.field_account_invoice_line_report_iomaq_partner_id
 #: model:ir.ui.view,arch_db:bi_sales_iomaq.view_account_invoice_line_report_search_iomaq
 msgid "Partner"
-msgstr "Empresa"
+msgstr "Partner"
 
 #. module: bi_sales_iomaq
+#: model:ir.model.fields,field_description:bi_sales_iomaq.field_account_invoice_line_report_iomaq_price_total
+msgid "Price"
+msgstr "Precio"
+
+#. module: bi_sales_iomaq
+#: model:ir.model.fields,field_description:bi_sales_iomaq.field_account_invoice_line_report_iomaq_price_total_taxed
+msgid "Price +tax"
+msgstr "Precio +IVA"
+
+#. module: bi_sales_iomaq
+#: model:ir.model.fields,field_description:bi_sales_iomaq.field_product_template_final_price
+msgid "Price tax included"
+msgstr "Precio iva incluido"
+
+#. module: bi_sales_iomaq
+#: selection:account.invoice.line.report.iomaq,state:0
+msgid "Pro-forma"
+msgstr "Pro-forma"
+
+#. module: bi_sales_iomaq
+#: model:ir.model.fields,field_description:bi_sales_iomaq.field_account_invoice_line_report_iomaq_product_id
 #: model:ir.ui.view,arch_db:bi_sales_iomaq.view_account_invoice_line_report_search_iomaq
 msgid "Product"
 msgstr "Producto"
@@ -208,7 +345,12 @@ msgstr "Producto"
 #. module: bi_sales_iomaq
 #: model:ir.ui.view,arch_db:bi_sales_iomaq.view_account_invoice_line_report_search_iomaq
 msgid "Product Category"
-msgstr "Categoría de producto"
+msgstr "Categoría de Producto"
+
+#. module: bi_sales_iomaq
+#: model:ir.model.fields,field_description:bi_sales_iomaq.field_account_invoice_line_product_margin
+msgid "Product Margin"
+msgstr "Margen del producto"
 
 #. module: bi_sales_iomaq
 #: model:ir.model,name:bi_sales_iomaq.model_product_template
@@ -223,9 +365,19 @@ msgid "Product brands"
 msgstr "Marcas de productos"
 
 #. module: bi_sales_iomaq
+#: model:ir.model.fields,field_description:bi_sales_iomaq.field_account_invoice_line_report_iomaq_name_template
+msgid "Product by text"
+msgstr "Nombre Producto"
+
+#. module: bi_sales_iomaq
 #: model:ir.model.fields,field_description:bi_sales_iomaq.field_bi_sales_iomaq_brand_product_count
 msgid "Product count"
 msgstr "Cantidad de productos"
+
+#. module: bi_sales_iomaq
+#: model:ir.model.fields,field_description:bi_sales_iomaq.field_account_invoice_line_product_iva
+msgid "Product iva"
+msgstr "IVA"
 
 #. module: bi_sales_iomaq
 #: model:ir.model.fields,field_description:bi_sales_iomaq.field_bi_sales_iomaq_brand_product_template_ids
@@ -233,9 +385,14 @@ msgid "Products"
 msgstr "Productos"
 
 #. module: bi_sales_iomaq
+#: model:ir.model.fields,field_description:bi_sales_iomaq.field_account_invoice_line_report_iomaq_quantity
+msgid "Quantity"
+msgstr "Cantidad"
+
+#. module: bi_sales_iomaq
 #: model:ir.ui.view,arch_db:bi_sales_iomaq.view_account_invoice_line_report_search_iomaq
 msgid "Refund"
-msgstr "Reembolso"
+msgstr "Factura rectificativa"
 
 #. module: bi_sales_iomaq
 #: model:ir.ui.menu,name:bi_sales_iomaq.menu_action_account_invoice_line_report_all_iomaq
@@ -243,24 +400,61 @@ msgid "Sales Invoice Lines Analysis"
 msgstr "Lineas de factura de ventas"
 
 #. module: bi_sales_iomaq
+#: model:ir.model.fields,field_description:bi_sales_iomaq.field_account_invoice_line_report_iomaq_user_id
 #: model:ir.ui.view,arch_db:bi_sales_iomaq.view_account_invoice_line_report_search_iomaq
 msgid "Salesman"
 msgstr "Vendedor"
 
 #. module: bi_sales_iomaq
+#: model:ir.model.fields,field_description:bi_sales_iomaq.field_account_invoice_line_sign
+msgid "Sign"
+msgstr "Firma"
+
+#. module: bi_sales_iomaq
+#: model:ir.model.fields,field_description:bi_sales_iomaq.field_account_invoice_line_report_iomaq_state_id
 #: model:ir.ui.view,arch_db:bi_sales_iomaq.view_account_invoice_line_report_search_iomaq
 msgid "State"
 msgstr "Estado"
 
 #. module: bi_sales_iomaq
-#: model:ir.model.fields,field_description:bi_sales_iomaq.field_product_template_system_cost
-msgid "System cost"
-msgstr "Costo por sistema"
+#: model:ir.model.fields,field_description:bi_sales_iomaq.field_account_invoice_line_report_iomaq_supplier
+msgid "Supplier"
+msgstr "Proveedor"
+
+#. module: bi_sales_iomaq
+#: selection:account.invoice.line.report.iomaq,type:0
+msgid "Supplier Invoice"
+msgstr "Factura de proveedor"
+
+#. module: bi_sales_iomaq
+#: selection:account.invoice.line.report.iomaq,type:0
+msgid "Supplier Refund"
+msgstr "Reembolso de provedor"
+
+#. module: bi_sales_iomaq
+#: model:ir.model.fields,field_description:bi_sales_iomaq.field_account_invoice_tag
+msgid "Tags"
+msgstr "Etiquetas"
 
 #. module: bi_sales_iomaq
 #: model:ir.model.fields,help:bi_sales_iomaq.field_account_invoice_line_vendor_id
 msgid "The vendor who sell us this product"
 msgstr "El proveedor que nos vendio este producto"
+
+#. module: bi_sales_iomaq
+#: model:ir.model.fields,help:bi_sales_iomaq.field_account_invoice_tag
+msgid "This is the first tag found in the partner, it adds a Tags field in the account.invoice model in order to filter invoices and to use it as a new dimension in pivot tables"
+msgstr "Esta es la primera etiqueta encontrada en el partner, agrega una etiqueta en el modelo account.invoice model para filtrar facturas y usarla como nueva dimension en tablas pivot"
+
+#. module: bi_sales_iomaq
+#: model:ir.model.fields,help:bi_sales_iomaq.field_account_invoice_line_product_margin
+msgid "This is the margin between standard_price and list_price taking into account line discounts, is the margin for this line only"
+msgstr "Este es el margen entre standard_price y list price teniendo en cuenta los descuentos en la linea de factura, es el margen solo por esta linea"
+
+#. module: bi_sales_iomaq
+#: model:ir.model.fields,help:bi_sales_iomaq.field_account_invoice_line_product_iva
+msgid "This is the product iva"
+msgstr "Este es el iva del producto"
 
 #. module: bi_sales_iomaq
 #: model:ir.ui.view,arch_db:bi_sales_iomaq.view_account_invoice_line_report_search_iomaq
@@ -276,6 +470,11 @@ msgstr "Este año"
 #: model:ir.ui.view,arch_db:bi_sales_iomaq.view_account_invoice_line_report_tree_iomaq
 msgid "Total"
 msgstr "Total"
+
+#. module: bi_sales_iomaq
+#: model:ir.model.fields,field_description:bi_sales_iomaq.field_account_invoice_line_report_iomaq_type
+msgid "Type"
+msgstr "Tipo"
 
 #. module: bi_sales_iomaq
 #: model:ir.model.fields,field_description:bi_sales_iomaq.field_account_invoice_line_report_iomaq_vendor_id
