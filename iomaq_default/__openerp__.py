@@ -61,6 +61,7 @@
         'document_page',  # documentacion y ayuda
         'product_upload',  # cargar productos desde planilla excel
         #'triplicate_picking',  # imprime el remito por triplicado
+        'account_vat_ledger_arba'  # imprime reporte impuestos por jurisdiccion
     ],
 
     'data': [
