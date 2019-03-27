@@ -144,6 +144,18 @@ class ProductTemplate(models.Model):
         # TODO evitar que se generen registros duplicados aqui
 
         vendor_id = self.get_vendor_id(vendor_ref)
+
+        # obtener los registros abiertos deberia haber solo uno o ninguno
+        sellers = self.seller_ids.search(
+            [('name', '=', vendor_id.id),
+             ('product_tmpl_id', '=', self.id),
+             ('date_end', '=', False)])
+
+        # Si el costo actual es el mismo no agrego la linea
+        for reg in sellers:
+            if reg.price == cost:
+                return
+
         # arma el registro para insertar
         supplierinfo = {
             'name': vendor_id.id,
@@ -155,12 +167,6 @@ class ProductTemplate(models.Model):
             'date_start': date,
             'product_tmpl_id': self.id,
         }
-
-        # obtener los registros abiertos deberia haber solo uno o ninguno
-        sellers = self.seller_ids.search(
-            [('name', '=', vendor_id.id),
-             ('product_tmpl_id', '=', self.id),
-             ('date_end', '=', False)])
 
         # restar un dia y cerrar los registros
         for reg in sellers:
@@ -182,7 +188,7 @@ class ProductTemplate(models.Model):
 
     @api.multi
     def set_prices(self, cost, vendor_ref, price=False, date=False, min_qty=1,
-        vendors_code=False):
+        vendors_code=False, manual=False):
         """ Setea el precio, costo y margen (no bulonfer) del producto
 
             - Si el costo es cero y es bulonfer se pone obsoleto y termina.
@@ -191,6 +197,7 @@ class ProductTemplate(models.Model):
             - bulonfer_cost = cost
             - Si es bulonfer list_price = cost * (1 + margin)
             - Si no es bulonfer list_price = price
+            - Si el costo baja hago tratamiento especial
         """
 
         def decreased_cost(cost):
@@ -217,23 +224,26 @@ class ProductTemplate(models.Model):
             if not date:
                 date = datetime.today().strftime('%Y-%m-%d')
 
-            # agrega una linea al historico de costos
+            # agrega una linea al historico de costos solo si cambio el costo
             self.insert_historic_cost(vendor_ref, min_qty, cost, vendors_code,
                                       date)
 
             # buscar si hay quants
             quant = self.oldest_quant(prod)
 
-            # si tengo stock y el costo disminuye, pongo oferta y no
-            # actualizo el costo.
-            if quant and decreased_cost(cost):
-                prod.state = 'offer'
-                return
+            # hago esto solo si proceso en automatico, cuando estamos en manual
+            # es porque el precio viene de una planilla
+            if not manual:
+                # si tengo stock y el costo disminuye, pongo oferta y no
+                # actualizo el costo.
+                if quant and decreased_cost(cost):
+                    prod.state = 'offer'
+                    return
 
-            # si NO tengo stock y el costo disminuye, pongo oferta y actualizo
-            # el costo.
-            if not quant and decreased_cost(cost):
-                prod.state = 'offer'
+                # si NO tengo stock y el costo disminuye, pongo oferta y actualizo
+                # el costo.
+                if not quant and decreased_cost(cost):
+                    prod.state = 'offer'
 
             # aqui ajusta el costo hoy pero se puede heredar para
             # hacer otras cosas!
@@ -241,13 +251,15 @@ class ProductTemplate(models.Model):
 
             prod.bulonfer_cost = cost
 
-            if vendor_ref == 'BULONFER':
+            if vendor_ref == 'BULONFER' and not manual:
+                # si el proveedor es bulonfer y estamos en automatico
                 item_obj = self.env['product_autoload.item']
                 item = item_obj.search([('code', '=', prod.item_code)])
 
                 prod.margin = 100 * item.margin
                 prod.list_price = cost * (item.margin + 1)
             else:
+                # si estamos en manual con cualquier vendor.
                 prod.list_price = price
                 prod.margin = 100 * (price / cost - 1) if cost != 0 else 1e10
 
