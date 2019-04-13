@@ -63,7 +63,8 @@
         'account_vat_ledger_arba',  # imprime reporte impuestos por jurisdiccion
         'database_cleanup',
         'date_range',
-        'sale_exception'
+        'sale_exception',
+        'partner_ref_unique'  # Que no se duplique la referencia
     ],
 
     'data': [
