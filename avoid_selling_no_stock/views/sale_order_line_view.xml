@@ -14,7 +14,7 @@
                      esto solo debe pasar en draft -->
 
                 <xpath expr="//header" position="before">
-                    <field name="is_available" invisible="0"/>
+                    <field name="is_available" invisible="1"/>
                     <div class="alert alert-info"
                          attrs="{'invisible': [('is_available', '!=', False)]}">
                         <span><strong>ATENCION</strong>: Este presupuesto no se
