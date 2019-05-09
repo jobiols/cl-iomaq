@@ -1,6 +1,6 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <openerp>
-    <data noupdate="1">
+    <data noupdate="0">
 
         <!-- grupos y categoria de grupos-->
 
@@ -22,9 +22,9 @@
         </record>
 
         <record model="res.groups" id="group_restrict_prices_plus_ml">
-            <field name="category_id" ref="module_prices_management"/>
             <field name="implied_ids" eval="[(4, ref('group_restrict_prices'))]"/>
-            <field name="name">Solo ver: precio venta + ML</field>
+            <field name="category_id" ref="module_prices_management"/>
+            <field name="name">Solo ver: precio venta + Modificar precio ML en presupuesto</field>
         </record>
 
         <!-- reglas -->
