@@ -63,7 +63,7 @@
             <field name="arch" type="xml">
                 <xpath expr="//tree/field[@name='price_unit']" position="after">
                     <field name="ml" invisible="1"/>
-                    <field name="price_unit_ml" string="ML" attrs="{'invisible':[('ml','!=','Mercadolibre')]}"/>
+                    <field name="price_unit_ml" string="ML%" attrs="{'invisible':[('ml','!=','Mercadolibre')]}"/>
                 </xpath>
             </field>
         </record>
