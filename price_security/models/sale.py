@@ -10,6 +10,16 @@ from openerp.exceptions import UserError
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
 
+    # incremento o decremento de precio para mercadolibre, debe aparecer solo
+    # con el grupo pulus_ml y si la venta esta en el team_id Mercadolibre
+    price_unit_ml = fields.Float(
+        help="Campo para modificar el precio unitario en productos de ML"
+    )
+    ml = fields.Char(
+        related='order_id.team_id.name',
+        help="Campo tecnico para ocultar o mostrar el campo price_unit_ml"
+    )
+
     # we add this fields instead of making original readonly because we need
     # on change to change values, we make readonly in view because sometimes
     # we want them to be writeable
@@ -23,6 +33,26 @@ class SaleOrderLine(models.Model):
         related='product_id.can_modify_prices',
         readonly=True,
         string='Product Can modify prices')
+
+    @api.depends('product_uom_qty', 'discount', 'price_unit', 'tax_id',
+                 'price_unit_ml')
+    def _compute_amount(self):
+        """
+        Compute the amounts of the SO line teniendo en cuenta el campo
+        price_unit_ml.
+        """
+        for line in self:
+            unit_price = line.price_unit + line.price_unit_ml
+            price = unit_price * (1 - (line.discount or 0.0) / 100.0)
+            taxes = line.tax_id.compute_all(price, line.order_id.currency_id,
+                                            line.product_uom_qty,
+                                            product=line.product_id,
+                                            partner=line.order_id.partner_id)
+            line.update({
+                'price_tax': taxes['total_included'] - taxes['total_excluded'],
+                'price_total': taxes['total_included'],
+                'price_subtotal': taxes['total_excluded'],
+            })
 
     @api.onchange('price_unit_readonly')
     def onchange_price_unit_readonly(self):

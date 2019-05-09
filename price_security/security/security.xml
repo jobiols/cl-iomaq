@@ -21,6 +21,12 @@
             <field name="name">Solo ver: precio venta y compra</field>
         </record>
 
+        <record model="res.groups" id="group_restrict_prices_plus_ml">
+            <field name="category_id" ref="module_prices_management"/>
+            <field name="implied_ids" eval="[(4, ref('group_restrict_prices'))]"/>
+            <field name="name">Solo ver: precio venta + ML</field>
+        </record>
+
         <!-- reglas -->
 
         <!-- hacemos readonly a lo payment terms -->
@@ -45,4 +51,3 @@
 
     </data>
 </openerp>
-

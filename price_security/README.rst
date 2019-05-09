@@ -6,8 +6,7 @@
 Price Security for IOMAQ
 ========================
 
-Creates a new permission to restrict the users that can modify the prices
-of the products.
+Creates a new permission to restrict the users that can modify product prices
 
 Asociate to each user a list of pricelist and the correspoding discounts they
 can apply to sale orders and invoices.
