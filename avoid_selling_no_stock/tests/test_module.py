@@ -16,7 +16,7 @@
 #
 #   Arrancar el test con:
 #
-#   oe -Q [nombre modulo] -c [nombre cliente] -d [nombre database]
+#   oe -Q avoid_selling_no_stock -c iomaq -d iomaq_prod
 #
 from openerp.tests import common
 
