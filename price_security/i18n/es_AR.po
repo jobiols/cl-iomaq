@@ -543,4 +543,3 @@ msgstr "Plazo de pago de proveedor"
 #, python-format
 msgid "You can not give any discount greater than pricelist discounts"
 msgstr "No puede darle un descuento mayor al descuento de la lista de precios."
-

@@ -42,7 +42,8 @@ class SaleOrderLine(models.Model):
         price_unit_ml.
         """
         for line in self:
-            unit_price = line.price_unit * (1 + line.price_unit_ml)
+            unit_price = line.price_unit * (
+                1 + line.price_unit_ml or 0.0 / 100.0)
             price = unit_price * (1 - (line.discount or 0.0) / 100.0)
             taxes = line.tax_id.compute_all(price, line.order_id.currency_id,
                                             line.product_uom_qty,
