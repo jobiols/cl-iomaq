@@ -16,6 +16,19 @@
         </field>
     </record>
 
+    <record model="ir.ui.view" id= "kpis_tree_manual_view">
+        <field name="name">KPIS: Tree Manual view</field>
+        <field name="model">kpis_panel.kpis_mensual</field>
+        <field name="arch" type="xml">
+            <tree string="Survey" create="false" edit="false">
+                <field name="date"/>
+                <field name="stock_value" widget="monetary"/>
+                <field name="payable" widget="monetary"/>
+                <field name="receivable" widget="monetary"/>
+            </tree>
+        </field>
+    </record>
+
     <!-- Action to open report -->
     <record id="action_kpi_form" model="ir.actions.act_window">
         <field name="name">Vendors Report</field>
@@ -25,10 +38,25 @@
         <field name="view_mode">tree,form</field>
     </record>
 
+    <!-- Action to open mensual report -->
+    <record id="action_kpi_mensual_form" model="ir.actions.act_window">
+        <field name="name">Reporte mensual de stock y deudas</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">kpis_panel.kpis_mensual</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
     <menuitem id="menu_kpi_form"
               name="Vendors Report"
               parent="account.menu_finance_entries"
               groups="group_kpis_users,base.group_erp_manager"
               action="action_kpi_form" />
+
+    <menuitem id="menu_kpi_mensual_form"
+              name="Mensual Report"
+              parent="account.menu_finance_entries"
+              groups="group_kpis_users,base.group_erp_manager"
+              action="action_kpi_mensual_form" />
 
 </odoo>

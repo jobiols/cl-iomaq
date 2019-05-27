@@ -4,10 +4,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 9.0c-20180827\n"
+"Project-Id-Version: Odoo Server 9.0c-20180504\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-10-06 19:41+0000\n"
-"PO-Revision-Date: 2018-10-06 19:41+0000\n"
+"POT-Creation-Date: 2019-05-27 23:51+0000\n"
+"PO-Revision-Date: 2019-05-27 23:51+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -22,43 +22,102 @@ msgstr "Cantidad de productos"
 
 #. module: kpis_panel
 #: model:ir.model.fields,field_description:kpis_panel.field_kpis_panel_kpis_create_uid
+#: model:ir.model.fields,field_description:kpis_panel.field_kpis_panel_kpis_mensual_create_uid
 msgid "Created by"
 msgstr "Creado por"
 
 #. module: kpis_panel
 #: model:ir.model.fields,field_description:kpis_panel.field_kpis_panel_kpis_create_date
+#: model:ir.model.fields,field_description:kpis_panel.field_kpis_panel_kpis_mensual_create_date
 msgid "Created on"
-msgstr "Creado el"
+msgstr "Creado en"
+
+#. module: kpis_panel
+#: model:ir.model.fields,field_description:kpis_panel.field_kpis_panel_kpis_mensual_currency_id
+msgid "Currency"
+msgstr "Moneda"
+
+#. module: kpis_panel
+#: model:ir.model.fields,field_description:kpis_panel.field_kpis_panel_kpis_mensual_date
+msgid "Date"
+msgstr "Fecha"
 
 #. module: kpis_panel
 #: model:ir.model.fields,field_description:kpis_panel.field_kpis_panel_kpis_display_name
+#: model:ir.model.fields,field_description:kpis_panel.field_kpis_panel_kpis_mensual_display_name
 msgid "Display Name"
 msgstr "Mostrar Nombre"
 
 #. module: kpis_panel
+#: model:ir.model.fields,help:kpis_panel.field_kpis_panel_kpis_mensual_receivable
+msgid "Es el balance de las cuentas de tipo \"A Cobrar\" "
+msgstr "Es el balance de las cuentas de tipo \"A Cobrar\" "
+
+#. module: kpis_panel
+#: model:ir.model.fields,help:kpis_panel.field_kpis_panel_kpis_mensual_payable
+msgid "Es el balance de las cuentas de tipo \"A Pagar\" "
+msgstr "Es el balance de las cuentas de tipo \"A Pagar\" "
+
+#. module: kpis_panel
+#: model:ir.model.fields,help:kpis_panel.field_kpis_panel_kpis_mensual_date
+msgid "Fecha en la que se calculan los valores"
+msgstr "Fecha en la que se calculan los valores"
+
+#. module: kpis_panel
 #: model:res.groups,comment:kpis_panel.group_kpis_users
-msgid "Habilita ver los kpis"
-msgstr "Habilita ver los indicadores"
+msgid "Habilita ver el reporte de proveedores que\n"
+"            esta en Facturacion / Asesor / Reporte de proveedores"
+msgstr "Habilita ver el reporte de proveedores que\n"
+"            esta en Facturacion / Asesor / Reporte de proveedores"
 
 #. module: kpis_panel
 #: model:ir.model.fields,field_description:kpis_panel.field_kpis_panel_kpis_id
+#: model:ir.model.fields,field_description:kpis_panel.field_kpis_panel_kpis_mensual_id
 msgid "ID"
 msgstr "ID"
 
 #. module: kpis_panel
 #: model:ir.model.fields,field_description:kpis_panel.field_kpis_panel_kpis___last_update
+#: model:ir.model.fields,field_description:kpis_panel.field_kpis_panel_kpis_mensual___last_update
 msgid "Last Modified on"
-msgstr "Última modificación el"
+msgstr "Última modificación en"
 
 #. module: kpis_panel
+#: model:ir.model.fields,field_description:kpis_panel.field_kpis_panel_kpis_mensual_write_uid
 #: model:ir.model.fields,field_description:kpis_panel.field_kpis_panel_kpis_write_uid
 msgid "Last Updated by"
-msgstr "Última actualización por"
+msgstr "Última actualización realizada por"
 
 #. module: kpis_panel
+#: model:ir.model.fields,field_description:kpis_panel.field_kpis_panel_kpis_mensual_write_date
 #: model:ir.model.fields,field_description:kpis_panel.field_kpis_panel_kpis_write_date
 msgid "Last Updated on"
-msgstr "Última actualizacón el"
+msgstr "Última actualización el"
+
+#. module: kpis_panel
+#: model:ir.ui.menu,name:kpis_panel.menu_kpi_mensual_form
+msgid "Mensual Report"
+msgstr "Mensual Report"
+
+#. module: kpis_panel
+#: model:ir.model.fields,field_description:kpis_panel.field_kpis_panel_kpis_mensual_payable
+msgid "Payable"
+msgstr "Payable"
+
+#. module: kpis_panel
+#: model:ir.model.fields,field_description:kpis_panel.field_kpis_panel_kpis_mensual_receivable
+msgid "Receivable"
+msgstr "Receivable"
+
+#. module: kpis_panel
+#: model:res.groups,name:kpis_panel.group_kpis_users
+msgid "Reporte de proveedore"
+msgstr "Reporte de proveedore"
+
+#. module: kpis_panel
+#: model:ir.actions.act_window,name:kpis_panel.action_kpi_mensual_form
+msgid "Reporte mensual de stock y deudas"
+msgstr "Reporte mensual de stock y deudas"
 
 #. module: kpis_panel
 #: model:ir.model.fields,field_description:kpis_panel.field_kpis_panel_kpis_stock_valuation
@@ -66,6 +125,12 @@ msgid "Stock valuation (sale price w/tax)"
 msgstr "Valuacion de stock (precio de venta +IVA)"
 
 #. module: kpis_panel
+#: model:ir.model.fields,field_description:kpis_panel.field_kpis_panel_kpis_mensual_stock_value
+msgid "Stock value"
+msgstr "Stock value"
+
+#. module: kpis_panel
+#: model:ir.ui.view,arch_db:kpis_panel.kpis_tree_manual_view
 #: model:ir.ui.view,arch_db:kpis_panel.kpis_tree_view
 msgid "Survey"
 msgstr "Encuesta"
@@ -74,6 +139,16 @@ msgstr "Encuesta"
 #: model:ir.model.fields,field_description:kpis_panel.field_kpis_panel_kpis_total_payable
 msgid "Total payable"
 msgstr "Deuda total"
+
+#. module: kpis_panel
+#: model:ir.model.fields,help:kpis_panel.field_kpis_panel_kpis_mensual_currency_id
+msgid "Utility field to express amount currency"
+msgstr "Campo utilitario para expresar importe en divisa."
+
+#. module: kpis_panel
+#: model:ir.model.fields,help:kpis_panel.field_kpis_panel_kpis_mensual_stock_value
+msgid "Valuacion de stock al precio de compra"
+msgstr "Valuacion de stock al precio de compra"
 
 #. module: kpis_panel
 #: model:ir.model.fields,field_description:kpis_panel.field_kpis_panel_kpis_vendor_id
@@ -87,11 +162,12 @@ msgid "Vendors Report"
 msgstr "Reporte de proveedores"
 
 #. module: kpis_panel
-#: model:res.groups,name:kpis_panel.group_kpis_users
-msgid "kpis"
-msgstr "Indicadores"
-
-#. module: kpis_panel
 #: model:ir.model,name:kpis_panel.model_kpis_panel_kpis
 msgid "kpis_panel.kpis"
 msgstr "kpis_panel.kpis"
+
+#. module: kpis_panel
+#: model:ir.model,name:kpis_panel.model_kpis_panel_kpis_mensual
+msgid "kpis_panel.kpis_mensual"
+msgstr "kpis_panel.kpis_mensual"
+
