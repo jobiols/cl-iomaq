@@ -97,17 +97,17 @@ msgstr "Última actualización el"
 #. module: kpis_panel
 #: model:ir.ui.menu,name:kpis_panel.menu_kpi_mensual_form
 msgid "Mensual Report"
-msgstr "Mensual Report"
+msgstr "Reporte Mensual Stock y Deudas"
 
 #. module: kpis_panel
 #: model:ir.model.fields,field_description:kpis_panel.field_kpis_panel_kpis_mensual_payable
 msgid "Payable"
-msgstr "Payable"
+msgstr "A Pagar"
 
 #. module: kpis_panel
 #: model:ir.model.fields,field_description:kpis_panel.field_kpis_panel_kpis_mensual_receivable
 msgid "Receivable"
-msgstr "Receivable"
+msgstr "A Cobrar"
 
 #. module: kpis_panel
 #: model:res.groups,name:kpis_panel.group_kpis_users
@@ -127,7 +127,7 @@ msgstr "Valuacion de stock (precio de venta +IVA)"
 #. module: kpis_panel
 #: model:ir.model.fields,field_description:kpis_panel.field_kpis_panel_kpis_mensual_stock_value
 msgid "Stock value"
-msgstr "Stock value"
+msgstr "Valuacion de Stock"
 
 #. module: kpis_panel
 #: model:ir.ui.view,arch_db:kpis_panel.kpis_tree_manual_view
