@@ -29,16 +29,17 @@ class SaleOrder(models.Model):
     @api.onchange('order_line')
     def _compute_is_available(self):
         for so in self:
+            is_available = True
+
             if self.env.user.has_group(enabled):
-                so.is_available = True
+                so.is_available = is_available
                 return
 
             if so.state in ['draft', 'sent']:
-                is_available = True
                 for sol in self.order_line:
                     if not sol.is_available:
                         is_available = False
-                so.is_available = is_available
+            so.is_available = is_available
 
 
 class SaleOrderLine(models.Model):
