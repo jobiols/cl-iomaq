@@ -1,12 +1,8 @@
 # -*- coding: utf-8 -*-
-# Copyright 2016-2018 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from openerp import models, api, _
-from openerp import exceptions
-
-
-# from openerp.tools.translate import _
+from openerp.exceptions import UserError
 
 
 class StockPicking(models.Model):
@@ -14,16 +10,13 @@ class StockPicking(models.Model):
 
     @api.model
     def _create_extra_moves(self, picking):
-        user = self.env['res.users']
-        if not user.has_group(
+        if not self.env.user.has_group(
             'stock_no_extra_move.group_can_increase_quantity'):
-            raise exceptions.Warning(
-                _('Forbidden operation'),
-                _('You are not allowed to process the specified '
-                  'quantities as they would create extra moves. '
-                  'This can cause stock corruption. Someone maybe '
-                  'already processed the picking, '
-                  'or you increased the quantities beyond what was '
-                  'originally scheduled.')
+            raise UserError(
+                _('Se ha bloqueado un intento de transferir cantidades '
+                  'mayores a las definidas en la orden de venta, esto esta '
+                  'prohibido. '
+                  'Por favor verifique que tiene suficiente stock para '
+                  'procesar el pedido. ')
             )
         return super(StockPicking, self)._create_extra_moves(picking)
