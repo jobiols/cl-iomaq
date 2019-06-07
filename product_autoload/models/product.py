@@ -53,6 +53,10 @@ class ProductTemplate(models.Model):
         selection_add=[
             ('offer', 'Offer')
         ])
+    sale_delay = fields.Float(
+        default=0
+    )
+
 
     def oldest_quant(self, prod):
         """ Retorna el quant mas antiguo de este producto.
