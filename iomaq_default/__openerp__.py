@@ -55,7 +55,6 @@
         'product_prices_update',  # incrementos de precios porcentuales
         'product_autoload',  # replicacion bulonfer
         'simple_meli_publishing',  # publicar precios de mercadolibre
-        'simple_meshops_publishing',
         'bi_sales_iomaq',  # custom bi report for sales
         'sale_global_discount',  # setea todos los descuentos de la SO
         'document_page',  # documentacion y ayuda
