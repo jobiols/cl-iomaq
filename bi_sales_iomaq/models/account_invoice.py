@@ -131,7 +131,8 @@ class AccountInvoiceLine(models.Model):
     @api.multi
     def _compute_product_margin(self):
         for ail in self:
-            if ail.product_id and ail.invoice_id.type in ['out_invoice','out_refund']:
+            if ail.product_id and ail.invoice_id.type in ['out_invoice',
+                                                          'out_refund']:
                 # precio de venta sacado de la linea de factura, teniendo
                 # en cuenta los descuentos que pudiera haber.
                 disc = ail.discount / 100
@@ -169,32 +170,41 @@ class AccountInvoiceLine(models.Model):
     @api.multi
     @api.depends('product_id')
     def _compute_vendor_id(self):
-        """ Tratar de obtener el vendor que me vendio este producto, esto es
-            lo mejor que se puede hacer por ahora.
-            Busco en stock.pack.operation la ultima vez que ingreso el producto
-            y obtengo el vendor del picking_id.
+        """ Obtener el vendor que me vendio este producto, desde los seller_ids
+            del producto. Si no lo tiene busco en stock.pack.operation la
+            ultima vez que ingreso el producto y obtengo el vendor del
+            picking_id.
         """
-        # TODO ver de guardar el vendor en el quant.
-        op_object = self.env['stock.pack.operation']
-        for line in self:
-            op = op_object.search([('product_id', '=', line.product_id.id),
-                                   ('location_dest_id', '=', 12)],
-                                  limit=1, order='id desc')
-            line.vendor_id = op.picking_id.partner_id \
-                if op.picking_id.partner_id.supplier else False
-            default_code = line.product_id.default_code
+        for rec in self:
+            # todos los vendors de este producto
+            domain = [('product_tmpl_id', '=', rec.product_id.product_tmpl_id.id)]
+            vendor = rec.product_id.seller_ids.search(domain,
+                                                      order='date_start desc',
+                                                      limit=1)
+            if vendor:
+                rec.vendor_id = vendor.name.id
+            else:
+                # no tengo vendors en el producto busco en stock la ultima vez
+                # que ingreso el producto
+                op_object = self.env['stock.pack.operation']
+                for line in self:
+                    domain = [('product_id', '=', line.product_id.id),
+                              ('location_dest_id', '=', 12)]
+                    op = op_object.search(domain, limit=1, order='id desc')
+                    rec.vendor_id = op.picking_id.partner_id \
+                        if op.picking_id.partner_id.supplier else False
 
-            if default_code == '123.CI.38' or \
-                    default_code == '200.8.400' or \
-                    default_code == '380.LCM.24' or \
-                    default_code == '380.LCM.8' or \
-                    default_code == '381.CL.10' or \
-                    default_code == '381.CL.13' or \
-                    default_code == '601.MS.801C' or \
-                    default_code == '601.SB.1014' or \
-                    default_code == '601.MS.1001/2' or \
-                    default_code == '76.4.16':
-                line.vendor_id = 16
+    @api.model
+    def fix_bulonfer_bi(self):
+        for rec in self.search([]):
+            # todos los vendors de este producto
+            domain = [('product_tmpl_id', '=', rec.product_id.product_tmpl_id.id)]
+            vendor = rec.product_id.seller_ids.search(domain,
+                                                      order='date_start desc',
+                                                      limit=1)
+            if vendor:
+                rec.vendor_id = vendor.name.id
+                _logger.info('product %s' % rec.product_id.name)
 
     """
     @api.model
@@ -433,11 +443,12 @@ class AccountInvoiceLine(models.Model):
         """
         ail_obj = self.env['account.invoice.line']
         ails = ail_obj.search([('product_margin', '=', 0),
-                               ('invoice_id.type', 'in', ['out_invoice','out_refund'])])
+                               ('invoice_id.type', 'in',
+                                ['out_invoice', 'out_refund'])])
         for ail in ails:
             ail._compute_product_margin()
-            _logger.info('Fixing %s on %s' % (ail.product_id.default_code, ail.date_invoice))
-
+            _logger.info('Fixing %s on %s' % (
+                ail.product_id.default_code, ail.date_invoice))
 
 
 class AccountInvoice(models.Model):
