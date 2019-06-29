@@ -403,9 +403,9 @@ class AutoloadMgr(models.Model):
         stock_quant_obj = self.env['stock.quant']
         for sq in stock_quant_obj.search([('cost', '=', 0),
                                           ('location_id.name', '=', 'Stock')]):
-            if sq.product_id.system_cost:
+            if sq.product_id.invoice_cost:
                 # si tengo el costo factura lo pongo, esto es bulonfer.
-                sq.cost = sq.product_id.system_cost
+                sq.cost = sq.product_id.invoice_cost
             else:
                 # tengo el costo hoy, lo pongo
                 sq.cost = sq.product_id.bulonfer_cost

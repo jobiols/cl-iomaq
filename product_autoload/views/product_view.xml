@@ -8,11 +8,8 @@
             <field name="inherit_id" ref="product.product_template_tree_view"/>
             <field name="arch" type="xml">
                 <field name="name" position="after">
-                    <!--
-                    <field name="difference" string="Dif%"/>
-                    -->
                     <field name="margin" string="Margin%"/>
-                    <field name="system_cost" string="Invoice Cost"/>
+                    <field name="invoice_cost" string="Invoice Cost"/>
                     <field name="bulonfer_cost" string="Today Cost"/>
                 </field>
             </field>

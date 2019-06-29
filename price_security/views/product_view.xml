@@ -98,7 +98,7 @@
             <field name="margin" position="attributes">
                 <attribute name="invisible">1</attribute>
             </field>
-            <field name="system_cost" position="attributes">
+            <field name="invoice_cost" position="attributes">
                 <attribute name="invisible">1</attribute>
             </field>
             <field name="bulonfer_cost" position="attributes">

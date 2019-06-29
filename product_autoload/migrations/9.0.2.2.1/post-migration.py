@@ -7,6 +7,7 @@ from openupgradelib import openupgrade
 def migrate(env, version):
     """ Populate invoice_cost
     """
+
     products = env['product.template'].search([])
     for product in products:
         product.set_invoice_cost()

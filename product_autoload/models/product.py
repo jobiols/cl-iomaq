@@ -27,9 +27,7 @@ class ProductTemplate(models.Model):
         help="True if the asociated category needs rebuild",
         default=False
     )
-    # TODO rename to invoice_cost requiere migracion
-    system_cost = fields.Float(
-        # compute="_compute_system_cost",
+    invoice_cost = fields.Float(
         help="Cost price based on the purchase invoice"
     )
     margin = fields.Float(
@@ -103,9 +101,9 @@ class ProductTemplate(models.Model):
     @api.multi
     def set_invoice_cost(self):
         """
-            Intenta calcular el system_cost (future invoice_cost) buscando el
-            costo en la linea de factura mas cercana al quant mas viejo, si
-            no hay stock es la ultima factura.
+            Intenta calcular el invoice_cost buscando el costo en la linea de
+            factura mas cercana al quant mas viejo, si no hay stock es la
+            ultima factura.
 
             Esto vale para cualquier proveedor no solo bulonfer.
         """
@@ -133,12 +131,12 @@ class ProductTemplate(models.Model):
                 ic = invoice_line.currency_id.with_context(date=invoice_date)
                 pc = prod.currency_id
                 # poner el costo de factura en moneda del producto
-                prod.system_cost = ic.compute(invoice_price, pc)
+                prod.invoice_cost = ic.compute(invoice_price, pc)
                 _logger.info('Setting invoice cost '
                              '$ %d - %s' % (invoice_price, prod.default_code))
             else:
                 # no hay factura de compra, se pone en cero.
-                prod.system_cost = 0
+                prod.invoice_cost = 0
 
     def insert_historic_cost(self, vendor_ref, min_qty, cost,
         vendors_code, date):
