@@ -442,9 +442,8 @@ class AccountInvoiceLine(models.Model):
         """ Para correr a mano recalcula product margin. a los que le falta
         """
         ail_obj = self.env['account.invoice.line']
-        ails = ail_obj.search([('product_margin', '=', 0),
-                               ('invoice_id.type', 'in',
-                                ['out_invoice', 'out_refund'])])
+        ails = ail_obj.search([('product_id.default_code', '=', '395.EC.AM20000'),
+                               ('date_invoice','>','2019-06-28')])
         for ail in ails:
             ail._compute_product_margin()
             _logger.info('Fixing %s on %s' % (
