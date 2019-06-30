@@ -64,7 +64,8 @@
         'date_range',
         'partner_ref_unique',  # Que no se duplique la referencia
         'account_journal_security',  # Restringe diarios a ciertos usuarios
-        'stock_no_extra_move'  # evitar Extra Move
+        'stock_no_extra_move',  # evitar Extra Move
+        'sale_order_validity_fix'  # modifica el comportamiento del boton actualizar validez
     ],
 
     'data': [
