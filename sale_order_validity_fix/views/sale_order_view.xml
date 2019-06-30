@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+    <record id="view_order_form_validity" model="ir.ui.view">
+        <field name="name">SALE ORDER VALIDITY FIX corregir help del boton</field>
+        <field name="model">sale.order</field>
+        <field name="type">form</field>
+        <field name="inherit_id" ref="sale_order_validity.view_order_form_validity"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='update_date_prices_and_validity']" position="attributes">
+                <attribute name="help">help="Update Date and Validity"</attribute>
+            </xpath>
+        </field>
+    </record>
+    </data>
+</openerp>
