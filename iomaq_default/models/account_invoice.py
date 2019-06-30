@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from openerp import models, api
+import csv
 
 
 class AccountInvoice(models.Model):
@@ -25,8 +26,6 @@ class AccountInvoice(models.Model):
   GROUP BY type, default_code
         """)
 
-        import re
-
         stock = {}
         r = self.env.cr.fetchone()
         while r is not None:
@@ -45,15 +44,30 @@ class AccountInvoice(models.Model):
             r = self.env.cr.fetchone()
 
         print 'buscando productos'
+        import re
 
         prod_obj = self.env['product.product']
-        prods = prod_obj.search([('virtual_available', '!=', 0)])
+        prods = prod_obj.search([('virtual_available', '!=', 0),
+                                 ('type', '=', 'product')])
 
-        for prod in prods:
+        with open('/opt/odoo/data/stock.csv', 'w') as csv_file:
+            fieldnames = ['Codigo', 'Descripcion', 'Proveedor', 'En Mano',
+                          'Previsto', 'Factura', 'Costo Hoy', 'Costo Compra']
+            writer = csv.DictWriter(csv_file, fieldnames=fieldnames,
+                                    quotechar='"',
+                                    quoting=csv.QUOTE_ALL)
+            writer.writeheader()
 
-            print '"%s","%s","%s","%s","%s"' % (
-                prod.default_code,
-                re.sub('^a-zA-Z0-9_', '', prod.name),
-                prod.qty_available,
-                prod.virtual_available,
-                stock.get(prod.default_code, 'S/Fact'))
+            for prod in prods:
+                print prod.default_code
+                vendor = prod.seller_ids[0].name.ref if prod.seller_ids else ''
+                writer.writerow({
+                    'Codigo': prod.default_code,
+                    'Descripcion': re.sub('^a-zA-Z0-9_', '', prod.name),
+                    'Proveedor': vendor,
+                    'En Mano': prod.qty_available,
+                    'Previsto': prod.virtual_available,
+                    'Factura': stock.get(prod.default_code, 'S/Fact'),
+                    'Costo Hoy': prod.bulonfer_cost,
+                    'Costo Compra': prod.standard_product_price
+                })
