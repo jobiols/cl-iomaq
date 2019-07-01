@@ -14,7 +14,7 @@ class ProductProduct(models.Model):
     default_code_stihl = fields.Char(
     )
 
-    @api.model
+    @api.multi
     def write(self, vals):
         """ Evitar la duplicacion de productos stihl
         """
