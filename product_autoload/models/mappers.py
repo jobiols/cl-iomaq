@@ -89,9 +89,10 @@ class ProductMapper(CommonMapper):
         self.item_code = line[MAP_ITEM_CODE]
         self.write_date = line[MAP_WRITE_DATE]
 
-    def values(self):
+    def values(self, create=False):
         ret = dict()
-        ret['default_code'] = self.default_code
+        if create:
+            ret['default_code'] = self.default_code
         ret['name'] = self.name
         ret['description_sale'] = self.description_sale
         ret['upv'] = self.upv
@@ -133,23 +134,23 @@ class ProductMapper(CommonMapper):
                     if tax.tax_group_id.afip_code == 2:
                         return tax.id
 
-        product_obj = env['product.template']
-        prod = product_obj.search([('default_code', '=', self.default_code)])
-
         # no permitir que modifique los 996.
-        if prod and prod.default_code[0:4] == '996.':
+        if self.default_code[0:4] == '996.':
             return []
 
         # no permitir que modifique 170.C.350.10
-        if prod and prod.default_code == '170.C.350.10':
+        if self.default_code == '170.C.350.10':
             return []
+
+        product_obj = env['product.template']
+        prod = product_obj.search([('default_code', '=', self.default_code)])
 
         if prod:
             prod.write(self.values())
             stats = ['prod_processed']
             _logger.info('Updating product %s' % self.default_code)
         else:
-            prod = product_obj.create(self.values())
+            prod = product_obj.create(self.values(create=True))
             stats = ['prod_created']
             _logger.info('Creating product %s' % self.default_code)
 
