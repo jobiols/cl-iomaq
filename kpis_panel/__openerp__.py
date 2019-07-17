@@ -20,7 +20,7 @@
 ##############################################################################
 {
     'name': 'KPIs Panel',
-    'version': '9.0.1.0.0',
+    'version': '9.0.1.0.1',
     'author': 'jeo Software',
     'website': 'www.jeosoft.com.ar',
     'license': 'AGPL-3',

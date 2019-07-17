@@ -22,7 +22,9 @@
         <field name="arch" type="xml">
             <tree string="Survey" create="false" edit="false">
                 <field name="date"/>
-                <field name="stock_value" widget="monetary"/>
+                <field name="stock_value_purchase_historic" widget="monetary"/>
+                <field name="stock_value_purchase" widget="monetary"/>
+                <field name="stock_value_sell" widget="monetary"/>
                 <field name="payable" widget="monetary"/>
                 <field name="receivable" widget="monetary"/>
             </tree>
