@@ -66,7 +66,8 @@
         'account_journal_security',  # Restringe diarios a ciertos usuarios
         'stock_no_extra_move',  # evitar Extra Move
         'sale_order_validity_fix',  # modifica el comportamiento del boton actualizar validez
-        'deduplicate_stihl' #  impide la duplicacion a pesar de los guiones
+        'deduplicate_stihl', #  impide la duplicacion a pesar de los guiones
+        'stock_by_invoices', # calcula el stock en base a facturas de compra y venta
     ],
 
     'data': [
