@@ -34,5 +34,5 @@ class ProductTemplate(models.Model):
                     ret[type[0]] = type[1]
 
                 rec.stock_by_invoices = \
-                    + (ret.get('in_invoice', 0) - ret.get('id_refund', 0)) \
+                    + (ret.get('in_invoice', 0) - ret.get('in_refund', 0)) \
                     - (ret.get('out_invoice', 0) - ret.get('out_refund', 0))
