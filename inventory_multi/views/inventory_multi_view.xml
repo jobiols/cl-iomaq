@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="inventory_multi_view_form" model="ir.ui.view">
+        <field name="name">INVENTORY MULTI form</field>
+        <field name="model">inventory_multi.mgr</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="prepare_inventory" states="draft"
+                            string="Iniciar Inventario"
+                            type="object"  class="oe_highlight"/>
+                    <button name="cancel_inventory" states="in_process"
+                            string="Cancelar Inventario"
+                            type="object"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only"/>
+                        <h1>
+                            <field name="name"
+                                   placeholder="ej. Inventario de Agosto"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="location_id"/>
+                        </group>
+                        <group>
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="line_ids" nolabel="1"
+                               string="Productos a inventariar">
+                            <tree editable="bottom"
+                                  decoration-danger="product_qty &lt; 0">
+                                <field name="product_qty" invisible="1"/>
+                                <field name="product_id"
+                                       domain="[('type','=','product')]"/>
+                            </tree>
+                        </field>
+                        <field name="user_ids" nolabel="1"
+                            string="Usuarios que realizaran el inventario">
+                            <tree editable="bottom">
+                                <field name="name"/>
+                            </tree>
+                        </field>
+                    </group>
+                </sheet>
+
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+
+            </form>
+        </field>
+    </record>
+
+    <record id="inventory_multi_view_tree_mgr" model="ir.ui.view">
+        <field name="name">INVENTORY MULTI tree mgr</field>
+        <field name="model">inventory_multi.mgr</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+</odoo>

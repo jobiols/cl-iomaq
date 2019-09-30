@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+        <!-- accion para Cargar inventario multiple -->
+        <record id="action_inventory_multi_usr" model="ir.actions.act_window">
+            <field name="name">Cargar Inventario Multiple</field>
+            <field name="res_model">inventory_multi.usr</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <!-- Cargar inventario multiple -->
+        <menuitem action="action_inventory_multi_usr"
+                  id="menu_action_inventory_multi_usr"
+                  name="Cargar inventario multiple"
+                  parent="stock.menu_stock_inventory_control"
+                  groups="group_inventory_multi_usr,base.group_erp_manager"/>
+
+        <!-- accion para Administrar inventario multiple -->
+        <record id="action_inventory_multi_mgr" model="ir.actions.act_window">
+            <field name="name">Administrar Inventario Multiple</field>
+            <field name="res_model">inventory_multi.mgr</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <!-- menu Administrar inventario multiple -->
+        <menuitem action="action_inventory_multi_mgr"
+                  id="menu_action_inventory_multi_mgr"
+                  name="Administrar inventario multiple"
+                  parent="stock.menu_stock_inventory_control"
+                  groups="group_inventory_multi_mgr,base.group_erp_manager"/>
+
+</odoo>
