@@ -95,7 +95,7 @@ class InventoryMultiMgr(models.Model):
             rec.state = 'cancel'
 
 
-class InventoryMultiUsr(models.Transient):
+class InventoryMultiUsr(models.Model):
     _name = 'inventory_multi.usr'
 
     name = fields.Char(
