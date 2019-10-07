@@ -1,3 +1,4 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_inventory_multi_usr,access_inventory_multi_usr,model_inventory_multi_usr,,1,0,0,0
-access_inventory_multi_mgr_line,access_inventory_multi_mgr_line,model_inventory_multi_mgr_line,,1,0,0,0
+access_inventory_multi_usr,access_inventory_multi_usr,model_inventory_multi_usr,,1,1,1,1
+access_inventory_multi_mgr,access_inventory_multi_mgr,model_inventory_multi_mgr,,1,1,1,1
+access_inventory_multi_mgr_line,access_inventory_multi_mgr_line,model_inventory_multi_mgr_line,,1,1,1,1
