@@ -69,6 +69,7 @@
         'deduplicate_stihl', #  impide la duplicacion a pesar de los guiones
         'stock_by_invoices', # calcula el stock en base a facturas de compra y venta
         'loyalty',  # agregar porcentaje de aumento global.
+        'stock_transfer_security',
     ],
 
     'data': [

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <!-- grupo con acceso para mover productos -->
+        <record model="res.groups" id="group_enable_stock_move">
+            <field name="name">Habilitar validacion ordenes compra/venta y movimientos de stock</field>
+            <field name="comment">Los usuarios con este permiso pueden validar ordenes de compra o venta y validar movimiento de stock</field>
+        </record>
+    </data>
+</openerp>

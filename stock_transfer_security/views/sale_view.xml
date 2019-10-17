@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Mostrar el boton validar solo a los usuarios del grupo -->
+    <record id="view_order_form" model="ir.ui.view">
+        <field name="name">STOCK TRANSFER SECURITY hide button</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+             <xpath expr="//button[@name='action_confirm'][1]" position="attributes">
+                <attribute name="groups">stock_transfer_security.group_enable_stock_move</attribute>
+             </xpath>
+             <xpath expr="//button[@name='action_confirm'][2]" position="attributes">
+                <attribute name="groups">stock_transfer_security.group_enable_stock_move</attribute>
+             </xpath>
+        </field>
+    </record>
+
+</odoo>

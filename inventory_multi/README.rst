@@ -39,7 +39,6 @@ Definir los usuarios que haran el inventario fisicamente y ponerlos en el grupo
 
 - Cargar inventarios multiples
 
-
 Usage
 =====
 
@@ -74,10 +73,9 @@ La informacion se presenta como un grilla con filas representando productos y
 columnas representando participantes en cada celda esta la cantidad ingresada
 por el participante mas un ajuste.
 
-El ajuste se hace tomando los ingresos y egresos de producto desde la fecha y
-hora en la que el participante ingreso la cantidad de este producto hasta el
-momento en que se visualiza la planilla. Esto puede resultar en que la
-visualizacion sea un poco lenta.
+El ajuste se hace tomando los deltas de producto por lo que no importa si entra
+o sale mercaderia durante el inventario. Solo hay que tener en cuenta que no
+se puede hacer un ajuste de inventario mientras se hace el inventario multiple.
 
 Bug Tracker
 ===========
