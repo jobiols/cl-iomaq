@@ -35,9 +35,11 @@ class ProductTemplate(models.Model):
     )
     # TODO renombrar a today_cost, require migracion
     bulonfer_cost = fields.Float(
-        help="Today cost in product currency, it is automatically updated "
-             "when the prices coming from Bulonfer are processed.\n"
-             "Or when a price sheet is loaded for no Bulonfer vendors"
+        help="Costo hoy en la moneda del producto, es automaticamente "
+             "actualizado en los siguientes casos\n"
+             "- Diariamente cuando se procesan los precios de bulonfer.\n"
+             "- Cuando se carga una planilla con precios de proveedores "
+             "no Bulonfer"
     )
     cost_history_ids = fields.One2many(
         comodel_name="stock.quant",
