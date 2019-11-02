@@ -1,0 +1,1 @@
+Genera un reporte pivot de inteligencia de negocio customizado para IOMAQ

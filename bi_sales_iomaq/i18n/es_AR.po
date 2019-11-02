@@ -4,10 +4,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 9.0c-20180827\n"
+"Project-Id-Version: Odoo Server 9.0c-20180504\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-03-16 14:57+0000\n"
-"PO-Revision-Date: 2019-03-16 14:57+0000\n"
+"POT-Creation-Date: 2019-11-02 15:16+0000\n"
+"PO-Revision-Date: 2019-11-02 15:16+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -43,14 +43,9 @@ msgid "Brand of the product"
 msgstr "Marca del producto"
 
 #. module: bi_sales_iomaq
-#: model:res.groups,name:bi_sales_iomaq.group_bi_users
-msgid "Business Intelligence"
-msgstr "Inteligencia de negocios"
-
-#. module: bi_sales_iomaq
 #: selection:account.invoice.line.report.iomaq,state:0
 msgid "Cancelled"
-msgstr "Cancelado"
+msgstr "Cancelled"
 
 #. module: bi_sales_iomaq
 #: model:ir.model.fields,field_description:bi_sales_iomaq.field_account_invoice_line_report_iomaq_product_category_id
@@ -106,12 +101,12 @@ msgstr "Cliente"
 #. module: bi_sales_iomaq
 #: selection:account.invoice.line.report.iomaq,type:0
 msgid "Customer Invoice"
-msgstr "Factura de cliente"
+msgstr "Customer Invoice"
 
 #. module: bi_sales_iomaq
 #: selection:account.invoice.line.report.iomaq,type:0
 msgid "Customer Refund"
-msgstr "Nota de credito de cliente"
+msgstr "Customer Refund"
 
 #. module: bi_sales_iomaq
 #: model:ir.model.fields,field_description:bi_sales_iomaq.field_account_invoice_line_report_iomaq_date_invoice
@@ -142,7 +137,7 @@ msgstr "Descuento +IVA"
 #: model:ir.model.fields,field_description:bi_sales_iomaq.field_account_invoice_line_report_iomaq_display_name
 #: model:ir.model.fields,field_description:bi_sales_iomaq.field_bi_sales_iomaq_brand_display_name
 msgid "Display Name"
-msgstr "Nombrem mostrado"
+msgstr "Mostrar Nombre"
 
 #. module: bi_sales_iomaq
 #: model:ir.ui.view,arch_db:bi_sales_iomaq.view_account_invoice_line_report_search_iomaq
@@ -168,17 +163,12 @@ msgstr "Borrador"
 #. module: bi_sales_iomaq
 #: model:ir.ui.view,arch_db:bi_sales_iomaq.view_account_invoice_line_report_search_iomaq
 msgid "Draft Invoices"
-msgstr "Facturas borrador"
+msgstr "Facturas en borrador"
 
 #. module: bi_sales_iomaq
 #: model:ir.model.fields,field_description:bi_sales_iomaq.field_account_invoice_line_report_iomaq_date_due
 msgid "Due Date"
 msgstr "Fecha de vencimiento"
-
-#. module: bi_sales_iomaq
-#: model:res.groups,comment:bi_sales_iomaq.group_bi_users
-msgid "Enable to see business intelligence"
-msgstr "Habilitar vista de la inteligencia de negocio"
 
 #. module: bi_sales_iomaq
 #: model:ir.model.fields,help:bi_sales_iomaq.field_product_template_final_price
@@ -194,6 +184,11 @@ msgstr "Agrupar por..."
 #: model:ir.model.fields,field_description:bi_sales_iomaq.field_bi_sales_iomaq_brand_id
 msgid "ID"
 msgstr "ID"
+
+#. module: bi_sales_iomaq
+#: model:res.groups,name:bi_sales_iomaq.group_bi_users
+msgid "Inteligencia de negocio"
+msgstr "Inteligencia de negocio"
 
 #. module: bi_sales_iomaq
 #: model:ir.model,name:bi_sales_iomaq.model_account_invoice
@@ -231,7 +226,7 @@ msgstr "Facturado"
 #. module: bi_sales_iomaq
 #: model:ir.model,name:bi_sales_iomaq.model_account_invoice_line_report_iomaq
 msgid "Invoices Statistics"
-msgstr "Estadísticas de facturas"
+msgstr "Estadísticas de Facturas"
 
 #. module: bi_sales_iomaq
 #: model:ir.model.fields,field_description:bi_sales_iomaq.field_account_invoice_line_report_iomaq_journal_id
@@ -269,6 +264,11 @@ msgstr "Último mes"
 #: model:ir.ui.view,arch_db:bi_sales_iomaq.view_account_invoice_line_report_search_iomaq
 msgid "Last year"
 msgstr "Ultimo año"
+
+#. module: bi_sales_iomaq
+#: model:res.groups,comment:bi_sales_iomaq.group_bi_users
+msgid "Los usuarios de este grupo pueden ver la inteligencia de negocio"
+msgstr "Los usuarios de este grupo pueden ver la inteligencia de negocio"
 
 #. module: bi_sales_iomaq
 #: model:ir.model.fields,field_description:bi_sales_iomaq.field_account_invoice_line_report_iomaq_margin_total
@@ -392,7 +392,7 @@ msgstr "Cantidad"
 #. module: bi_sales_iomaq
 #: model:ir.ui.view,arch_db:bi_sales_iomaq.view_account_invoice_line_report_search_iomaq
 msgid "Refund"
-msgstr "Factura rectificativa"
+msgstr "Reembolso"
 
 #. module: bi_sales_iomaq
 #: model:ir.ui.menu,name:bi_sales_iomaq.menu_action_account_invoice_line_report_all_iomaq

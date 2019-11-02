@@ -3,8 +3,8 @@
     <data>
         <!-- GRUPO BI -->
         <record id="group_bi_users" model="res.groups">
-            <field name="name">Business Intelligence</field>
-            <field name="comment">Enable to see business intelligence</field>
+            <field name="name">Inteligencia de negocio</field>
+            <field name="comment">Los usuarios de este grupo pueden ver la inteligencia de negocio</field>
          </record>
     </data>
 </openerp>

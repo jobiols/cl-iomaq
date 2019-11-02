@@ -19,11 +19,11 @@
 #
 # -----------------------------------------------------------------------------
 {
-    'name': 'Sales Business Intelligence Report',
+    'name': 'Inteligencia de negocio para ventas',
     'version': '9.0.0.9.1',
     'license': 'AGPL-3',
     'category': 'Tools',
-    'summary': 'Custom BI Sales Report',
+    'summary': 'Customizacion de BI para IOMAQ',
     'author': 'jeo Software',
     'depends': [
         'account',
