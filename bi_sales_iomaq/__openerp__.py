@@ -20,7 +20,7 @@
 # -----------------------------------------------------------------------------
 {
     'name': 'Inteligencia de negocio para ventas',
-    'version': '9.0.0.9.1',
+    'version': '9.0.0.10.0',
     'license': 'AGPL-3',
     'category': 'Tools',
     'summary': 'Customizacion de BI para IOMAQ',
@@ -36,6 +36,7 @@
         'views/invoice_analysis.xml',
         'views/product_view.xml',
         'views/brand_view.xml',
+        'views/partner_view.xml',
     ],
     'test': [
     ],

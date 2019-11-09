@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <!-- agregar campo business_mode -->
+        <record id="view_partner_formw" model="ir.ui.view">
+            <field name="name">BI_SALES: add business mode</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//group[@name='purchase']/field[@name='supplier']"
+                       position="after">
+                    <field name="business_mode"
+                           widget="radio"
+                           attrs="{'invisible': [('supplier', '!=', True)]}"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</openerp>

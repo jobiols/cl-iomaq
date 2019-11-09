@@ -16,13 +16,38 @@ class ProductTemplate(models.Model):
         help='Brand of the product',
         store=True,
     )
-
     final_price = fields.Float(
         string='Price tax included',
         compute='_compute_final_price',
         digits=dp.get_precision('Product Price'),
         help='Final Price. This is the public price with tax',
     )
+    business_mode = fields.Char(
+        compute="_compute_business_mode",
+        help="indica si es un producto consignado o normal"
+    )
+
+    @api.multi
+    def _compute_business_mode(self):
+        """ Esto calcula el business mode del producto puede ser standard o
+            en consignacion.
+            El mode se define en el proveedor asi que el del producto es el
+            bm del ultimo proveedor que me vendio el producto.
+        """
+        for prod in self:
+
+            # obtener los proveedores
+            sellers = prod.seller_ids
+
+            # si no hay cargado el vendedor termino
+            if not sellers:
+                prod.business_mode = 'undefined'
+                return
+
+            # obtengo el ultimo proveedor que vendio el producto
+            _ = sellers.sorted(key=lambda r: r.date_start, reverse=True)
+            partner = _[0].name
+            prod.business_mode = partner.business_mode
 
     @api.multi
     def _compute_final_price(self):

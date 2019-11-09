@@ -129,7 +129,7 @@ class AccountInvoiceLine(models.Model):
     )
 
     @api.multi
-    def _compute_product_margin(self):
+    def _compute_product_margin(self, date=False):
         for ail in self:
             if ail.product_id and ail.invoice_id.type in ['out_invoice',
                                                           'out_refund']:
@@ -145,8 +145,20 @@ class AccountInvoiceLine(models.Model):
                 # convierte currency de ic a cc
                 price = ic.compute(price, cc, round=False)
 
-                # precio de costo sacado del producto en moneda de la company
-                cost = ail.product_id.standard_price
+                business_mode = ail.product_id.business_mode
+                if business_mode == 'standard':
+                    # precio de costo del producto en moneda de la company
+                    # es el costo del quant mas viejo
+                    cost = ail.product_id.standard_price
+
+                if business_mode == 'consignment':
+                    # el ultimo precio que le cargamos
+                    cost = ail.product_id.bulonfer_cost
+
+                if business_mode == 'undefined':
+                    # falla porque no sabemos el proveedor
+                    ail.product_margin = 1e10
+                    return
 
                 ail.product_margin = price / cost - 1 \
                     if cost and price else 1e10
@@ -439,15 +451,20 @@ class AccountInvoiceLine(models.Model):
 
     @api.model
     def fix_compute_margin(self):
-        """ Para correr a mano recalcula product margin. a los que le falta
+        """ Para correr a mano recalcula product margin. a los productos que
+            tienen proveedor con marca de consignacion
         """
         ail_obj = self.env['account.invoice.line']
-        ails = ail_obj.search([('product_id.default_code', '=', '395.EC.AM20000'),
-                               ('date_invoice','>','2019-06-28')])
+        cr = self.cr
+        cr.execute("""
+            select id from account_invoice_line ail
+        """)
+        ids = cr.fetchall()
+        ails = ail_obj.browse(ids)
         for ail in ails:
-            ail._compute_product_margin()
-            _logger.info('Fixing %s on %s' % (
-                ail.product_id.default_code, ail.date_invoice))
+            ail._compute_product_margin(date=ail.invoice_id.date_invoice)
+            _logger.info('Fixing %s on %s' % (ail.product_id.default_code,
+                                              ail.date_invoice))
 
 
 class AccountInvoice(models.Model):
