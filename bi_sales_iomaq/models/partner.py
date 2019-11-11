@@ -12,5 +12,5 @@ class ResPartner(models.Model):
         ('consignment', 'Consignación')],
         help="Modo de venta\n-Normal\n-Consignación",
         string='Modo de Venta',
-        default='normal'
+        default='standard'
     )
