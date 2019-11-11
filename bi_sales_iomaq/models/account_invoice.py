@@ -146,7 +146,10 @@ class AccountInvoiceLine(models.Model):
                 price = ic.compute(price, cc, round=False)
 
                 business_mode = ail.product_id.business_mode
-                if business_mode == 'standard':
+                # TODO
+                # Esto es un parche porque en el default pusimos normal
+                # hay que arreglarlo rapidamente.
+                if business_mode != 'consignment':
                     # precio de costo del producto en moneda de la company
                     # es el costo del quant mas viejo
                     cost = ail.product_id.standard_price
