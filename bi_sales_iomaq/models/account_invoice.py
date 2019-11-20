@@ -231,7 +231,7 @@ class AccountInvoiceLine(models.Model):
 
     @api.model
     def get_fix_historic_price(self, date, pid):
-        """ Para correr a mano desde fix_compute_price
+        """ Para correr a mano desde fix_compute_margin
         """
         # buscar el product_supplierinfo para este producto
 
