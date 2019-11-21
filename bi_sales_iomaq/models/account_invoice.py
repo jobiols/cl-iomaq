@@ -269,9 +269,7 @@ class AccountInvoiceLine(models.Model):
         """)
 
         tuples = cr.fetchall()
-        ids = []
-        for id in tuples:
-            ids.append(id[0])
+        ids = [i[0] for i in tuples]
 
         ail_obj = self.env['account.invoice.line']
         ails = ail_obj.browse(ids)
