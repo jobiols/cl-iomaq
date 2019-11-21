@@ -155,8 +155,17 @@ class AccountInvoiceLine(models.Model):
                     cost = ail.product_id.standard_price
 
                 if business_mode == 'consignment':
-                    # el ultimo precio que le cargamos
-                    cost = ail.product_id.bulonfer_cost
+                    if date:
+                        # buscar el precio historico (solo para el fix)
+                        pid = ail.product_id
+                        cost = self.get_fix_historic_price(date, pid)
+                    else:
+                        # el ultimo precio que le cargamos (lo normal)
+                        cost = ail.product_id.bulonfer_cost
+
+                    # convertimos de moneda del producto a la company
+                    pc = ail.product_id.currency_id
+                    cost = pc.compute(cost, cc, round=False)
 
                 if business_mode == 'undefined':
                     # falla porque no sabemos el proveedor
@@ -192,7 +201,8 @@ class AccountInvoiceLine(models.Model):
         """
         for rec in self:
             # todos los vendors de este producto
-            domain = [('product_tmpl_id', '=', rec.product_id.product_tmpl_id.id)]
+            domain = [
+                ('product_tmpl_id', '=', rec.product_id.product_tmpl_id.id)]
             vendor = rec.product_id.seller_ids.search(domain,
                                                       order='date_start desc',
                                                       limit=1)
@@ -213,7 +223,8 @@ class AccountInvoiceLine(models.Model):
     def fix_bulonfer_bi(self):
         for rec in self.search([]):
             # todos los vendors de este producto
-            domain = [('product_tmpl_id', '=', rec.product_id.product_tmpl_id.id)]
+            domain = [
+                ('product_tmpl_id', '=', rec.product_id.product_tmpl_id.id)]
             vendor = rec.product_id.seller_ids.search(domain,
                                                       order='date_start desc',
                                                       limit=1)
@@ -221,248 +232,48 @@ class AccountInvoiceLine(models.Model):
                 rec.vendor_id = vendor.name.id
                 _logger.info('product %s' % rec.product_id.name)
 
-    """
     @api.model
-    def fix_recalculate_invoice_discount(self):
-        "" " Fuerza el recalculo de invoice discounts.
-        "" "
-        _logger.info('fix_recalculate_invoice_discount')
+    def get_fix_historic_price(self, date, pid):
+        """ Para correr a mano desde fix_compute_margin
+        """
+        # buscar el product_supplierinfo para este producto
 
-        ai_obj = self.env['account.invoice']
-        ais = ai_obj.search([])
-        ais.write({'discount_processed': False})
-
-    @api.model
-    def fix_996(self):
-        "" " Para correr a mano, corrije el margen de ail de los productos 996
-            basado en standard_price y list_price de la ficha del producto.
-            Ademas corrije el costo historico.
-            Sabemos que los precios estan en ARS asi que no tenemos en cuenta
-            multimoneda
-        "" "
-        product_obj = self.env['product.template']
-        products = product_obj.search([('default_code', '=like', '996%')])
-        for product in products:
-            cost = product.standard_product_price
-            product.standard_price = cost
-
-            # corregir costo en stock
-            for history in product.cost_history_ids:
-                history.cost = cost
-                history.cost_product = cost
-                _logger.info('Fixing %s on %s' % (product.default_code, cost))
-
-        ail_obj = self.env['account.invoice.line']
-        # seleccionar productos 996, que sean facturas de venta
-        # ordenar la lista por producto y luego por fecha
-        ails = ail_obj.search([('product_id.default_code', '=like', '996.%'),
-                               ('invoice_id.type', '=', 'out_invoice')],
-                              order="product_id,date_invoice")
-
-        for ail in ails:
-            cost = ail.product_id.standard_product_price
-            ail.product_id.standard_price = cost
-            ail._compute_product_margin()
-            _logger.info('Fixing %s on %s' % (
-                ail.product_id.default_code,
-                ail.product_id.list_price / cost - 1))
-
-    @api.model
-    def fix_product_historic(self, data):
-        "" " Para correr a mano, corrije el costo historico del producto
-            basado en standard_product_price y list_price de la ficha del
-            producto. no tiene en cuenta multimoneda.
-            regenera el product_margin
-        "" "
-
-        product_obj = self.env['product.template']
-        products = product_obj.search([('default_code', 'in', data)])
-        for product in products:
-            cost = product.standard_product_price
-            product.standard_price = cost
-
-            # corregir costo en stock
-            for history in product.cost_history_ids:
-                history.cost = cost
-                history.cost_product = cost
-                _logger.info('Fixing %s on %s' % (product.default_code, cost))
-
-        ail_obj = self.env['account.invoice.line']
-        # seleccionar que sean facturas de venta
-        # ordenar la lista por producto y luego por fecha
-        ails = ail_obj.search([('product_id.default_code', 'in', data),
-                               ('invoice_id.type', '=', 'out_invoice')],
-                              order="product_id,date_invoice")
-
-        for ail in ails:
-            cost = ail.product_id.standard_product_price
-            ail.product_id.standard_price = cost
-            ail._compute_product_margin()
-            _logger.info('Fixing %s on %s' % (
-                ail.product_id.default_code,
-                ail.product_id.list_price / cost - 1))
-
-    @api.model
-    def fix_supplierinfo_currency(self):
-        "" " para correr a mano arregla el currency en supplierinfo
-        "" "
-        supp_info_obj = self.env['product.supplierinfo']
-        for info in supp_info_obj.search([]):
-            curr = info.product_tmpl_id.currency_id
-            if info.currency_id != curr:
-                info.currency_id = curr
-                _logger.info('Fixing currency %s' %
-                             info.product_tmpl_id.default_code)
-
-    @api.model
-    def fix_simule_sale(self, products):
-        "" " Pone el precio del quant mas viejo en standard_price y product_
-            standard_price como si se vendiera el producto
-        "" "
-        _logger.info('fix_simule_sale %s' % products)
-
-        domain = [('virtual_available', '!=', 0)]
-        if products:
-            domain += [('default_code', 'in', products)]
-
-        product_obj = self.env['product.template']
-
-        for prod in product_obj.search(domain):
-            quant = product_obj.oldest_quant(prod)
-            prod.standard_price = quant.cost
-            prod.standard_product_price = quant.cost_product
-            _logger.info('fix_prod %s' % prod.default_code)
-
-    @api.model
-    def fix_recalculate_invoice_cost(self, products):
-        domain = []
-        if products:
-            domain += [('default_code', 'in', products)]
-
-        product_obj = self.env['product.template']
-        product_obj.search(domain).set_invoice_cost()
-
-    @api.model
-    def fix_no_hay_stock(self, products):
-        "" " Si el producto no tiene stock entonces pongo
-            el costo hoy en standard_cost y standard_product_cost.
-        "" "
-        _logger.info('fix_no_hay_stock %s' % products)
-
-        prod_obj = self.env['product.template']
-        domain = [('virtual_available', '=', 0)]
-
-        if products:
-            domain += [('default_code', 'in', products)]
-
-        for prod in prod_obj.search(domain):
-            pc = prod.currency_id
-            cc = prod.company_id.currency_id
-            diff = prod.standard_price - pc.compute(prod.bulonfer_cost, cc) + \
-                   prod.standard_product_price - prod.bulonfer_cost
-            if diff > 1:
-                _logger.info('ZERO STOCK Fixing %s' % (prod.default_code))
-
-                prod.standard_price = pc.compute(prod.bulonfer_cost, cc)
-                prod.standard_product_price = prod.bulonfer_cost
-
-    @api.model
-    def fix_product_margin(self, products):
-        "" " Corrije el margen de un producto teniendo en cuenta las facturas
-            de compra y venta y usando un fake stock para calcular el margen
-            real. No toca el historic.
-
-            Si no hay facturas de compra toma el precio standard.
-        "" "
-
-        self.fix_recalculate_invoice_cost(products)
-
-        # por las dudas aunque ya deberia estar corregido
-        self.fix_no_hay_stock(products)
-
-        new_prod = False
-        _logger.info('fix_product_margin %s' % products)
-
-        if products:
-            domain = [('product_id.default_code', 'in', products)]
+        domain = ['&', ('product_tmpl_id', '=', pid.product_tmpl_id.id),
+                  '|',
+                  '&', ('date_start', '<=', date), ('date_end', '=', False),
+                  '&', ('date_start', '<=', date), ('date_end', '>=', date)
+                  ]
+        ps = self.env['product.supplierinfo'].search(domain, limit=1)
+        if ps:
+            return ps.price
         else:
-            domain = []
-
-        ail_obj = self.env['account.invoice.line']
-        # ordenar la lista por producto y luego por fecha
-        ails = ail_obj.search(domain, order="product_id,date_invoice")
-
-        cost = 0
-        for ail in ails:
-            # Si cambia el producto recrear el fake stock
-            if new_prod != ail.product_id:
-                new_prod = ail.product_id
-                _stock = FakeStock()
-                cost = 0
-
-            _logger.info('Fixing %s on %s' % (
-                ail.product_id.default_code, ail.date_invoice))
-
-            cc = ail.company_id.currency_id
-            # busco facturas de compra
-            if ail.invoice_id.type == 'in_invoice':
-                # acumulo stock
-                # descuento de linea
-                ldisc = (1 - ail.discount / 100)
-                # descuento global
-                idisc = (1 + ail.invoice_discount)
-
-                cost = ail.price_unit * ldisc * idisc
-                ic = ail.currency_id.with_context(date=ail.date_invoice)
-                # lo pasamos del ic al cc
-                cost = ic.compute(cost, cc)
-                _stock.push(ail.quantity, cost)
-
-            # busco facturas de venta o reembolso
-            if ail.invoice_id.type == 'out_refund':
-                # bajo el stock
-                _stock.pop(ail.quantity)
-                ail.product_margin = 0
-
-            if ail.invoice_id.type == 'out_invoice':
-                # bajo el stock, si hay errores de stock negativo intento
-                # ponerle el ultimo precio que tengo.
-                the_cost = _stock.pop(ail.quantity)
-                if not the_cost:
-                    the_cost = cost
-                    # si el cost es cero es porque no encontro facturas de
-                    # compra, entonces tomo el standard product price
-                    if not cost:
-                        the_cost = ail.product_id.standard_product_price
-
-                # tengo en cuenta el tipo de cambio del dia de la factura
-                pc = ail.product_id.currency_id
-                cc = ail.company_id.currency_id.with_context(
-                    date=ail.date_invoice)
-
-                ail.product_id.standard_price = the_cost
-                ail.product_id.standard_product_price = cc.compute(the_cost,
-                                                                   pc)
-                ail._compute_product_margin()
-            else:
-                # in_invoice, in_refund
-                ail.product_margin = 0
-
-        # esto para que vuelva a tomar el primer quant como costo.
-        self.fix_simule_sale(products)
-    """
+            return False
 
     @api.model
     def fix_compute_margin(self):
         """ Para correr a mano recalcula product margin. a los productos que
             tienen proveedor con marca de consignacion
         """
-        ail_obj = self.env['account.invoice.line']
-        cr = self.cr
+
+        # me traigo todas las ail que corresponden a productos en consignacion
+        cr = self._cr
         cr.execute("""
-            select id from account_invoice_line ail
+            SELECT ail.id from account_invoice_line ail
+              JOIN product_product pp
+              ON ail.product_id = pp.id
+              JOIN product_supplierinfo ps
+              ON ps.product_tmpl_id = pp.product_tmpl_id
+              JOIN res_partner rp
+              on rp.id = ps.name
+            WHERE rp.business_mode = 'consignment';
         """)
-        ids = cr.fetchall()
+
+        tuples = cr.fetchall()
+        ids = []
+        for id in tuples:
+            ids.append(id[0])
+
+        ail_obj = self.env['account.invoice.line']
         ails = ail_obj.browse(ids)
         for ail in ails:
             ail._compute_product_margin(date=ail.invoice_id.date_invoice)

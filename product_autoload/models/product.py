@@ -183,9 +183,10 @@ class ProductTemplate(models.Model):
         self.seller_ids = [(0, 0, supplierinfo)]
 
     def get_vendor_id(self, vendor_ref):
-        # obtiene el vendor_id a partir del vendor_ref
-        vendor_id = self.env['res.partner'].search(
-            [('ref', '=', vendor_ref)])
+        """ obtiene el vendor_id a partir del vendor_ref
+            si no existe genera excepcion
+        """
+        vendor_id = self.env['res.partner'].search([('ref', '=', vendor_ref)])
         if not vendor_id:
             raise Exception('Vendor %s not found' % vendor_ref)
         return vendor_id

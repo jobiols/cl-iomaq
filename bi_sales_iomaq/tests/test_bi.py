@@ -143,7 +143,7 @@ class TestBusiness(TransactionCase):
             'name': '/',
             'product_id': prod.id,
             'product_uom': prod.uom_id.id,
-            'product_qty': qty,
+            'product_uom_qty': qty,
         }
         return self.env['sale.order'].create({
             'partner_id': self.client.id,
@@ -157,7 +157,7 @@ class TestBusiness(TransactionCase):
         picking_out.action_confirm()
         picking_out.do_transfer()
 
-    def test_01_ingreso_de_producto(self):
+    def test_01_ingreso_de_producto_normal(self):
         """ Testear que el costo del producto vaya al quant al ingresar la
              mercaderia, en las dos monedas, company y product.
         """
@@ -238,3 +238,201 @@ class TestBusiness(TransactionCase):
         self.assertEqual(bi.cost_total, pc.compute(cost1, cc))
         # margen
         self.assertEqual(bi.margin_total, pc.compute(price2 - cost1, cc))
+
+    def test_02_ingreso_de_producto_consignacion(self):
+        """ Testear que el costo del producto vaya al quant al ingresar la
+             mercaderia, en las dos monedas, company y product.
+             costo del producto en pesos.
+             Mercaderia en consignacion.
+        """
+        vendor = self.env['res.partner'].search([('ref', '=', 'AGROLAIT')])
+        vendor.business_mode = 'consignment'
+
+        cost1 = 5000.0
+        price1 = 7000.0
+        cost2 = 6000.0
+        price2 = 8400.0
+
+        # obtener el producto para comprar y vender
+        prod = self.env['product.product'].search(
+            [('default_code', '=', 'A1090')])
+        tmpl = prod.product_tmpl_id
+
+        # forzar al producto en pesos
+        tmpl.force_currency_id = 20
+
+        # agregarle las cuentas contables solo para que genere la factura
+        tmpl.property_account_income_id = 1
+        tmpl.property_account_expense_id = 2
+
+        # company currency ARS
+        cc = prod.company_id.currency_id
+        # product currency USD
+        pc = prod.currency_id
+
+        # ingresar producto a precio 1
+        prod.product_tmpl_id.set_prices(cost1, 'AGROLAIT', price=price1)
+        self.ingresar_producto_a_stock(prod, 1)
+
+        # verificar el precio del quant
+        q = self.get_quants(prod)
+        self.assertEqual(q.cost, pc.compute(cost1, cc))
+        self.assertAlmostEqual(q.cost_product, cost1, places=3)
+
+        # ingresar producto a precio 2
+        prod.product_tmpl_id.set_prices(cost2, 'AGROLAIT', price=price2)
+        self.ingresar_producto_a_stock(prod, 2)
+
+        # verificar el precio del quant
+        q = self.get_quants(prod)
+        self.assertEqual(q[1].cost, pc.compute(cost2, cc))
+        self.assertAlmostEqual(q[1].cost_product, cost2, places=3)
+
+        # obtener el quant mas antiguo (es el primero que puse)
+        q = self.prod_obj.oldest_quant(tmpl)
+        self.assertEqual(q.cost, pc.compute(cost1, cc))
+        self.assertAlmostEqual(q.cost_product, cost1, places=3)
+
+        # vender el producto y verificar que se muevan los costos--------------
+
+        so1 = self.create_so(prod, 1)
+        self.validate_so(so1)
+        # El standard price sigue en 5000
+        self.assertEqual(prod.standard_price, pc.compute(cost1, cc))
+        self.assertEqual(prod.standard_product_price, cost1)
+
+        # Crear las facturas y verificar BI
+
+        id = so1.action_invoice_create()
+        inv = self.env['account.invoice'].browse(id[0])
+        inv.signal_workflow('invoice_open')
+
+        ail_obj = self.env['account.invoice.line']
+        ail = ail_obj.search([('product_id', '=', prod.id)])
+
+        # en la linea de factura precio es el ultimo
+        self.assertEqual(ail.price_subtotal_signed, pc.compute(price2, cc))
+        # costo es el mas antiguo ???? esta mal esto ???? seria el mas nuevo.
+        self.assertEqual(ail.product_id.standard_price, pc.compute(cost1, cc))
+        # el margen se calcula con el ultimo precio porque es consignacion
+        self.assertAlmostEqual(ail.product_margin, price2 / cost2 - 1,
+                               places=4)
+
+        bi_obj = self.env['account.invoice.line.report.iomaq']
+        bi = bi_obj.search([('product_id', '=', prod.id)])
+
+        # precio
+        self.assertEqual(bi.price_total, pc.compute(price2, cc))
+        # costo
+        self.assertEqual(bi.cost_total, pc.compute(cost2, cc))
+        # margen
+        self.assertEqual(bi.margin_total, pc.compute(price2 - cost2, cc))
+
+    def test_03_ingreso_de_producto_consignacion(self):
+        """ Testear que el costo del producto vaya al quant al ingresar la
+             mercaderia, en las dos monedas, company y product.
+             costo del producto en dolares.
+             Mercaderia en consignacion.
+        """
+        vendor = self.env['res.partner'].search([('ref', '=', 'AGROLAIT')])
+        vendor.business_mode = 'consignment'
+
+        cost1 = 5000.0
+        price1 = 7000.0
+        cost2 = 6000.0
+        price2 = 8400.0
+
+        # obtener el producto para comprar y vender
+        prod = self.env['product.product'].search(
+            [('default_code', '=', 'A1090')])
+        tmpl = prod.product_tmpl_id
+
+        # forzar al producto en dolares
+        tmpl.force_currency_id = 3
+
+        # agregarle las cuentas contables solo para que genere la factura
+        tmpl.property_account_income_id = 1
+        tmpl.property_account_expense_id = 2
+
+        # company currency ARS
+        cc = prod.company_id.currency_id
+        # product currency USD
+        pc = prod.currency_id
+
+        # ingresar producto a precio 1
+        prod.product_tmpl_id.set_prices(cost1, 'AGROLAIT', price=price1)
+        self.ingresar_producto_a_stock(prod, 1)
+
+        # verificar el precio del quant
+        q = self.get_quants(prod)
+        self.assertEqual(q.cost, pc.compute(cost1, cc))
+        self.assertAlmostEqual(q.cost_product, cost1, places=3)
+
+        # ingresar producto a precio 2
+        prod.product_tmpl_id.set_prices(cost2, 'AGROLAIT', price=price2)
+        self.ingresar_producto_a_stock(prod, 2)
+
+        # verificar el precio del quant
+        q = self.get_quants(prod)
+        self.assertEqual(q[1].cost, pc.compute(cost2, cc))
+        self.assertAlmostEqual(q[1].cost_product, cost2, places=3)
+
+        # obtener el quant mas antiguo (es el primero que puse)
+        q = self.prod_obj.oldest_quant(tmpl)
+        self.assertEqual(q.cost, pc.compute(cost1, cc))
+        self.assertAlmostEqual(q.cost_product, cost1, places=3)
+
+        # vender el producto y verificar que se muevan los costos--------------
+
+        so1 = self.create_so(prod, 1)
+        self.validate_so(so1)
+        # El standard price sigue en 5000
+        self.assertEqual(prod.standard_price, pc.compute(cost1, cc))
+        self.assertEqual(prod.standard_product_price, cost1)
+
+        # Crear las facturas y verificar BI
+
+        id = so1.action_invoice_create()
+        inv = self.env['account.invoice'].browse(id[0])
+        inv.signal_workflow('invoice_open')
+
+        ail_obj = self.env['account.invoice.line']
+        ail = ail_obj.search([('product_id', '=', prod.id)])
+
+        # en la linea de factura precio es el ultimo
+        self.assertEqual(ail.price_subtotal_signed, pc.compute(price2, cc))
+        # costo es el mas antiguo ???? esta mal esto ???? seria el mas nuevo.
+        self.assertEqual(ail.product_id.standard_price, pc.compute(cost1, cc))
+        # el margen se calcula con el ultimo precio porque es consignacion
+        self.assertAlmostEqual(ail.product_margin, price2 / cost2 - 1,
+                               places=4)
+
+        bi_obj = self.env['account.invoice.line.report.iomaq']
+        bi = bi_obj.search([('product_id', '=', prod.id)])
+
+        # precio
+        self.assertEqual(bi.price_total, pc.compute(price2, cc))
+        # costo
+        self.assertAlmostEqual(bi.cost_total, pc.compute(cost2, cc), places=2)
+        # margen
+        self.assertAlmostEqual(bi.margin_total, pc.compute(price2 - cost2, cc),
+                               places=1)
+
+    def test_00_get_fix_historic_price(self):
+        """ Testear fix get_fix_historic_price
+        """
+        import wdb;wdb.set_trace()
+
+        # buscar un producto cualquiera
+        pid = self.env['product_product'].search([], limit=1)
+
+        # cargarle datos historicos
+        cost = 1000
+        price = 1500
+
+
+        pid.product_tmpl_id.set_prices(cost, 'AGROLAIT', price=price)
+
+
+
+        price = get_fix_historic_price(date,pid)

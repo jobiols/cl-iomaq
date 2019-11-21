@@ -5,6 +5,7 @@ from openerp import fields, models, api
 
 class ProductBrand(models.Model):
     _name = "bi_sales_iomaq.brand"
+    _description = "Establece las marcas de los productos"
 
     name = fields.Char(
         help='Brand name',
