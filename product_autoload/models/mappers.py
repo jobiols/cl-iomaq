@@ -138,10 +138,6 @@ class ProductMapper(CommonMapper):
         if self.default_code[0:4] == '996.':
             return []
 
-        # no permitir que modifique 170.C.350.10
-        if self.default_code == '170.C.350.10':
-            return []
-
         product_obj = env['product.template']
         prod = product_obj.search([('default_code', '=', self.default_code)])
 
