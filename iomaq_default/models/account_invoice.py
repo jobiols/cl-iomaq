@@ -68,9 +68,3 @@ class AccountInvoice(models.Model):
                     'Costo Hoy': prod.bulonfer_cost,
                     'Costo Compra': prod.standard_product_price
                 })
-
-    @api.multi
-    def write(self, values):
-        values['comment'] = values['internal_notes']
-        res = super(AccountInvoice, self).write(values)
-        return res
