@@ -7,7 +7,6 @@ import csv
 class AccountInvoice(models.Model):
     _inherit = 'account.invoice'
 
-    print 'calculando stock'
 
     @api.model
     def compute_stock(self):
@@ -43,7 +42,6 @@ class AccountInvoice(models.Model):
                 stock[default_code] += qty
             r = self.env.cr.fetchone()
 
-        print 'buscando productos'
         import re
 
         prod_obj = self.env['product.product']
@@ -59,7 +57,6 @@ class AccountInvoice(models.Model):
             writer.writeheader()
 
             for prod in prods:
-                print prod.default_code
                 vendor = prod.seller_ids[0].name.ref if prod.seller_ids else ''
                 writer.writerow({
                     'Codigo': prod.default_code,
@@ -71,3 +68,9 @@ class AccountInvoice(models.Model):
                     'Costo Hoy': prod.bulonfer_cost,
                     'Costo Compra': prod.standard_product_price
                 })
+
+    @api.multi
+    def write(self, values):
+        values['comment'] = values['internal_notes']
+        res = super(AccountInvoice, self).write(values)
+        return res
