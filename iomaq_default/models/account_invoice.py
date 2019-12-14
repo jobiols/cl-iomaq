@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 
-from openerp import models, api
+from openerp import models, api, fields
 import csv
 
 
 class AccountInvoice(models.Model):
     _inherit = 'account.invoice'
 
+    comment = fields.Text('Additional Information', readonly=False)
 
     @api.model
     def compute_stock(self):
