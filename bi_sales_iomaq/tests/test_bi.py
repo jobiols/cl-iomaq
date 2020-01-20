@@ -421,7 +421,6 @@ class TestBusiness(TransactionCase):
     def test_00_get_fix_historic_price(self):
         """ Testear fix get_fix_historic_price
         """
-        import wdb;wdb.set_trace()
 
         # buscar un producto cualquiera
         pid = self.env['product_product'].search([], limit=1)
@@ -430,9 +429,6 @@ class TestBusiness(TransactionCase):
         cost = 1000
         price = 1500
 
-
         pid.product_tmpl_id.set_prices(cost, 'AGROLAIT', price=price)
-
-
 
         price = get_fix_historic_price(date,pid)

@@ -10,7 +10,6 @@ class sale_order_line(models.Model):
 
     @api.model
     def _get_purchase_price(self, pricelist, product, product_uom, date):
-        import wdb;wdb.set_trace()
 
         frm_cur = self.env.user.company_id.currency_id
         to_cur = pricelist.currency_id

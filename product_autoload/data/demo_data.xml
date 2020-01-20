@@ -14,15 +14,15 @@
 
         <!-- Agregar IVA -->
         <record id="account_tax_iva_ventas_15" model="account.tax">
-            <field name="name">IVA Ventas 15.5%</field>
-            <field name="amount">15.5</field>
+            <field name="name">IVA Ventas 10.5%</field>
+            <field name="amount">10.5</field>
             <field name="type_tax_use">sale</field>
             <field name="tax_group_id" model="account.tax.group" search="[('tax', '=', u'vat')]"/>
         </record>
 
         <record id="account_tax_iva_compras_15" model="account.tax">
-            <field name="name">IVA Compras 15.5%</field>
-            <field name="amount">15.5</field>
+            <field name="name">IVA Compras 10.5%</field>
+            <field name="amount">10.5</field>
             <field name="type_tax_use">purchase</field>
             <field name="tax_group_id" model="account.tax.group" search="[('tax', '=', u'vat')]"/>
         </record>
