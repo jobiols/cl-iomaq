@@ -176,7 +176,7 @@ class AccountInvoiceLine(models.Model):
                     if cost and price else 1e10
 
     @api.multi
-    @api.depends('product_id.standard_price', 'invoice_id.currency_id')
+    @api.depends('product_id.taxes_id')
     def _compute_product_iva(self):
         for ail in self:
             iva = False
@@ -277,6 +277,13 @@ class AccountInvoiceLine(models.Model):
             ail._compute_product_margin(date=ail.invoice_id.date_invoice)
             _logger.info('Fixing %s on %s' % (ail.product_id.default_code,
                                               ail.date_invoice))
+
+    @api.model
+    def fix_product_iva(self):
+        """ Para correr a mano recalcula product iva
+        """
+        recs = self.search([('date_invoice', '>=', '2020-01-27')])
+        recs._compute_product_iva()
 
 
 class AccountInvoice(models.Model):
