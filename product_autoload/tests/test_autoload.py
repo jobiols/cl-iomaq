@@ -41,8 +41,8 @@ class TestBusiness(TransactionCase):
 
         # Agregar al admin al grupo de crear productos para que funcione
         # el test.
-        create_prod_group = self.env['res.groups'].search(
-            [('name', '=', 'Create products manually')])
+        create_prod_group = self.env.ref(
+            'product_upload.group_product_create_users')
         admin = self.env['res.users'].search([('id', '=', 1)])
         create_prod_group.users += admin
 
@@ -396,29 +396,16 @@ class TestBusiness(TransactionCase):
         self.assertEqual(invoice_line.id, ai2.invoice_line_ids.id)
 
     def test_15_check_996(self):
-        """ Los productos 996 deben darse de alta pero no modificarse--------15
-            durante el autoload
+        """ Los productos 996 deben ser ignorados ---------------------------15
         """
         prod_obj = self.env['product.template']
 
         # carga los productos donde hay 996
         self.manager_obj.run()
 
-        # verificar que se carga el 996
+        # verificar que NO se carga el 996
         prod = prod_obj.search([('default_code', '=', '996.18.10')])
-        self.assertAlmostEqual(prod.bulonfer_cost, 0.1077, places=2)
-
-        # vuelve a cargar los productos donde hay nuevos productos 996 y los
-        # anteriores modificaron sus precios
-        self.manager_obj.run(data='data_changed.csv')
-
-        # verificar que no se modifica el primer 996
-        prod = prod_obj.search([('default_code', '=', '996.18.10')])
-        self.assertAlmostEqual(prod.bulonfer_cost, 0.1077, places=2)
-
-        # verificar que se carga el nuevo 996
-        prod = prod_obj.search([('default_code', '=', '996.100.325')])
-        self.assertAlmostEqual(prod.bulonfer_cost, 1478.50, places=2)
+        self.assertFalse(prod)
 
     def test_16_(self):
         """ Si baja el precio sin stock hay que actualizar y poner en oferta

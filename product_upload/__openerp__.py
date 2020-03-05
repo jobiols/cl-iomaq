@@ -27,7 +27,6 @@
     'author': 'jeo Software',
     'depends': [
         'stock',
-        'product_autoload',
         'product_currency',
         'simple_meli_publishing'
     ],

@@ -9,8 +9,8 @@
 
         <!-- GRUPO PRODUCT_CREATE -->
         <record id="group_product_create_users" model="res.groups">
-            <field name="name">Create products manually</field>
-            <field name="comment">Enable manual product creation</field>
+            <field name="name">Crear productos manualmente</field>
+            <field name="comment">Habilitar la creacion manual de productos</field>
          </record>
     </data>
 </openerp>
