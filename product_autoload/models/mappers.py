@@ -191,7 +191,7 @@ class ProductMapper(CommonMapper):
         # linkear los barcodes
         barcode_obj = env['product.barcode']
         default_code = prod.default_code
-        recs = self._productcode.get(default_code, False)
+        recs = self._productcode.get(default_code, [])
         for rec in recs:
             barcode = rec.get('barcode')
             _logger.info(
