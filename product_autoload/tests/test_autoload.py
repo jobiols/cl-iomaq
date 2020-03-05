@@ -23,7 +23,7 @@ from ..models.mappers import ProductMapper, MAP_NAME, MAP_UPV, \
 #
 #   Correr el test con:
 #
-#   oe -Q product_autoload -c iomaq -d iomaq_test_product_autoload
+#   oe -Q product_autoload -c iomaq -d iomaq_test
 #
 
 import os
