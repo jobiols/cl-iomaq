@@ -83,6 +83,61 @@ class AutoloadMgr(models.Model):
                 res[line[0]] = line[1]
         return res
 
+    def load_productcode(self, data_path, productcode):
+        """ Carga la estructura de datos en memoria
+        """
+        _logger.info('REPLICATION: loading productcodes')
+        res = dict()
+        test_barcode = list()
+        with open(data_path + productcode, 'r') as file_csv:
+            reader = csv.reader(file_csv)
+            for line in reader:
+                default_code = line[PC_PRODUCT_CODE].strip()
+                barcode = line[PC_BARCODE].strip()
+                uxb = line[PC_UXB].strip()
+
+                # para verificar que no se duplique el barcode
+                if barcode not in test_barcode:
+                    test_barcode.append(barcode)
+                else:
+                    raise ExceptionBarcodeDuplicated(
+                        'El codigo de barras %s esta duplicado para el '
+                        'producto %s' % (barcode, default_code))
+
+                if default_code not in res:
+                    # default_code no esta, agregarlo
+                    res[default_code] = [{'barcode': barcode, 'uxb': uxb}]
+                else:
+                    # default_code esta, agregar barcode a la lista
+                    res[default_code].append({'barcode': barcode, 'uxb': uxb})
+        return res
+
+        """
+        item_obj = self.env['product_autoload.productcode']
+        item_obj.search([]).unlink()
+        count = 0
+        with open(data_path + productcode, 'r') as file_csv:
+            reader = csv.reader(file_csv)
+            for line in reader:
+                count += 1
+                if count == 4000:
+                    count = 0
+                    _logger.info('REPLICATION: loading +4000 barcodes')
+                values = {
+                    'barcode': line[PC_BARCODE].strip(),
+                    'product_code': line[PC_PRODUCT_CODE].strip(),
+                    'uxb': line[PC_UXB].strip(),
+                }
+                try:
+                    item_obj.create(values)
+                except:
+                    raise ExceptionBarcodeDuplicated(
+                        'Barcode Duplicated %s for product %s' %
+                        (line[PC_BARCODE].strip(),
+                         line[PC_PRODUCT_CODE].strip())
+                    )
+        """
+
     def load_item(self, data_path, item=ITEM):
         """ Carga los datos en un modelo, chequeando por modificaciones
             Si cambio el margen recalcula todos precios de los productos
@@ -113,33 +168,6 @@ class AutoloadMgr(models.Model):
                 else:
                     item_obj.create(values)
 
-    def load_productcode(self, data_path, productcode):
-        """ Borra la tabla productcode y la vuelve a crear con los datos nuevos
-        """
-        item_obj = self.env['product_autoload.productcode']
-        item_obj.search([]).unlink()
-        count = 0
-        with open(data_path + productcode, 'r') as file_csv:
-            reader = csv.reader(file_csv)
-            for line in reader:
-                count += 1
-                if count == 4000:
-                    count = 0
-                    _logger.info('REPLICATION: loading +4000 barcodes')
-                values = {
-                    'barcode': line[PC_BARCODE].strip(),
-                    'product_code': line[PC_PRODUCT_CODE].strip(),
-                    'uxb': line[PC_UXB].strip(),
-                }
-                try:
-                    item_obj.create(values)
-                except:
-                    raise ExceptionBarcodeDuplicated(
-                        'Barcode Duplicated %s for product %s' %
-                        (line[PC_BARCODE].strip(),
-                         line[PC_PRODUCT_CODE].strip())
-                    )
-
     def load_product(self, data_path, data):
         """ Carga todos los productos teniendo en cuenta la fecha
         """
@@ -158,7 +186,8 @@ class AutoloadMgr(models.Model):
             reader = csv.reader(file_csv)
             for line in reader:
                 if line and line[MAP_WRITE_DATE] > last_replication:
-                    obj = ProductMapper(line, data_path, bulonfer_id.ref)
+                    obj = ProductMapper(line, data_path, bulonfer_id.ref,
+                                        self._productcode)
                     stats = obj.execute(self.env)
 
                     if 'barc_created' in stats:
@@ -201,12 +230,11 @@ class AutoloadMgr(models.Model):
             # Cargar en memoria las tablas chicas
             self._section = self.load_section(data_path)
             self._family = self.load_family(data_path)
+            self._productcode = self.load_productcode(data_path, productcode)
 
             _logger.info('REPLICATION: Load disk tables')
             # Cargar en bd las demas tablas
-            # TODO Ver si podemos cargar esto en memoria
             self.load_item(data_path, item)
-            self.load_productcode(data_path, productcode)
 
             # Aca carga solo los productos que tienen fecha de modificacion
             # posterior a la fecha de proceso y los actualiza o los crea segun
@@ -481,9 +509,9 @@ class AutoloadMgr(models.Model):
             if len(pinfo) > 1 and pinfo[1].price > pinfo[
                 0].price and prod.virtual_available:
                 _logger.info('FIX: "{:10}","{:5}","{:5}"'.format(
-                                                prod.default_code,
-                                                pinfo[0].price,
-                                                pinfo[1].price))
+                    prod.default_code,
+                    pinfo[0].price,
+                    pinfo[1].price))
 
                 prod.bulonfer_cost = pinfo[1].price
                 prod.state = 'offer'

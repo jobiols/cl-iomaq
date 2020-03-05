@@ -201,6 +201,7 @@ class TestBusiness(TransactionCase):
     def test_07_update_product(self):
         """ Chequear que SI replique registros nuevos------------------------07
         """
+
         # fecha de los registros 2018-01-26 16:13:21
         # con esta fecha si deberia replicar
         self.env['ir.config_parameter'].set_param(

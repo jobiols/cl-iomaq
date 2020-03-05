@@ -48,7 +48,8 @@ MAP_LEN = 14
 
 
 class ProductMapper(CommonMapper):
-    def __init__(self, line, image_path=False, vendor_ref=False):
+    def __init__(self, line, image_path=False, vendor_ref=False,
+        productcode=False):
 
         if len(line) != MAP_LEN:
             raise Exception('data.csv len is {} '
@@ -56,6 +57,7 @@ class ProductMapper(CommonMapper):
         self._vendor_ref = vendor_ref
         self._image_path = image_path
         self._image = False
+        self._productcode = productcode
 
         self._default_code = False
         self._name = False
@@ -187,13 +189,14 @@ class ProductMapper(CommonMapper):
         prod.supplier_taxes_id = [(6, 0, [tax])]
 
         # linkear los barcodes
-        prodcode_obj = env['product_autoload.productcode']
         barcode_obj = env['product.barcode']
-
-        recs = prodcode_obj.search([('product_code', '=', prod.default_code)])
+        default_code = prod.default_code
+        recs = self._productcode.get(default_code, False)
         for rec in recs:
-            _logger.info('Linking barcode %s' % rec.barcode)
-            stats += barcode_obj.add_barcode(prod, rec.barcode)
+            barcode = rec.get('barcode')
+            _logger.info(
+                'Product %s linking barcode %s' % (default_code, barcode))
+            stats += barcode_obj.add_barcode(prod, barcode)
         return stats
 
     @staticmethod

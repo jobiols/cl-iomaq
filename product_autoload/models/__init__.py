@@ -5,7 +5,7 @@ from . import product
 from . import stock_quant
 from . import mappers
 from . import item
-from . import productcode
+#from . import productcode
 from . import settings
 from . import autoload
 from . import account_invoice
