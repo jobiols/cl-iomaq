@@ -7,7 +7,10 @@ import csv
 class AccountInvoice(models.Model):
     _inherit = 'account.invoice'
 
-    comment = fields.Text('Additional Information', readonly=False)
+    comment = fields.Text(
+        'Additional Information',
+        readonly=False
+    )
 
     @api.model
     def compute_stock(self):
@@ -31,10 +34,10 @@ class AccountInvoice(models.Model):
         while r is not None:
 
             default_code = r[0]
-            type = r[1]
-            if type in ['in_invoice', 'out_refund']:
+            _type = r[1]
+            if _type in ['in_invoice', 'out_refund']:
                 qty = r[2]
-            if type in ['out_invoice', 'in_refund']:
+            if _type in ['out_invoice', 'in_refund']:
                 qty = -r[2]
 
             if default_code not in stock:
