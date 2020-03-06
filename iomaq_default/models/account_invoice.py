@@ -37,7 +37,7 @@ class AccountInvoice(models.Model):
             if type in ['out_invoice', 'in_refund']:
                 qty = -r[2]
 
-            if not default_code in stock:
+            if default_code not in stock:
                 stock[default_code] = qty
             else:
                 stock[default_code] += qty

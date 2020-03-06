@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 # For copyright and license notices, see __manifest__.py file in module root
 
-from openerp import fields, models, api
+from openerp import fields, models, api, _
 import openerp.addons.decimal_precision as dp
+from openerp.exceptions import UserError
 
 
 class InventoryMultiMgrLine(models.Model):
@@ -32,11 +33,14 @@ class InventoryMultiMgr(models.Model):
     @api.model
     def _default_location_id(self):
         company_user = self.env.user.company_id
-        warehouse = self.env['stock.warehouse'].search([('company_id', '=', company_user.id)], limit=1)
+        warehouse = self.env['stock.warehouse'].search(
+            [('company_id', '=', company_user.id)], limit=1)
         if warehouse:
             return warehouse.lot_stock_id.id
         else:
-            raise UserError(_('You must define a warehouse for the company: %s.') % (company_user.name,))
+            raise UserError(
+                _('You must define a warehouse for the company: %s.') % (
+                company_user.name,))
 
     name = fields.Char(
         string='Referencia del Inventario',

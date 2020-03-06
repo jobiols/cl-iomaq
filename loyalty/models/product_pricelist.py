@@ -4,14 +4,16 @@
 from openerp.osv import fields, osv
 
 
-class product_pricelist(osv.osv):
+class ProductPricelist(osv.osv):
     _inherit = 'product.pricelist'
 
-    def _price_get_multi(self, cr, uid, pricelist, products_by_qty_by_partner, context=None):
+    def _price_get_multi(self, cr, uid, pricelist, products_by_qty_by_partner,
+        context=None):
         """ Sobreescribimos esto para aplicar un aumento o bonificacion cliente
         """
 
-        ret = super(product_pricelist, self)._price_get_multi(cr, uid, pricelist, products_by_qty_by_partner, context=None)
+        ret = super(product_pricelist, self)._price_get_multi(
+            cr, uid, pricelist, products_by_qty_by_partner, context=None)
 
         # obtenemos el partner id
         id_partner = products_by_qty_by_partner[0][2]

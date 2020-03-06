@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 # For copyright and license notices, see __manifest__.py file in module root
-from openerp import api, fields, models, _
-from openerp import api, fields, models, _
-from openerp import api, fields, models, _
-from openerp.tools import DEFAULT_SERVER_DATETIME_FORMAT, float_compare
+from openerp import api, fields, models
+from openerp.tools import float_compare
 
 enabled = 'avoid_selling_no_stock.group_sell_negative_stock_users'
 

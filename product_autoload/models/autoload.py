@@ -9,6 +9,7 @@ from .mappers import MAP_WRITE_DATE, ProductMapper
 import os
 import fnmatch
 
+
 class ExceptionBarcodeDuplicated(Exception):
     def __init__(self, msg):
         self.message = msg

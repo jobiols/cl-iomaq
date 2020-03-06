@@ -52,10 +52,10 @@ class TestBusiness(TransactionCase):
         categ_obj = self.env['product.category']
         account_obj = self.env['account.account']
         stock = account_obj.search([('code', '=', '1.1.05.01.010')])
-        input = account_obj.search([('code', '=', '1.1.05.01.020')])
+        _input = account_obj.search([('code', '=', '1.1.05.01.020')])
         output = account_obj.search([('code', '=', '1.1.05.01.030')])
         categ_data = {
-            'property_stock_account_input_categ_id': input,
+            'property_stock_account_input_categ_id': _input,
             'property_stock_account_output_categ_id': output,
             'property_stock_valuation_account_id': stock,
             'property_cost_method': 'real',
