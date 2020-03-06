@@ -116,32 +116,6 @@ class AutoloadMgr(models.Model):
                     res[default_code].append({'barcode': barcode, 'uxb': uxb})
         return res
 
-        """
-        item_obj = self.env['product_autoload.productcode']
-        item_obj.search([]).unlink()
-        count = 0
-        with open(data_path + productcode, 'r') as file_csv:
-            reader = csv.reader(file_csv)
-            for line in reader:
-                count += 1
-                if count == 4000:
-                    count = 0
-                    _logger.info('REPLICATION: loading +4000 barcodes')
-                values = {
-                    'barcode': line[PC_BARCODE].strip(),
-                    'product_code': line[PC_PRODUCT_CODE].strip(),
-                    'uxb': line[PC_UXB].strip(),
-                }
-                try:
-                    item_obj.create(values)
-                except:
-                    raise ExceptionBarcodeDuplicated(
-                        'Barcode Duplicated %s for product %s' %
-                        (line[PC_BARCODE].strip(),
-                         line[PC_PRODUCT_CODE].strip())
-                    )
-        """
-
     def load_item(self, data_path, item=ITEM):
         """ Carga los datos en un modelo, chequeando por modificaciones
             Si cambio el margen recalcula todos precios de los productos
@@ -172,8 +146,8 @@ class AutoloadMgr(models.Model):
                 else:
                     item_obj.create(values)
 
-    def load_product(self, data_path, data):
-        """ Carga PROCESS_QTY productos del archivo data
+    def load_product(self, data_path, data, lote):
+        """ Carga lote productos del archivo data
         """
 
         bulonfer_id = self.env['res.partner'].search(
@@ -181,18 +155,17 @@ class AutoloadMgr(models.Model):
         if not bulonfer_id:
             raise Exception('Vendor Bulonfer not found')
 
-        import wdb;wdb.set_trace()
         next_line = int(self.next_line) if self.next_line else 1
 
         _logger.info('REPLICATION: Load %s products from file '
-                     '%s' % (PROCESS_QTY, data))
+                     '%s' % (lote, data))
         prod_processed = prod_created = barc_changed = barc_created = 0
         with open(data_path + data, 'r') as file_csv:
             reader = csv.reader(file_csv)
             for line in reader:
                 # Recorremos el archivo y procesamos los registros que:
                 #  - tienen el numero de linea >= que next_line
-                #  - maximo PROCESS_QTY registros
+                #  - cuando procesamos lote registros terminamos
                 if line and reader.line_num >= next_line:
                     obj = ProductMapper(line, data_path, bulonfer_id.ref,
                                         self._productcode)
@@ -206,15 +179,16 @@ class AutoloadMgr(models.Model):
                         prod_processed += 1
                     if 'prod_created' in stats:
                         prod_created += 1
-                if reader.line_num - next_line + 1 >= PROCESS_QTY:
-                    import wdb;wdb.set_trace()
+                if reader.line_num - next_line + 1 >= lote:
+                    self.next_line = next_line
                     break
 
-            # si terminamos el archivo hay que borrarlo
-            if reader.line_num - next_line +1 < PROCESS_QTY:
+            # si terminamos el archivo hay que borrarlo y poner nl=1
+            if reader.line_num - next_line + 1 < lote:
                 os.remove(data_path+data)
-
-            self.next_line = str(reader.line_num + 1)
+                self.next_line = '1'
+            else:
+                self.next_line = str(reader.line_num + 1)
             return {'barc_created': barc_created,
                     'barc_changed': barc_changed,
                     'prod_processed': prod_processed,
@@ -236,7 +210,6 @@ class AutoloadMgr(models.Model):
             Solo procesa las fechas mayores que la de la ultima replicacion.
             :param data: Nombre del archivo origen
         """
-        import wdb;wdb.set_trace()
         last_replication = self.last_replication
         _logger.info('REPLICATION: Process Files '
                      'with timestamp > {}'.format(last_replication))
@@ -264,7 +237,8 @@ class AutoloadMgr(models.Model):
         return res[0] if res else False
 
     @api.model
-    def run(self, item=ITEM, productcode=PRODUCTCODE, data=DATA):
+    def run(self, item=ITEM, productcode=PRODUCTCODE, data=DATA,
+            process_qty=False):
         """
         Actualiza los datos de los productos
 
@@ -273,6 +247,9 @@ class AutoloadMgr(models.Model):
         :param data: nombre del archivo data
         :return: none
         """
+        # para test modificamos el lote a procesar.
+        lote = process_qty if process_qty else PROCESS_QTY
+
         # usamos el archivo diario, si no hay es que ya lo procesamos
         data = self.get_first_file()
         if not data:
@@ -301,12 +278,8 @@ class AutoloadMgr(models.Model):
             # Cargar en bd las demas tablas
             self.load_item(data_path, item)
 
-            # Aca carga solo los productos que tienen fecha de modificacion
-            # posterior a la fecha de proceso y los actualiza o los crea segun
-            # sea necesario
-            # En realidad todos los registros tendran la misma fecha ahora.
-
-            stats = self.load_product(data_path, data)
+            # Procesa los productos del archivo diario
+            stats = self.load_product(data_path, data, lote)
 
             # terminamos de contar el tiempo de proceso
             elapsed_time = time.time() - start_time

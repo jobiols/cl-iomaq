@@ -8,6 +8,9 @@ from openerp.tests.common import TransactionCase
 from ..models.mappers import ProductMapper, MAP_NAME, MAP_UPV, \
     MAP_STANDARD_PRICE, MAP_WEIGHT
 import csv
+import os
+
+
 #   Forma de correr el test
 #   -----------------------
 #
@@ -25,8 +28,6 @@ import csv
 #
 #   oe -Q product_autoload -c iomaq -d iomaq_test
 #
-
-import os
 
 
 class TestBusiness(TransactionCase):
@@ -185,52 +186,66 @@ class TestBusiness(TransactionCase):
     def test_06_update(self):
         """ Chequear que NO replique registros viejos------------------------06
         """
-        # fecha de los registros 2018-01-26 16:13:21
-        # con esta fecha no deberia replicar nada
-        self.env['ir.config_parameter'].set_param(
-            'last_replication', '2018-02-26 16:13:21')
-        self.env['ir.config_parameter'].set_param(
-            'import_only_new', True)
+        self.env['ir.config_parameter'].set_param('last_replication',
+                                                  '2018-02-26 16:13:21')
+        self.env['ir.config_parameter'].set_param('import_only_new', True)
+        self.manager_obj.run_files()
 
-        self.manager_obj.run()
-        prod = self.prod_obj.search([('default_code', '=', '102.AF')])
-        self.assertFalse(prod)
-        prod = self.prod_obj.search([('default_code', '=', '106.32')])
-        self.assertFalse(prod)
+        # verificar que se creo el archivo
+        file = '2018-08-30-data.csv'
+        created = os.path.isfile(self._data_path + file)
+        self.assertTrue(created)
 
-    def test_07_update_product(self):
-        """ Chequear que SI replique registros nuevos------------------------07
-        """
-
-        # fecha de los registros 2018-01-26 16:13:21
-        # con esta fecha si deberia replicar
-        self.env['ir.config_parameter'].set_param(
-            'last_replication', '2018-01-01 16:13:21')
-        self.env['ir.config_parameter'].set_param(
-            'import_only_new', True)
-
-        self.manager_obj.run()
-        prod = self.prod_obj.search([('default_code', '=', '102.AF')])
-        self.assertTrue(prod)
-        self.assertTrue(prod.invalidate_category)
-        prod = self.prod_obj.search([('default_code', '=', '106.32')])
-        self.assertTrue(prod)
-        self.assertTrue(prod.invalidate_category)
+        # borrarlo
+        os.remove(self._data_path + file)
 
     def test_08_update_product(self):
         """ Chequear que SI replique si fuerzo la replicacion----------------08
         """
-        # fecha de los registros 2018-01-26 16:13:21
-        # con esta fecha no deberia replicar nada
-        self.env['ir.config_parameter'].set_param(
-            'last_replication', '2018-02-26 16:13:21')
+        self.env['ir.config_parameter'].set_param('last_replication',
+                                                  '2018-09-26 16:13:21')
         # pero aca lo estoy forzando a que replique
         self.env['ir.config_parameter'].set_param('import_only_new', False)
 
+        self.manager_obj.run_files()
+        # verificar que se creo el archivo
+        files = ['2018-01-26-data.csv', '2018-08-30-data.csv']
+
+        for file in files:
+            created = os.path.isfile(self._data_path + file)
+            self.assertTrue(created)
+            # borrarlo
+            os.remove(self._data_path + file)
+
+    def test_085_verificar_borrado(self):
+        """ Borrado del archivo diario al procesarlo completamente
+        """
+        self.env['ir.config_parameter'].set_param('last_replication',
+                                                  '2018-01-25 16:13:21')
+        # debe generar los dos archivos
+        self.manager_obj.run_files()
+
+        # proceso el mas antiguo
+        self.manager_obj.run(process_qty=8)
+        # una vez mas para que se salte una linea y lo borre
+        self.manager_obj.run(process_qty=8)
+        # proceso el otro y se borra solo
+        self.manager_obj.run(process_qty=8)
+        # este no deberia hacer nada
         self.manager_obj.run()
-        prod = self.prod_obj.search([('default_code', '=', '102.AF')])
+
+        # verificar que no quedo ningun archivo
+        files = ['2018-01-26-data.csv', '2018-08-30-data.csv']
+        for file in files:
+            created = os.path.isfile(self._data_path + file)
+            self.assertFalse(created)
+
+        prod_obj = self.env['product.template']
+
+        # verificar que se cargaron los productos
+        prod = prod_obj.search([('default_code', '=', '102.B.12')])
         self.assertTrue(prod)
-        prod = self.prod_obj.search([('default_code', '=', '106.32')])
+        prod = prod_obj.search([('default_code', '=', '102.7811')])
         self.assertTrue(prod)
 
     def test_09_categories(self):
@@ -238,7 +253,10 @@ class TestBusiness(TransactionCase):
         """
         prod_obj = self.env['product.template']
 
-        self.manager_obj.run()
+        self.manager_obj.run_files()
+        self.manager_obj.run(process_qty=8)
+        self.manager_obj.run(process_qty=8)
+        self.manager_obj.run(process_qty=8)
 
         # verificar precios
         prod = prod_obj.search([('default_code', '=', '102.B.12')])
@@ -292,7 +310,8 @@ class TestBusiness(TransactionCase):
     def test_10_cambia_margen(self):
         """ Testear cambio de margen de ganancia-----------------------------10
         """
-
+        self.manager_obj.run_files()
+        self.manager_obj.run()
         self.manager_obj.run()
         self.manager_obj.update_categories()
 
@@ -301,6 +320,8 @@ class TestBusiness(TransactionCase):
         self.assertAlmostEqual(prod.bulonfer_cost * 1.5, prod.list_price,
                                places=2)
 
+        self.manager_obj.run_files()
+        self.manager_obj.run(item='item_changed.csv')
         self.manager_obj.run(item='item_changed.csv')
         self.manager_obj.update_categories()
 
@@ -311,11 +332,15 @@ class TestBusiness(TransactionCase):
     def test_11_barcodes(self):
         """ Testear barcode duplicado ---------------------------------------11
         """
+        self.manager_obj.run_files()
+        self.manager_obj.run(productcode='productcode_changed.csv')
         self.manager_obj.run(productcode='productcode_changed.csv')
 
     def test_13_costos(self):
         """ Testear que cargue bien los costos ------------------------------13
         """
+        self.manager_obj.run_files()
+        self.manager_obj.run()
         self.manager_obj.run()
         self.manager_obj.update_categories()
         prod = self.prod_obj.search([('default_code', '=', '102.7811')])
@@ -402,6 +427,8 @@ class TestBusiness(TransactionCase):
         prod_obj = self.env['product.template']
 
         # carga los productos donde hay 996
+        self.manager_obj.run_files()
+        self.manager_obj.run()
         self.manager_obj.run()
 
         # verificar que NO se carga el 996
@@ -409,19 +436,25 @@ class TestBusiness(TransactionCase):
         self.assertFalse(prod)
 
     def test_16_(self):
-        """ Si baja el precio sin stock hay que actualizar y poner en oferta
+        """ Si baja el precio sin stock hay que actualizar ------------------16
+            y poner en oferta
         """
+
         # replicar todo
         self.env['ir.config_parameter'].set_param(
             'import_only_new', False)
 
         # chequear el precio original
+        self.manager_obj.run_files()
+        self.manager_obj.run()
         self.manager_obj.run()
         prod = self.prod_obj.search([('default_code', '=', '102.AF')])
         self.assertAlmostEqual(prod.bulonfer_cost, 7.7832)
 
         # cargar de nuevo y con precio rebajado
-        self.manager_obj.run(data='data_baja_precios.csv')
+        self.manager_obj.run_files(data='data_baja_precios.csv')
+        self.manager_obj.run()
+        self.manager_obj.run()
 
         # como no hay stock se baja el precio y se pone en oferta
         prod = self.prod_obj.search([('default_code', '=', '102.AF')])
@@ -429,13 +462,16 @@ class TestBusiness(TransactionCase):
         self.assertEqual(prod.product_variant_ids.state, 'offer')
 
     def test_17_(self):
-        """ Si baja el precio con stock NO hay que actualizar y poner en oferta
+        """ Si baja el precio con stock NO hay que actualizar -------------- 17
+            y poner en oferta
         """
         # replicar todo
         self.env['ir.config_parameter'].set_param(
             'import_only_new', False)
 
         # chequear el precio original
+        self.manager_obj.run_files()
+        self.manager_obj.run()
         self.manager_obj.run()
         prod = self.prod_obj.search([('default_code', '=', '102.AF')])
         self.assertAlmostEqual(prod.bulonfer_cost, 7.7832)
@@ -444,52 +480,61 @@ class TestBusiness(TransactionCase):
         self.add_quant(prod)
 
         # cargar de nuevo y chequear el precio rebajado
-        self.manager_obj.run(data='data_baja_precios.csv')
+        self.manager_obj.run_files(data='data_baja_precios.csv')
+        self.manager_obj.run()
+        self.manager_obj.run()
         prod = self.prod_obj.search([('default_code', '=', '102.AF')])
         self.assertAlmostEqual(prod.bulonfer_cost, 7.7832)
         self.assertEqual(prod.product_variant_ids.state, 'offer')
 
     def test_18_(self):
-        """ Si el producto esta en oferta y sube el precio sacar de oferta
-            no importa el stock
+        """ Si el producto esta en oferta y sube el precio ----------------- 18
+            sacar de oferta no importa el stock
         """
         # replicar todo
         self.env['ir.config_parameter'].set_param(
             'import_only_new', False)
 
         # iniciamos con el producto normal
-        self.manager_obj.run(data='data.csv')
+        self.manager_obj.run_files()
+        self.manager_obj.run()
+        self.manager_obj.run()
         prod = self.prod_obj.search([('default_code', '=', '102.AF')])
         self.assertEqual(prod.product_variant_ids.state, 'sellable')
 
         # el producto entra en oferta sin stock
-        self.manager_obj.run(data='data_baja_precios.csv')
+        self.manager_obj.run_files(data='data_baja_precios.csv')
+        self.manager_obj.run()
+        self.manager_obj.run()
         prod = self.prod_obj.search([('default_code', '=', '102.AF')])
         self.assertEqual(prod.product_variant_ids.state, 'offer')
         self.assertAlmostEqual(prod.bulonfer_cost, 7.0)
 
         # el precio sube, corregir y sacar de oferta
+        self.manager_obj.run_files()
+        self.manager_obj.run()
         self.manager_obj.run()
         prod = self.prod_obj.search([('default_code', '=', '102.AF')])
         self.assertAlmostEqual(prod.bulonfer_cost, 7.7832)
         self.assertEqual(prod.product_variant_ids.state, 'sellable')
 
     def test_19_run_files(self):
-        """ Testea que se generen los archivos diarios
+        """ Testea que se generen los archivos diarios --------------------- 19
         """
         self.manager_obj.run_files()
-        with open(self._data_path+'2018-08-30-data.csv', 'r') as file_csv:
+        with open(self._data_path + '2018-08-30-data.csv', 'r') as file_csv:
             reader = csv.reader(file_csv)
             for line in reader:
                 self.assertEqual(line[0], '996.18.10')
 
-        with open(self._data_path+'2018-01-26-data.csv', 'r') as file_csv:
+        with open(self._data_path + '2018-01-26-data.csv', 'r') as file_csv:
             reader = csv.reader(file_csv)
             for line in reader:
                 self.assertEqual(line[0], '102.7811')
                 break
 
     def test_20_get_first_file(self):
+        """ Verifica la funcion que encuentra el mas viejo ----------------- 20
+        """
         file = self.manager_obj.get_first_file()
         self.assertEqual(file, '2018-01-26-data.csv')
-
