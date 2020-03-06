@@ -1,14 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
-    <data noupdate="0">
+    <data noupdate="1">
 
         <!-- Cron data -->
         <record id="bulonfer_cron_data" model="ir.cron">
             <field name="name">Importar datos Bulonfer</field>
-            <field name="interval_type">work_days</field>
+            <field name="interval_type">minutes</field>
             <field name="numbercall">-1</field>
             <field name="model">product_autoload.manager</field>
             <field name="function">run</field>
+            <field name="args"></field>
+        </record>
+
+        <!-- Cron data -->
+        <record id="bulonfer_cron_data_files" model="ir.cron">
+            <field name="name">Procesar archivos Bulonfer</field>
+            <field name="interval_type">work_days</field>
+            <field name="numbercall">-1</field>
+            <field name="model">product_autoload.manager</field>
+            <field name="function">run_files</field>
             <field name="args"></field>
         </record>
 

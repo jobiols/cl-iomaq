@@ -6,7 +6,8 @@ from datetime import datetime
 import csv
 from openerp import api, models, fields, registry
 from .mappers import MAP_WRITE_DATE, ProductMapper
-
+import os
+import fnmatch
 
 class ExceptionBarcodeDuplicated(Exception):
     def __init__(self, msg):
@@ -34,6 +35,7 @@ PC_PRODUCT_CODE = 1
 PC_UXB = 2
 PC_LEN = 3
 
+PROCESS_QTY = 10
 
 class AutoloadMgr(models.Model):
     _name = 'product_autoload.manager'
@@ -169,7 +171,7 @@ class AutoloadMgr(models.Model):
                     item_obj.create(values)
 
     def load_product(self, data_path, data):
-        """ Carga todos los productos teniendo en cuenta la fecha
+        """ Carga PROCESS_QTY productos del archivo data
         """
 
         bulonfer_id = self.env['res.partner'].search(
@@ -177,15 +179,19 @@ class AutoloadMgr(models.Model):
         if not bulonfer_id:
             raise Exception('Vendor Bulonfer not found')
 
-        last_replication = self.last_replication
-        _logger.info('REPLICATION: Load products '
-                     'with timestamp > {}'.format(last_replication))
+        import wdb;wdb.set_trace()
+        next_line = int(self.next_line) if self.next_line else 1
 
+        _logger.info('REPLICATION: Load %s products from file '
+                     '%s' % (PROCESS_QTY, data))
         prod_processed = prod_created = barc_changed = barc_created = 0
         with open(data_path + data, 'r') as file_csv:
             reader = csv.reader(file_csv)
             for line in reader:
-                if line and line[MAP_WRITE_DATE] > last_replication:
+                # Recorremos el archivo y procesamos los registros que:
+                #  - tienen el numero de linea >= que next_line
+                #  - maximo PROCESS_QTY registros
+                if line and reader.line_num >= next_line:
                     obj = ProductMapper(line, data_path, bulonfer_id.ref,
                                         self._productcode)
                     stats = obj.execute(self.env)
@@ -198,21 +204,78 @@ class AutoloadMgr(models.Model):
                         prod_processed += 1
                     if 'prod_created' in stats:
                         prod_created += 1
+                if reader.line_num - next_line + 1 >= PROCESS_QTY:
+                    import wdb;wdb.set_trace()
+                    break
 
+            # si terminamos el archivo hay que borrarlo
+            if reader.line_num - next_line +1 < PROCESS_QTY:
+                os.remove(data_path+data)
+
+            self.next_line = str(reader.line_num + 1)
             return {'barc_created': barc_created,
                     'barc_changed': barc_changed,
                     'prod_processed': prod_processed,
                     'prod_created': prod_created}
 
+    def save_data_line(self, line):
+        date = line[MAP_WRITE_DATE][:10]
+        data_path = self.data_path
+        data = date + '-data.csv'
+        with open(data_path + data, 'a') as file_csv:
+            cr = csv.writer(file_csv, delimiter=',', lineterminator='\n')
+            cr.writerow(line)
+
+    @api.model
+    def run_files(self, data=DATA):
+        """ Procesa el archivo data.csv generando archivos con el formato
+            YYYY-MM-DD-data.csv que contendran los registros de la fecha
+            correspondiente al nombre del archivo.
+            Solo procesa las fechas mayores que la de la ultima replicacion.
+            :param data: Nombre del archivo origen
+        """
+        import wdb;wdb.set_trace()
+        last_replication = self.last_replication
+        _logger.info('REPLICATION: Process Files '
+                     'with timestamp > {}'.format(last_replication))
+
+        data_path = self.data_path
+
+        with open(data_path + data, 'r') as file_csv:
+            reader = csv.reader(file_csv)
+            for line in reader:
+                if line and line[MAP_WRITE_DATE] > last_replication:
+                    self.save_data_line(line)
+
+        self.last_replication = str(datetime.now())
+
+    def get_first_file(self):
+        """ Busca en data_path los archivos csv y se queda con el primero
+        """
+        data_path = self.data_path
+        res = list()
+        files = os.listdir(data_path)
+        for file in files:
+            if fnmatch.fnmatch(file, '*-data.csv'):
+                res.append(file)
+        res.sort()
+        return res[0] if res else False
+
     @api.model
     def run(self, item=ITEM, productcode=PRODUCTCODE, data=DATA):
         """
-           Actualiza los datos de los productos
+        Actualiza los datos de los productos
+
         :param item: nombre del archivo item
         :param productcode: nombre del archivo productcode
         :param data: nombre del archivo data
         :return: none
         """
+        # usamos el archivo diario, si no hay es que ya lo procesamos
+        data = self.get_first_file()
+        if not data:
+            return
+
         config_obj = self.env['ir.config_parameter']
         email_from = config_obj.get_param('email_from', '')
         email_to = config_obj.get_param('email_notification', '')
@@ -239,6 +302,8 @@ class AutoloadMgr(models.Model):
             # Aca carga solo los productos que tienen fecha de modificacion
             # posterior a la fecha de proceso y los actualiza o los crea segun
             # sea necesario
+            # En realidad todos los registros tendran la misma fecha ahora.
+
             stats = self.load_product(data_path, data)
 
             # terminamos de contar el tiempo de proceso
@@ -248,7 +313,6 @@ class AutoloadMgr(models.Model):
                             self.get_stats(start, elapsed, stats),
                             email_from, email_to)
 
-            self.last_replication = str(datetime.now())
             _logger.info('REPLICATION: End')
 
             rec.write({
@@ -401,6 +465,16 @@ class AutoloadMgr(models.Model):
     def last_replication(self, value):
         parameter_obj = self.env['ir.config_parameter']
         parameter_obj.set_param('last_replication', str(value))
+
+    @property
+    def next_line(self):
+        parameter_obj = self.env['ir.config_parameter']
+        return parameter_obj.get_param('next_line')
+
+    @next_line.setter
+    def next_line(self, value):
+        parameter_obj = self.env['ir.config_parameter']
+        parameter_obj.set_param('next_line', str(value))
 
     @api.model
     def process_invoice_discounts(self):

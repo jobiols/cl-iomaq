@@ -7,7 +7,7 @@ from __future__ import division
 from openerp.tests.common import TransactionCase
 from ..models.mappers import ProductMapper, MAP_NAME, MAP_UPV, \
     MAP_STANDARD_PRICE, MAP_WEIGHT
-
+import csv
 #   Forma de correr el test
 #   -----------------------
 #
@@ -473,3 +473,23 @@ class TestBusiness(TransactionCase):
         prod = self.prod_obj.search([('default_code', '=', '102.AF')])
         self.assertAlmostEqual(prod.bulonfer_cost, 7.7832)
         self.assertEqual(prod.product_variant_ids.state, 'sellable')
+
+    def test_19_run_files(self):
+        """ Testea que se generen los archivos diarios
+        """
+        self.manager_obj.run_files()
+        with open(self._data_path+'2018-08-30-data.csv', 'r') as file_csv:
+            reader = csv.reader(file_csv)
+            for line in reader:
+                self.assertEqual(line[0], '996.18.10')
+
+        with open(self._data_path+'2018-01-26-data.csv', 'r') as file_csv:
+            reader = csv.reader(file_csv)
+            for line in reader:
+                self.assertEqual(line[0], '102.7811')
+                break
+
+    def test_20_get_first_file(self):
+        file = self.manager_obj.get_first_file()
+        self.assertEqual(file, '2018-01-26-data.csv')
+
