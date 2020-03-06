@@ -40,7 +40,7 @@ class InventoryMultiMgr(models.Model):
         else:
             raise UserError(
                 _('You must define a warehouse for the company: %s.') % (
-                company_user.name,))
+                    company_user.name,))
 
     name = fields.Char(
         string='Referencia del Inventario',

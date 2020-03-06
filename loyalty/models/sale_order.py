@@ -2,7 +2,7 @@
 # For copyright and license notices, see __manifest__.py file in module root
 
 
-from openerp import models, api, fields
+from openerp import models, api
 
 
 class SaleOrderLine(models.Model):

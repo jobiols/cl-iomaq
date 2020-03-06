@@ -10,7 +10,7 @@ class PurchaseOrderLine(models.Model):
     @api.multi
     def _get_stock_move_price_unit(self):
         """ sobreescribe la original y devuelve el precio unitario en la moneda
-            de la compaia como antes y le agrega el precio unitario en la
+            de la compania como antes y le agrega el precio unitario en la
             moneda del producto llamado price_product_unit.
             En algunos casos seran iguales...
         """

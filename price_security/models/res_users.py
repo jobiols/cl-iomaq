@@ -90,8 +90,7 @@ class Users(models.Model):
                         'between %s and %s for pricelist "%s"') % (
                                 disc_restriction.min_discount + pricelist_disc,
                                 disc_restriction.max_discount + pricelist_disc,
-                                pricelist.name
-                            )
+                                pricelist.name)
                     # if pricelist_disc then we have a so line and e product
                     if pricelist_disc:
                         error += ' and product "%s"' % (

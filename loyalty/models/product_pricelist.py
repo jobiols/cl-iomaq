@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # For copyright and license notices, see __manifest__.py file in module root
 
-from openerp.osv import fields, osv
+from openerp.osv import osv
 
 
 class ProductPricelist(osv.osv):
@@ -12,7 +12,7 @@ class ProductPricelist(osv.osv):
         """ Sobreescribimos esto para aplicar un aumento o bonificacion cliente
         """
 
-        ret = super(product_pricelist, self)._price_get_multi(
+        ret = super(ProductPricelist, self)._price_get_multi(
             cr, uid, pricelist, products_by_qty_by_partner, context=None)
 
         # obtenemos el partner id

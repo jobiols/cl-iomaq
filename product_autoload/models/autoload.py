@@ -38,6 +38,7 @@ PC_LEN = 3
 
 PROCESS_QTY = 10
 
+
 class AutoloadMgr(models.Model):
     _name = 'product_autoload.manager'
     _description = "Manage product data import"

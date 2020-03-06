@@ -133,8 +133,9 @@ class StockQuant(models.Model):
             # and reach here (quant creation), it means that a negative quant
             # has to be created as well.
             negative_vals = vals.copy()
-            negative_vals[
-                'location_id'] = force_location_from and force_location_from.id or move.location_id.id
+            negative_vals['location_id'] = force_location_from and \
+                                           force_location_from.id or \
+                                           move.location_id.id
             negative_vals['qty'] = float_round(-qty,
                                                precision_rounding=rounding)
             negative_vals['cost'] = price_unit
@@ -144,10 +145,12 @@ class StockQuant(models.Model):
                                             context=context)
             vals.update({'propagated_from_id': negative_quant_id})
 
-        picking_type = move.picking_id and move.picking_id.picking_type_id or False
+        picking_type = move.picking_id and \
+                       move.picking_id.picking_type_id or False
         if lot_id and move.product_id.tracking == 'serial' and (
                 not picking_type or (
-                    picking_type.use_create_lots or picking_type.use_existing_lots)):
+                    picking_type.use_create_lots or
+                    picking_type.use_existing_lots)):
             if qty != 1.0:
                 raise UserError(_('You should only receive by the piece with '
                                   'the same serial number'))
