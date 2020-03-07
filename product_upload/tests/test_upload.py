@@ -49,8 +49,8 @@ class TestProductUploadProduct(common.TransactionCase):
 
         # Agregar al admin al grupo de crear productos para que funcione
         # el test.
-        create_prod_group = self.env.ref(
-            'product_upload.group_product_create_users')
+        create_prod_group = self.env['res.groups'].search(
+            [('name', '=', 'Crear productos manualmente')])
         admin = self.env['res.users'].search([('id', '=', 1)])
         create_prod_group.users += admin
 
