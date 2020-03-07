@@ -26,7 +26,7 @@
     'summary': 'Customización IOMAQ SA',
     'author': 'jeo Software',
     'depends': [
-        'avoid_selling_no_stock',   # evitar que se venda con stock negativo
+        'avoid_selling_no_stock',  # evitar que se venda con stock negativo
         'support_branding_jeosoft',
 
         # aplicaciones instaladas
@@ -46,7 +46,7 @@
         'account_invoice_global_discount',  # descuentos en facturas de compra
         'web_export_view',  # exportar vistas en excel
         'account_clean_cancelled_invoice_number',  # borrar fac canceladas
-        'price_security',   # Quien ve el precio de costo
+        'price_security',  # Quien ve el precio de costo
         'base_currency_inverse_rate',  # Ver TC al derecho
         'l10n_ar_currency_update',  # Actualizar tipo de cambio
         'sale_order_validity',  # imprimir validez del presupuesto
@@ -59,15 +59,18 @@
         'sale_global_discount',  # setea todos los descuentos de la SO
         'document_page',  # documentacion y ayuda
         'product_upload',  # cargar productos desde planilla excel
-        'account_vat_ledger_arba',  # imprime reporte impuestos por jurisdiccion
+        'account_vat_ledger_arba',
+        # imprime reporte impuestos por jurisdiccion
         'database_cleanup',
         'date_range',
         'partner_ref_unique',  # Que no se duplique la referencia
         'account_journal_security',  # Restringe diarios a ciertos usuarios
         'stock_no_extra_move',  # evitar Extra Move
-        'sale_order_validity_fix',  # modifica el comportamiento del boton actualizar validez
-        'deduplicate_stihl', #  impide la duplicacion a pesar de los guiones
-        'stock_by_invoices', # calcula el stock en base a facturas de compra y venta
+        'sale_order_validity_fix',
+        # modifica el comportamiento del boton actualizar validez
+        'deduplicate_stihl',  # impide la duplicacion a pesar de los guiones
+        'stock_by_invoices',
+        # calcula el stock en base a facturas de compra y venta
         'loyalty',  # agregar porcentaje de aumento global.
         'stock_transfer_security',
     ],

@@ -42,7 +42,7 @@ class Users(models.Model):
 
     @api.multi
     def check_discount(self, discount, pricelist_id, so_line=False,
-                       do_not_raise=False):
+        do_not_raise=False):
         """
         We add do_not_raise for compatibility with other modules
         """
@@ -90,8 +90,7 @@ class Users(models.Model):
                         'between %s and %s for pricelist "%s"') % (
                                 disc_restriction.min_discount + pricelist_disc,
                                 disc_restriction.max_discount + pricelist_disc,
-                                pricelist.name
-                            )
+                                pricelist.name)
                     # if pricelist_disc then we have a so line and e product
                     if pricelist_disc:
                         error += ' and product "%s"' % (

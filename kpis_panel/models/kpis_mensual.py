@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 from openerp import models, fields, api
-import datetime, time
+import datetime
+import time
 from dateutil.relativedelta import relativedelta
 
 import logging
@@ -16,7 +17,7 @@ class Kpis_mensual(models.Model):
     _name = 'kpis_panel.kpis_mensual'
 
     @api.multi
-    def _get_company_currency(self):
+    def _compute_currency_id(self):
         for rec in self:
             rec.currency_id = rec.env.user.company_id.currency_id
 
@@ -50,7 +51,7 @@ class Kpis_mensual(models.Model):
     )
     currency_id = fields.Many2one(
         'res.currency',
-        compute='_get_company_currency',
+        compute='_compute_currency_id',
         readonly=True,
         string="Currency",
         help='Utility field to express amount currency'
@@ -78,7 +79,7 @@ class Kpis_mensual(models.Model):
         quant_obj = self.env['stock.quant']
         domain = [('location_id.location_id.name', '=', 'WH')]
         quants = quant_obj.search(domain)
-        stock_value_purchase_historic = 0;
+        stock_value_purchase_historic = 0
         for q in quants:
             if q.qty > 0:
                 stock_value_purchase_historic += q.qty * q.cost

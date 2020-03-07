@@ -27,9 +27,9 @@
     'author': 'jeo Software',
     'depends': [
         'stock',
-        'product_autoload',
         'product_currency',
-        'simple_meli_publishing'
+        'simple_meli_publishing',
+        'product_autoload'
     ],
     'data': [
         'security/ir.model.access.csv',

@@ -7,6 +7,24 @@ cron desde un directorio del servidor.
 Se requiere que el archivo data sea actualizado por medios externos en forma
 periodica.
 
+Procesos CRON
+~~~~~~~~~~~~~
+
+**Procesar archivos**, Corre una vez por dia. Lee el archivo data.csv
+seleccionando los registros con fecha > ultima replicacion y genera archivos
+de nombre YYYY-MM-DD-data.csv con cada registro que encuentra.
+
+**Procesar Registros** Corre cada 1 minuto,
+Busca el archivo mas viejo con el formato YYYY-MM-DD-data.csv, si no lo
+encuentra termina y pone proxima linea en 1
+Procesa 100 registros del archivo, se guarda el proximo numero de linea y
+termina.
+Si termina de procesar el archivo antes de los 100 registros borra el archivo
+pone la proxima linea en 1 y termina.
+Manda mail con la estadistica de proceso.
+
+**Generar categorias** Corre cada 10 minutos procesa 400 categorias y termina
+
 Formato de archivo CSV para carga de datos
 ------------------------------------------
 

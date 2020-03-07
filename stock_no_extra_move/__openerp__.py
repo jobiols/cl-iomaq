@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # Copyright 2016 Camptocamp
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+
 {
     "version": "9.0.1.0.0",
     "name": "Stock no extra move",

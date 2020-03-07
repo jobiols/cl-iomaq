@@ -49,8 +49,8 @@ class TestProductUploadProduct(common.TransactionCase):
 
         # Agregar al admin al grupo de crear productos para que funcione
         # el test.
-        create_prod_group = self.env['res.groups'].search(
-            [('name', '=', 'Create products manually')])
+        create_prod_group = self.env.ref(
+            'product_upload.group_product_create_users')
         admin = self.env['res.users'].search([('id', '=', 1)])
         create_prod_group.users += admin
 
@@ -65,7 +65,7 @@ class TestProductUploadProduct(common.TransactionCase):
                                       data_only=True)
 
     def test_01_(self):
-        """ cargar una linea del primer proveedor -----------------------------
+        """ cargar una linea del primer proveedor -------------------------- 01
         """
         data = self.wizard_obj.read_data(self.get_ws(0)['B&D'])[0]
         self.assertEqual(data['default_code'], u'D25811K-AR-DECKER')
@@ -80,7 +80,7 @@ class TestProductUploadProduct(common.TransactionCase):
         self.assertEqual(data.get('parent'), None)
 
     def test_02_(self):
-        """ cargar una linea del segundo proveedor ----------------------------
+        """ cargar una linea del segundo proveedor ------------------------- 02
         """
         data = self.wizard_obj.read_data(self.get_ws(0)['EINHELL'])[0]
         self.assertEqual(data['default_code'], u'4502015-EINHELL')
@@ -95,7 +95,7 @@ class TestProductUploadProduct(common.TransactionCase):
         self.assertEqual(data['parent'], 'B3423')
 
     def test_03_(self):
-        """ Cargar los productos y verificar que esten bien -------------------
+        """ Cargar los productos y verificar que esten bien ---------------- 03
         """
         self.wizard_obj.process_tmp_file(self.get_filename(0))
         self.assertEqual(self.wizard_obj.log.state, 'done')
@@ -127,20 +127,20 @@ class TestProductUploadProduct(common.TransactionCase):
         self.assertEqual(einhell.parent_price_product, 'B3423')
 
     def test_04_(self):
-        """ terminar el proceso con done --------------------------------------
+        """ terminar el proceso con done ----------------------------------- 04
         """
         aaa = self.get_filename(0)
         self.wizard_obj.process_tmp_file(aaa)
         self.assertEqual(self.wizard_obj.log.state, 'done')
 
     def test_05_(self):
-        """ planilla con none en default code, no carga la linea --------------
+        """ planilla con none en default code, no carga la linea ----------- 05
         """
         self.wizard_obj.process_tmp_file(self.get_filename(1))
         self.assertEqual(self.wizard_obj.log.state, 'done')
 
     def test_06_(self):
-        """ Chequear falta de campos requeridos -------------------------------
+        """ Chequear falta de campos requeridos ---------------------------- 06
         """
         self.wizard_obj.process_tmp_file(self.get_filename(2))
         self.assertEqual(self.wizard_obj.log.errors, 1)
@@ -149,7 +149,7 @@ class TestProductUploadProduct(common.TransactionCase):
         self.assertEqual(self.wizard_obj.log.state, 'error')
 
     def test_07_(self):
-        """ Chequear trimming del codigo de producto --------------------------
+        """ Chequear trimming del codigo de producto ----------------------- 07
         """
         # el producto tiene un espacio despues del codigo
         self.wizard_obj.process_tmp_file(self.get_filename(3))
@@ -160,13 +160,13 @@ class TestProductUploadProduct(common.TransactionCase):
         self.assertEqual(self.wizard_obj.log.state, 'done')
 
     def test_08_(self):
-        """ Chequear falta iva ventas. ----------------------------------------
+        """ Chequear falta iva ventas. ------------------------------------- 08
         """
         self.wizard_obj.process_tmp_file(self.get_filename(2))
         self.assertEqual(self.wizard_obj.log.errors, 1)
 
     def test_09_(self):
-        """ Chequear sin campos obligatorios ----------------------------------
+        """ Chequear sin campos obligatorios ------------------------------- 09
         """
         # cargo einhell
         self.wizard_obj.process_tmp_file(self.get_filename(3))

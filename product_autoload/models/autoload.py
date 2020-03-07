@@ -6,6 +6,8 @@ from datetime import datetime
 import csv
 from openerp import api, models, fields, registry
 from .mappers import MAP_WRITE_DATE, ProductMapper
+import os
+import fnmatch
 
 
 class ExceptionBarcodeDuplicated(Exception):
@@ -33,6 +35,8 @@ PC_BARCODE = 0
 PC_PRODUCT_CODE = 1
 PC_UXB = 2
 PC_LEN = 3
+
+PROCESS_QTY = 300
 
 
 class AutoloadMgr(models.Model):
@@ -83,6 +87,35 @@ class AutoloadMgr(models.Model):
                 res[line[0]] = line[1]
         return res
 
+    def load_productcode(self, data_path, productcode):
+        """ Carga la estructura de datos en memoria
+        """
+        _logger.info('REPLICATION: loading productcodes')
+        res = dict()
+        test_barcode = list()
+        with open(data_path + productcode, 'r') as file_csv:
+            reader = csv.reader(file_csv)
+            for line in reader:
+                default_code = line[PC_PRODUCT_CODE].strip()
+                barcode = line[PC_BARCODE].strip()
+                uxb = line[PC_UXB].strip()
+
+                # para verificar que no se duplique el barcode
+                if barcode not in test_barcode:
+                    test_barcode.append(barcode)
+                else:
+                    raise ExceptionBarcodeDuplicated(
+                        'El codigo de barras %s esta duplicado para el '
+                        'producto %s' % (barcode, default_code))
+
+                if default_code not in res:
+                    # default_code no esta, agregarlo
+                    res[default_code] = [{'barcode': barcode, 'uxb': uxb}]
+                else:
+                    # default_code esta, agregar barcode a la lista
+                    res[default_code].append({'barcode': barcode, 'uxb': uxb})
+        return res
+
     def load_item(self, data_path, item=ITEM):
         """ Carga los datos en un modelo, chequeando por modificaciones
             Si cambio el margen recalcula todos precios de los productos
@@ -113,35 +146,8 @@ class AutoloadMgr(models.Model):
                 else:
                     item_obj.create(values)
 
-    def load_productcode(self, data_path, productcode):
-        """ Borra la tabla productcode y la vuelve a crear con los datos nuevos
-        """
-        item_obj = self.env['product_autoload.productcode']
-        item_obj.search([]).unlink()
-        count = 0
-        with open(data_path + productcode, 'r') as file_csv:
-            reader = csv.reader(file_csv)
-            for line in reader:
-                count += 1
-                if count == 4000:
-                    count = 0
-                    _logger.info('REPLICATION: loading +4000 barcodes')
-                values = {
-                    'barcode': line[PC_BARCODE].strip(),
-                    'product_code': line[PC_PRODUCT_CODE].strip(),
-                    'uxb': line[PC_UXB].strip(),
-                }
-                try:
-                    item_obj.create(values)
-                except:
-                    raise ExceptionBarcodeDuplicated(
-                        'Barcode Duplicated %s for product %s' %
-                        (line[PC_BARCODE].strip(),
-                         line[PC_PRODUCT_CODE].strip())
-                    )
-
-    def load_product(self, data_path, data):
-        """ Carga todos los productos teniendo en cuenta la fecha
+    def load_product(self, data_path, data, lote):
+        """ Carga lote productos del archivo data
         """
 
         bulonfer_id = self.env['res.partner'].search(
@@ -149,16 +155,20 @@ class AutoloadMgr(models.Model):
         if not bulonfer_id:
             raise Exception('Vendor Bulonfer not found')
 
-        last_replication = self.last_replication
-        _logger.info('REPLICATION: Load products '
-                     'with timestamp > {}'.format(last_replication))
+        next_line = int(self.next_line) if self.next_line else 1
 
+        _logger.info('REPLICATION: Load %s products from file '
+                     '%s' % (lote, data))
         prod_processed = prod_created = barc_changed = barc_created = 0
         with open(data_path + data, 'r') as file_csv:
             reader = csv.reader(file_csv)
             for line in reader:
-                if line and line[MAP_WRITE_DATE] > last_replication:
-                    obj = ProductMapper(line, data_path, bulonfer_id.ref)
+                # Recorremos el archivo y procesamos los registros que:
+                #  - tienen el numero de linea >= que next_line
+                #  - cuando procesamos lote registros terminamos
+                if line and reader.line_num >= next_line:
+                    obj = ProductMapper(line, data_path, bulonfer_id.ref,
+                                        self._productcode)
                     stats = obj.execute(self.env)
 
                     if 'barc_created' in stats:
@@ -169,21 +179,82 @@ class AutoloadMgr(models.Model):
                         prod_processed += 1
                     if 'prod_created' in stats:
                         prod_created += 1
+                if reader.line_num - next_line + 1 >= lote:
+                    self.next_line = next_line
+                    break
 
+            # si terminamos el archivo hay que borrarlo y poner nl=1
+            if reader.line_num - next_line + 1 < lote:
+                os.remove(data_path+data)
+                self.next_line = '1'
+            else:
+                self.next_line = str(reader.line_num + 1)
             return {'barc_created': barc_created,
                     'barc_changed': barc_changed,
                     'prod_processed': prod_processed,
                     'prod_created': prod_created}
 
+    def save_data_line(self, line):
+        date = line[MAP_WRITE_DATE][:10]
+        data_path = self.data_path
+        data = date + '-data.csv'
+        with open(data_path + data, 'a') as file_csv:
+            cr = csv.writer(file_csv, delimiter=',', lineterminator='\n')
+            cr.writerow(line)
+
     @api.model
-    def run(self, item=ITEM, productcode=PRODUCTCODE, data=DATA):
+    def run_files(self, data=DATA):
+        """ Procesa el archivo data.csv generando archivos con el formato
+            YYYY-MM-DD-data.csv que contendran los registros de la fecha
+            correspondiente al nombre del archivo.
+            Solo procesa las fechas mayores que la de la ultima replicacion.
+            :param data: Nombre del archivo origen
         """
-           Actualiza los datos de los productos
+        last_replication = self.last_replication
+        _logger.info('REPLICATION: Process Files '
+                     'with timestamp > {}'.format(last_replication))
+
+        data_path = self.data_path
+
+        with open(data_path + data, 'r') as file_csv:
+            reader = csv.reader(file_csv)
+            for line in reader:
+                if line and line[MAP_WRITE_DATE] > last_replication:
+                    self.save_data_line(line)
+
+        self.last_replication = str(datetime.now())
+
+    def get_first_file(self):
+        """ Busca en data_path los archivos csv y se queda con el primero
+        """
+        data_path = self.data_path
+        res = list()
+        files = os.listdir(data_path)
+        for file in files:
+            if fnmatch.fnmatch(file, '*-data.csv'):
+                res.append(file)
+        res.sort()
+        return res[0] if res else False
+
+    @api.model
+    def run(self, item=ITEM, productcode=PRODUCTCODE, data=DATA,
+            process_qty=False):
+        """
+        Actualiza los datos de los productos
+
         :param item: nombre del archivo item
         :param productcode: nombre del archivo productcode
         :param data: nombre del archivo data
         :return: none
         """
+        # para test modificamos el lote a procesar.
+        lote = process_qty if process_qty else PROCESS_QTY
+
+        # usamos el archivo diario, si no hay es que ya lo procesamos
+        data = self.get_first_file()
+        if not data:
+            return
+
         config_obj = self.env['ir.config_parameter']
         email_from = config_obj.get_param('email_from', '')
         email_to = config_obj.get_param('email_notification', '')
@@ -201,17 +272,14 @@ class AutoloadMgr(models.Model):
             # Cargar en memoria las tablas chicas
             self._section = self.load_section(data_path)
             self._family = self.load_family(data_path)
+            self._productcode = self.load_productcode(data_path, productcode)
 
             _logger.info('REPLICATION: Load disk tables')
             # Cargar en bd las demas tablas
-            # TODO Ver si podemos cargar esto en memoria
             self.load_item(data_path, item)
-            self.load_productcode(data_path, productcode)
 
-            # Aca carga solo los productos que tienen fecha de modificacion
-            # posterior a la fecha de proceso y los actualiza o los crea segun
-            # sea necesario
-            stats = self.load_product(data_path, data)
+            # Procesa los productos del archivo diario
+            stats = self.load_product(data_path, data, lote)
 
             # terminamos de contar el tiempo de proceso
             elapsed_time = time.time() - start_time
@@ -220,7 +288,6 @@ class AutoloadMgr(models.Model):
                             self.get_stats(start, elapsed, stats),
                             email_from, email_to)
 
-            self.last_replication = str(datetime.now())
             _logger.info('REPLICATION: End')
 
             rec.write({
@@ -374,6 +441,16 @@ class AutoloadMgr(models.Model):
         parameter_obj = self.env['ir.config_parameter']
         parameter_obj.set_param('last_replication', str(value))
 
+    @property
+    def next_line(self):
+        parameter_obj = self.env['ir.config_parameter']
+        return parameter_obj.get_param('next_line')
+
+    @next_line.setter
+    def next_line(self, value):
+        parameter_obj = self.env['ir.config_parameter']
+        parameter_obj.set_param('next_line', str(value))
+
     @api.model
     def process_invoice_discounts(self):
         _logger.info('Start processing invoice discounts')
@@ -481,9 +558,9 @@ class AutoloadMgr(models.Model):
             if len(pinfo) > 1 and pinfo[1].price > pinfo[
                 0].price and prod.virtual_available:
                 _logger.info('FIX: "{:10}","{:5}","{:5}"'.format(
-                                                prod.default_code,
-                                                pinfo[0].price,
-                                                pinfo[1].price))
+                    prod.default_code,
+                    pinfo[0].price,
+                    pinfo[1].price))
 
                 prod.bulonfer_cost = pinfo[1].price
                 prod.state = 'offer'

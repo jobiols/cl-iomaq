@@ -20,6 +20,7 @@ Inteligencia de negocio para ventas
 |badge1| |badge2| |badge3| 
 
 Genera un reporte pivot de inteligencia de negocio customizado para IOMAQ
+Establece las marcas de los productos mediante mascaras
 
 **Table of contents**
 
@@ -33,11 +34,28 @@ Configuration
 - Ir a Ajustes / Usuarios y companias / Grupos
 - Buscar el grupo "Inteligencia de negocio"
 - Incluir en el grupo a los usuarios que pueden ver el reporte.
+- En los proveedores se puede poner el modelo de negocio, normal o consignacion
 
 Usage
 =====
 
-Ir a Contabilidad / Inteligencia de empresarial / Lineas de factura de ventas
+Para ver el pivot
+
+    Ir a Contabilidad / Inteligencia de empresarial / Lineas de factura de ventas
+
+Para establecer marca de un producto
+
+    Ir a Inventario / Productos / Marcas de producto
+
+Se puede crear una marca nueva, y se le pone una mascara, la mascara es parte
+del nombre y un simbolo % que reemplaza cualquier texto por ejemplo %-DECKER
+representa cualquier producto cuya referencia termine con -DECKER.
+
+Una vez definida la marca y la mascara se debe testear con el boton **Chequear mascara**
+y se mostraran todos los productos que aplican a esta mascara.
+
+Una vez definida la marca de esta forma, en todos los productos mostrados aparecera
+la marca en el campo marca. Permitiendo filtrar los productos por ese campo.
 
 Bug Tracker
 ===========

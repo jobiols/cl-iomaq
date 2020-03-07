@@ -418,7 +418,7 @@ class TestBusiness(TransactionCase):
         self.assertAlmostEqual(bi.margin_total, pc.compute(price2 - cost2, cc),
                                places=1)
 
-    def test_00_get_fix_historic_price(self):
+    def test_04_get_fix_historic_price(self):
         """ Testear fix get_fix_historic_price
         """
 
@@ -430,5 +430,3 @@ class TestBusiness(TransactionCase):
         price = 1500
 
         pid.product_tmpl_id.set_prices(cost, 'AGROLAIT', price=price)
-
-        price = get_fix_historic_price(date,pid)

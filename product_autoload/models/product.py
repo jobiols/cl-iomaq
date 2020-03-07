@@ -57,7 +57,6 @@ class ProductTemplate(models.Model):
         default=0
     )
 
-
     def oldest_quant(self, prod):
         """ Retorna el quant mas antiguo de este producto.
         """
@@ -245,8 +244,8 @@ class ProductTemplate(models.Model):
                     prod.state = 'offer'
                     return
 
-                # si NO tengo stock y el costo disminuye, pongo oferta y actualizo
-                # el costo.
+                # si NO tengo stock y el costo disminuye, pongo oferta y
+                # actualizo el costo.
                 if not quant and decreased_cost(cost):
                     prod.state = 'offer'
 
