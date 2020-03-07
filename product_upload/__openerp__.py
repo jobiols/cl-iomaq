@@ -28,7 +28,8 @@
     'depends': [
         'stock',
         'product_currency',
-        'simple_meli_publishing'
+        'simple_meli_publishing',
+        'product_autoload'
     ],
     'data': [
         'security/ir.model.access.csv',

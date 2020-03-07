@@ -36,7 +36,7 @@ PC_PRODUCT_CODE = 1
 PC_UXB = 2
 PC_LEN = 3
 
-PROCESS_QTY = 10
+PROCESS_QTY = 300
 
 
 class AutoloadMgr(models.Model):
