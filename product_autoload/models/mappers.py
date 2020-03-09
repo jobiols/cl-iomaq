@@ -136,14 +136,13 @@ class ProductMapper(CommonMapper):
                     if tax.tax_group_id.afip_code == 2:
                         return tax.id
 
-        # no permitir que modifique los 996.
-        if self.default_code[0:4] == '996.':
-            return []
-
         product_obj = env['product.template']
         prod = product_obj.search([('default_code', '=', self.default_code)])
 
         if prod:
+            # no permitir que modifique los 996, solo pueden ser creados
+            if self.default_code[0:4] == '996.':
+                return []
             prod.write(self.values())
             stats = ['prod_processed']
             _logger.info('Updating product %s' % self.default_code)
