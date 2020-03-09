@@ -5,7 +5,7 @@ import time
 from datetime import datetime
 import csv
 from openerp import api, models, fields, registry
-from .mappers import MAP_WRITE_DATE, MAP_DEFAULT_CODE, ProductMapper
+from .mappers import MAP_WRITE_DATE, ProductMapper
 import os
 import fnmatch
 
