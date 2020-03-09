@@ -192,7 +192,8 @@ class AutoloadMgr(models.Model):
             return {'barc_created': barc_created,
                     'barc_changed': barc_changed,
                     'prod_processed': prod_processed,
-                    'prod_created': prod_created}
+                    'prod_created': prod_created,
+                    'next_line': str(self.next_line)}
 
     def save_data_line(self, line):
         """ Hace append de una linea al archivo correspondiente
@@ -421,9 +422,9 @@ class AutoloadMgr(models.Model):
         ret += u'Productos creados: {}\n'.format(stats['prod_created'])
         ret += u'Inicio: {}\n'.format(start)
         ret += u'Duración: {}\n'.format(elapsed)
-        ret += u'Codigos de barra creados {}\n'.format(stats['barc_created'])
-        ret += u'Codigos de barra modificados {}\n'.format(
-            stats['barc_changed'])
+        ret += u'Cod barra creados {}\n'.format(stats['barc_created'])
+        ret += u'Cod barra modificados {}\n'.format(stats['barc_changed'])
+        ret += u'Proxima linea {}\n'.format(stats['next_line'])
         return ret
 
     @property
