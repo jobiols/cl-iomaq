@@ -195,6 +195,8 @@ class AutoloadMgr(models.Model):
                     'prod_created': prod_created}
 
     def save_data_line(self, line):
+        """ Hace append de una linea al archivo correspondiente
+        """
         date = line[MAP_WRITE_DATE][:10]
         data_path = self.data_path
         data = date + '-data.csv'
@@ -211,7 +213,7 @@ class AutoloadMgr(models.Model):
             :param data: Nombre del archivo origen
         """
         last_replication = self.last_replication
-        _logger.info('REPLICATION: Process Files '
+        _logger.info('REPLICATION FILES START: Processing Files '
                      'with timestamp > {}'.format(last_replication))
 
         data_path = self.data_path
@@ -221,6 +223,9 @@ class AutoloadMgr(models.Model):
             for line in reader:
                 if line and line[MAP_WRITE_DATE] > last_replication:
                     self.save_data_line(line)
+
+        _logger.info('REPLICATION FILES END: Processed Files '
+                     'with timestamp > {}'.format(last_replication))
 
         self.last_replication = str(datetime.now())
 
@@ -263,7 +268,7 @@ class AutoloadMgr(models.Model):
         start_time = time.time()
         data_path = self.data_path
         rec = self.create({})
-        _logger.info('REPLICATION: Start #{}'.format(rec.id))
+        _logger.info('REPLICATION PRODUCTS: Start #{}'.format(rec.id))
         try:
             start = time.strftime('%Y-%m-%d %H:%M:%S',
                                   time.localtime(start_time))
@@ -288,7 +293,7 @@ class AutoloadMgr(models.Model):
                             self.get_stats(start, elapsed, stats),
                             email_from, email_to)
 
-            _logger.info('REPLICATION: End')
+            _logger.info('REPLICATION PRODUCTS: End elapsed=%s' % elapsed)
 
             rec.write({
                 'name': '#{} Replicacion'.format(rec.id),
