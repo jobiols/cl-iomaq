@@ -22,6 +22,7 @@
     'name': 'Product autoload',
     'version': '9.0.2.2.1',
     'license': 'AGPL-3',
+    "development_status": "Production/Stable",  # "Alpha|Beta|Production/Stable|Mature"
     'category': 'Tools',
     'summary': 'Carga automatica de productos',
     'author': 'jeo Software',
@@ -32,7 +33,6 @@
         'purchase',
         'product_multi_barcode',
     ],
-
     'data': [
         'security/ir.model.access.csv',
         'data/cron_data.xml',

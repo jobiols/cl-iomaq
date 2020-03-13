@@ -8,6 +8,7 @@
     "summary": "Prevent creation of extra moves in picking processing",
     "category": "Logistics",
     "website": "http://jeosoft.com.ar",
+    "development_status": "Production/Stable",  # "Alpha|Beta|Production/Stable|Mature"
     "author": "jeosoft",
     "license": "AGPL-3",
     "application": False,
