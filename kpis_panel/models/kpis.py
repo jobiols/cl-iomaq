@@ -12,23 +12,63 @@ class Kpis(models.Model):
     vendor_id = fields.Many2one(
         'res.partner',
         domain="[('category_id.name', 'in', ['MERCADERIA'] )]",
-        required=True,
+        required=True
     )
     total_payable = fields.Float(
-        required=True,
+        required=True
     )
     stock_valuation = fields.Float(
         required=True,
         string="Stock valuation (sale price w/tax)"
     )
     count = fields.Integer(
-        required=True,
+        required=True
     )
+    updated = fields.Datetime(
+        default=lambda x: fields.datetime.now(),
+        readonly=True
+    )
+
+    @property
+    def last_kpi_run(self):
+        parameter_obj = self.env['ir.config_parameter']
+        last = parameter_obj.get_param('last_kpi_run')
+        return last if last else '2000-01-01'
+
+    @last_kpi_run.setter
+    def last_kpi_run(self, value):
+        parameter_obj = self.env['ir.config_parameter']
+        parameter_obj.set_param('last_kpi_run', str(value))
+
+    def update_reported_vendors(self):
+        """ Actualizar la tabla 'kpis_panel.kpis' con los vendors que tienen
+            la etiqueta MERCADERIA
+        """
+        import wdb;wdb.set_trace()
+        domain = [('category_id.name', 'in', ['MERCADERIA'])]
+        vendors = self.env['res.partner'].search(domain)
+        for vendor in vendors:
+            # si no esta en kpis_panel.kpis lo agrego
+            if not self.search([('vendor_id', '=', vendor.id)]):
+                self.create({'vendor_id': vendor.id,
+                             'total_payable': 0,
+                             'stock_valuation': 0,
+                             'count': 0})
+
+        # si el kpi no tiene mercaderia lo borro
+        domain = [('vendor_id.category_id.name','not in',['MERCADERIA'])]
+        delete = self.search(domain)
+        delete.unlink()
 
     @api.model
     @api.depends('vendor_id')
     def update(self):
         # limpiar la tabla
+        import wdb;wdb.set_trace()
+
+        self.update_reported_vendors()
+
+
         self.search([]).unlink()
         # cargar todos los proveedores que tengan MERCADERIA
         domain = [('category_id.name', 'in', ['MERCADERIA'])]
