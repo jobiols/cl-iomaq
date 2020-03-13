@@ -31,14 +31,24 @@ class Test_kpis(common.TransactionCase):
 
         self.category = self.env['res.partner.category'].create(
             {'name': 'MERCADERIA'})
+        self.category1 = self.env['res.partner.category'].create(
+            {'name': 'CLIENTES'})
+        self.category2 = self.env['res.partner.category'].create(
+            {'name': 'VERDURA'})
+        self.category3 = self.env['res.partner.category'].create(
+            {'name': 'ANIMALES'})
 
         self.vendor1 = self.env['res.partner'].create(
             {'name': 'proveedor1',
-             'category_id': [(6, 0, [self.category.id])]}
+             'category_id': [(6, 0, [self.category1.id,
+                                     self.category.id,
+                                     self.category2.id,
+                                     self.category3.id])]}
         )
         self.vendor2 = self.env['res.partner'].create(
             {'name': 'proveedor2',
-             'category_id': [(6, 0, [self.category.id])]}
+             'category_id': [(6, 0, [self.category.id,
+                                     self.category3.id])]}
         )
         self.vendor3 = self.env['res.partner'].create(
             {'name': 'proveedor3'}
@@ -51,6 +61,13 @@ class Test_kpis(common.TransactionCase):
             'vendor_id': self.vendor3.id}
         )
 
-    def test_01_update(self):
+    def test_01_update_table(self):
         kpis = self.env['kpis_panel.kpis']
         kpis.update_reported_vendors()
+        tst = kpis.search([])
+        self.assertEqual(tst[0].vendor_id, self.vendor1)
+        self.assertEqual(tst[1].vendor_id, self.vendor2)
+
+    def test_02_update(self):
+        kpis = self.env['kpis_panel.kpis']
+        kpis.update()
