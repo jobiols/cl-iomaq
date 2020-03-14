@@ -59,9 +59,6 @@ class Kpis_mensual(models.Model):
 
     @api.model
     def run(self):
-        _logger.info('updating mensual kpi')
-        start_time = time.time()
-
         # fecha del dia de hoy
         date = datetime.date.today()
 
@@ -70,6 +67,9 @@ class Kpis_mensual(models.Model):
         # si no cambia el mes, no es el ultimo dia, entonces terminamos
         if date.month == tomorrow.month:
             return
+
+        _logger.info('updating mensual kpi')
+        start_time = time.time()
 
         # obtener el total de stock valuado al costo de compra para las
         # ubicaciones que dependen de WH, (Outlet y Existencias).
