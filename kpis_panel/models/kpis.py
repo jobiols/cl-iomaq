@@ -58,7 +58,6 @@ class Kpis(models.Model):
                 self.create({'vendor_id': vendor.id})
                 _logger.info('ADDED KPI for %s' % vendor.name)
 
-
         # quitar los vendors que estan en kpi y no tienen etiqueta
         for kpi in self.search([]):
             if 'MERCADERIA' not in kpi.vendor_id.category_id.mapped('name'):
@@ -67,7 +66,6 @@ class Kpis(models.Model):
 
     @api.model
     def update(self):
-        import wdb;wdb.set_trace()
         domain = [('updated', '<=', str(fields.datetime.now()))]
         kpis = self.search(domain, limit=1)
 
