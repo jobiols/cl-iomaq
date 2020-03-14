@@ -2,6 +2,16 @@
 <openerp>
     <data noupdate="1">
 
+        <!-- Cron data update reported vendors kpi table -->
+        <record id="bulonfer_cron_update_reported_vendors_table" model="ir.cron">
+            <field name="name">Update Reported Vendors KPI Table</field>
+            <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+            <field name="model">kpis_panel.kpis</field>
+            <field name="function">update_reported_vendors</field>
+            <field name="args"></field>
+        </record>
+
         <!-- Cron data kpis -->
         <record id="bulonfer_cron_data" model="ir.cron">
             <field name="name">Update KPIS</field>

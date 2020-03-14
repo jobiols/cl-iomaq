@@ -6,6 +6,7 @@ Facturacion / Reporte de proveedores
 - Deuda total
 - Valuacion de stock al precio de venta actual
 - Cantidad de productos
+- Actualizado
 
 Facturacion / Reporte mensual de stock
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

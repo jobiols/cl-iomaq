@@ -24,6 +24,7 @@
     'author': 'jeo Software',
     'website': 'www.jeosoft.com.ar',
     'license': 'AGPL-3',
+    "development_status": "Production/Stable",  # "Alpha|Beta|Production/Stable|Mature"
     'category': 'Accounting & Finance',
     'data': [
         'security/ir.model.access.csv',
@@ -35,6 +36,7 @@
     'depends': [
         'base',
         'account',
+        'stock'
     ],
     'test': [],
     'installable': True,
