@@ -15,6 +15,7 @@ PAYABLE_ID = 2
 
 class Kpis_mensual(models.Model):
     _name = 'kpis_panel.kpis_mensual'
+    _order = 'date desc'
 
     @api.multi
     def _compute_currency_id(self):
@@ -23,45 +24,54 @@ class Kpis_mensual(models.Model):
 
     date = fields.Date(
         name='Fecha',
-        help='Fecha en la que se calculan los valores'
+        help='Fecha en la que se calculan los valores',
+        readonly=True
     )
     stock_value_purchase_historic = fields.Monetary(
         string='Valuacion de Stock (compra historica)',
         help='Valuacion de stock al precio historico de compra. Es el precio '
-             'que se pago al comprarlo.'
+             'que se pago al comprarlo.',
+        readonly=True
     )
     stock_value_purchase = fields.Monetary(
         string='Valuacion de Stock (compra a la fecha)',
         help='Valuacion de stock al precio de compra. Es el precio de compra '
-             'que tenia a la fecha de este registro'
+             'que tenia a la fecha de este registro',
+        readonly=True
     )
     stock_value_sell = fields.Monetary(
         string='Valuacion de Stock (venta a la fecha)',
         help='Valuacion de stock al precio de venta, es el precio de venta '
-             'que tenia a la fecha de este registro'
+             'que tenia a la fecha de este registro',
+        readonly=True
     )
 
     payable = fields.Monetary(
         string='Deuda con proveedores',
-        help='Es el balance de las cuentas de tipo "A Pagar" '
+        help='Es el balance de las cuentas de tipo "A Pagar" ',
+        readonly=True
     )
     receivable = fields.Monetary(
         string='Deuda de los clientes',
-        help='Es el balance de las cuentas de tipo "A Cobrar" '
+        help='Es el balance de las cuentas de tipo "A Cobrar" ',
+        readonly=True
     )
     currency_id = fields.Many2one(
         'res.currency',
         compute='_compute_currency_id',
-        readonly=True,
         string="Currency",
-        help='Utility field to express amount currency'
+        help='Utility field to express amount currency',
+        readonly=True
     )
 
     @api.model
     def run(self):
+        """ Calcula los kpi mensuales, esto tarda unos cuatro minutos
+        """
         # fecha del dia de hoy
         date = datetime.date.today()
-
+        # para pruebas fecha del dia de la prueba
+        #date = datetime.datetime.strptime('2020-01-31', '%Y-%m-%d')
         # sumamos un dia
         tomorrow = date + relativedelta(days=1)
         # si no cambia el mes, no es el ultimo dia, entonces terminamos
