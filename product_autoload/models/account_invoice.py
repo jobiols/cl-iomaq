@@ -34,20 +34,33 @@ class AccountInvoice(models.Model):
 
     @api.multi
     def compute_invoice_discount(self):
+        """ Calcula el descuento de cada linea basado en el descuento global
+            que se hace con una linea de factura que representa el descuento
+            Esa linea tiene precio negativo.
+        """
+
+        # obtener los impuestos de iva que buscaremos
+        tax21 = self.env['account.tax'].search(
+            [('amount', '=', 21.0), ('type_tax_use', '=', 'purchase')])
+        tax105 = self.env['account.tax'].search(
+            [('amount', '=', 10.5), ('type_tax_use', '=', 'purchase')])
 
         for inv in self:
-            _logger.info('Processing discounts on invoice %s' %
-                         inv.document_number)
-
+            number = inv.document_number if \
+                inv.document_number else inv.display_name
+            _logger.info('Processing discounts on invoice %s' % number)
+            # poner en cero los acumuladores
             prod_iva_21 = disc_iva_21 = prod_iva_105 = disc_iva_105 = 0
+
+            # procesar cada linea de la factura
             for line in inv.invoice_line_ids:
                 # el subtotal de la linea
                 subtotal = line.price_unit * (
                     1 - line.discount / 100) * line.quantity
 
                 # sumar IVA 21%
-                if line.invoice_line_tax_ids[0].amount == 21.0:
-                    if line.product_id:
+                if tax21 in line.invoice_line_tax_ids:
+                    if line.price_subtotal_signed >= 0:
                         # sumar subtotales con el descuento de linea aplicado
                         prod_iva_21 += subtotal
                     else:
@@ -55,8 +68,8 @@ class AccountInvoice(models.Model):
                         disc_iva_21 += subtotal
 
                 # sumar IVA 10.5%
-                if line.invoice_line_tax_ids[0].amount == 10.5:
-                    if line.product_id:
+                if tax105 in line.invoice_line_tax_ids:
+                    if line.price_subtotal_signed >= 0:
                         # sumar subtotales con el descuento de linea aplicado
                         prod_iva_105 += subtotal
                     else:
@@ -67,11 +80,14 @@ class AccountInvoice(models.Model):
             disc_105 = disc_iva_105 / prod_iva_105 if prod_iva_105 else False
 
             # ponerle el descuento global a todas las lineas
-            for line in inv.invoice_line_ids:
-                if line.invoice_line_tax_ids[0].amount == 21.0 and line.product_id:
-                    line.invoice_discount = disc_21
+            lines21 = inv.invoice_line_ids.filtered(
+                lambda r: r.price_subtotal_signed > 0 and
+                tax21 in r.invoice_line_tax_ids)
+            lines21.write({'invoice_discount': disc_21})
 
-                if line.invoice_line_tax_ids[0].amount == 10.5 and line.product_id:
-                    line.invoice_discount = disc_105
+            lines105 = inv.invoice_line_ids.filtered(
+                lambda r: r.price_subtotal_signed > 0 and
+                tax105 in r.invoice_line_tax_ids)
+            lines105.write({'invoice_discount': disc_105})
 
             inv.discount_processed = True
