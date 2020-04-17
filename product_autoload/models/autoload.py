@@ -185,7 +185,7 @@ class AutoloadMgr(models.Model):
 
             # si terminamos el archivo hay que borrarlo y poner nl=1
             if reader.line_num - next_line + 1 < lote:
-                os.remove(data_path+data)
+                os.remove(data_path + data)
                 self.next_line = '1'
             else:
                 self.next_line = str(reader.line_num + 1)
@@ -244,7 +244,7 @@ class AutoloadMgr(models.Model):
 
     @api.model
     def run(self, item=ITEM, productcode=PRODUCTCODE, data=DATA,
-            process_qty=False):
+        process_qty=False):
         """
         Actualiza los datos de los productos
 
@@ -575,3 +575,102 @@ class AutoloadMgr(models.Model):
                 prod.list_price = pinfo[1].price * (item.margin + 1)
 
         _logger.info('FIX: END ----------------------------------------------')
+
+    @api.model
+    def review_quant_cost(self):
+        """ Revisa los costos de los quants, para lanzar manualmente
+
+            Verifica que el margen no sea raro (negativo en principio)
+            Si el margen de la ail da negativo, busca el costo del producto
+            y se lo pone en el quant correspondiente
+        """
+
+        def get_historic_cost(product, date):
+            """ me traigo el precio historico del inventario
+            """
+            ps_obj = self.env['product.supplierinfo']
+            domain = [('product_tmpl_id', '=', product.product_tmpl_id.id),
+                      ('date_start', '<=', date)]
+            ps = ps_obj.search(domain, limit=1, order='date_start')
+
+            return ps.price if ps else False
+
+        bulonfer = self.env['res.partner'].search([('ref', '=', 'BULONFER')])
+
+        ail_obj = self.env['account.invoice.line']
+        quant_obj = self.env['stock.quant']
+        ails = ail_obj.search([('product_margin', '<', 0),
+                               ('invoice_id.state', '!=', 'draft'),
+                               ('date_invoice', '>', '2020-01-01'),
+                               ('invoice_id.type', '=', 'out_invoice')],
+                              order="date_invoice")
+
+        for ail in ails:
+            # verificar si es bulonfer
+            if bulonfer not in ail.product_id.seller_ids.mapped('name'):
+                continue
+            _logger.info('FIX: PROCESANDO: %s %s' %
+                         (ail.date_invoice, ail.product_id.default_code))
+
+            invoice_date = ail.invoice_id.date_invoice
+
+            # obtener el costo al momento de la compra segun inventario
+            historic_inv_cost = get_historic_cost(ail.product_id, invoice_date)
+
+            # obtener el costo del producto segun los quants
+            historic_quant_cost = ail.product_id.standard_product_price
+
+            # obtener el costo del producto segun bulonfer hoy
+            today_cost = ail.product_id.bulonfer_cost
+
+            # precio de lista de la factura
+            list_price = ail.price_unit
+
+            # obtener los quants correspondientes a ese producto
+            domain = [('location_id.name', '=', 'Stock'),
+                      ('product_id.id', '=', ail.product_id.id),
+                      ('in_date', '<', invoice_date)]
+
+            # verificar que no este mal el costo
+            cost = min(historic_inv_cost, today_cost) \
+                if historic_inv_cost else today_cost
+
+            if cost * 1.35 > list_price:
+                _logger.info('FIX: AJUSTANDO: %s %s' % (cost, list_price))
+                cost = list_price / 1.35
+
+            quants = quant_obj.search(domain)
+            for quant in quants:
+                if quant.cost > cost:
+                    quant.cost = cost
+
+            ail.product_margin = list_price / cost - 1 \
+                if cost and list_price else 1e10
+
+        """
+        stock_quant_obj = self.env['stock.quant']
+        for sq in stock_quant_obj.search([('cost', '=', 0),
+                                          ('location_id.name', '=', 'Stock')]):
+            if sq.product_id.invoice_cost:
+                # si tengo el costo factura lo pongo, esto es bulonfer.
+                sq.cost = sq.product_id.invoice_cost
+            else:
+                # tengo el costo hoy, lo pongo
+                sq.cost = sq.product_id.bulonfer_cost
+
+            if not sq.cost:
+                # el costo sigue en cero busco la factura
+                invoice_lines_obj = self.env['account.invoice.line']
+                invoice_line = invoice_lines_obj.search(
+                    [('product_id.default_code', '=',
+                      sq.product_id.default_code)],
+                    order="id desc",
+                    limit=1)
+
+                if invoice_line and invoice_line.price_unit:
+                    # precio que cargaron en la factura de compra
+                    invoice_price = invoice_line.price_unit
+                    # descuento en la linea de factura
+                    invoice_price *= (1 - invoice_line.discount / 100)
+                    sq.cost = invoice_price
+        """
