@@ -7,7 +7,7 @@
             <form string="Check Bulonfer prices">
                 <group col="4">
                     <group col="1">
-                        <field name="global_discount" nolabel="1"/>
+                        <field name="global_discount"/>
                     </group>
                     <group col="1" colspan="3">
                         <p>El proceso de calcular precios se aplica a cada linea
