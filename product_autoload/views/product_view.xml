@@ -15,6 +15,7 @@
             </field>
         </record>
 
+        <!-- agregar la oreja de historial de costos -->
         <record id="product_template_only_form_view" model="ir.ui.view">
             <field name="name">PRODUCT AUTOLOAD: cost history</field>
             <field name="model">product.template</field>
@@ -24,7 +25,7 @@
                     <page name="cost_history" string="Cost History"
                           groups="product_autoload.group_show_history_cost,base.group_erp_manager">
                         <field name="cost_history_ids">
-                            <tree string="Cost History">
+                            <tree string="Cost History" create="0" delete="0">
                                 <field name="qty"/>
                                 <field name="cost" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                                 <field name="in_date"/>
@@ -34,6 +35,22 @@
                         </field>
                     </page>
                 </xpath>
+            </field>
+        </record>
+
+        <!-- formulario para historial de costos -->
+        <record id="quant_history_form_view" model="ir.ui.view">
+            <field name="name">PRODUCT AUTOLOAD: quant history form</field>
+            <field name="model">stock.quant</field>
+            <field name="priority" eval="1"/>
+            <field name="arch" type="xml">
+                <form string="Stock Quant">
+                    <group>
+                        <field name="product_id"/>
+                        <field name="qty"/>
+                        <field name="cost"/>
+                    </group>
+                </form>
             </field>
         </record>
 

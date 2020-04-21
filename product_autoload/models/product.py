@@ -248,6 +248,17 @@ class ProductTemplate(models.Model):
                 # actualizo el costo.
                 if not quant and decreased_cost(cost):
                     prod.state = 'offer'
+            else:
+                # cuando proceso manual y el producto es bulonfer ajustar
+                # tambien el valor de costo en el quant.
+                # Hubo que hacer esto porque ponian mal el costo en la PO y se
+                # cargaron muchos costos mal en los quants.
+                # esto solo actualiza el quant mas viejo, alqunos quedaran mal.
+                if quant and vendor_ref == 'BULONFER':
+                    quant.write({
+                        'cost': cost,
+                        'cost_product': cost
+                    })
 
             # aqui ajusta el costo hoy pero se puede heredar para
             # hacer otras cosas!
