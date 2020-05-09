@@ -131,7 +131,6 @@ class AccountInvoiceLine(models.Model):
     @api.multi
     def _compute_product_margin(self, date=False):
         for ail in self:
-            import wdb;wdb.set_trace()
             if ail.product_id and ail.invoice_id.type in ['out_invoice',
                                                           'out_refund']:
                 # precio de venta sacado de la linea de factura, teniendo
