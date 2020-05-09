@@ -131,6 +131,7 @@ class AccountInvoiceLine(models.Model):
     @api.multi
     def _compute_product_margin(self, date=False):
         for ail in self:
+            import wdb;wdb.set_trace()
             if ail.product_id and ail.invoice_id.type in ['out_invoice',
                                                           'out_refund']:
                 # precio de venta sacado de la linea de factura, teniendo
@@ -150,9 +151,16 @@ class AccountInvoiceLine(models.Model):
                 # Esto es un parche porque en el default pusimos normal
                 # hay que arreglarlo rapidamente.
                 if business_mode != 'consignment':
-                    # precio de costo del producto en moneda de la company
-                    # es el costo del quant mas viejo
-                    cost = ail.product_id.standard_price
+                    # tomar precio de costo del producto en moneda de la
+                    # company es el costo del quant mas viejo.
+
+                    # Pero si el stock es <0 pasa que empieza a tomar el costo
+                    # de un quant que no sabemos de donde sale y normalmente
+                    # esta mal, es mejor tomar el costo real.
+                    if ail.product_id.virtual_available >= 0:
+                        cost = ail.product_id.standard_price
+                    else:
+                        cost = ail.product_id.bulonfer_cost
 
                 if business_mode == 'consignment':
                     if date:
