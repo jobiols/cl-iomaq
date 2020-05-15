@@ -688,8 +688,7 @@ class AutoloadMgr(models.Model):
             #esto seguramente esta en la moneda del prodcuto.
             cost = ail.product_id.invoice_cost
 
-            ail.product_margin = 100 * (price / cost - 1) \
-                if cost != 0 else 1e10
+            ail.product_margin = (price / cost - 1) if cost != 0 else 1e10
 
             _logger.info('FIX: %s - %s' % (ail.product_margin,
                                            ail.product_id.default_code))
