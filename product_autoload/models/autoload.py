@@ -647,30 +647,49 @@ class AutoloadMgr(models.Model):
             ail.product_margin = list_price / cost - 1 \
                 if cost and list_price else 1e10
 
+    @api.model
+    def autofix_margin(self):
+        """ Revisar los margenes de una factura y corregirlos teniendo en
+            cuenta el costo historico o el costo sacado de la factura y ademas
+            la moneda porque hicieron la factura en dolares.
         """
-        stock_quant_obj = self.env['stock.quant']
-        for sq in stock_quant_obj.search([('cost', '=', 0),
-                                          ('location_id.name', '=', 'Stock')]):
-            if sq.product_id.invoice_cost:
-                # si tengo el costo factura lo pongo, esto es bulonfer.
-                sq.cost = sq.product_id.invoice_cost
-            else:
-                # tengo el costo hoy, lo pongo
-                sq.cost = sq.product_id.bulonfer_cost
+        _logger.info('FIX: START --------------------------------------------')
+        ail_obj = self.env['account.invoice.line']
 
-            if not sq.cost:
-                # el costo sigue en cero busco la factura
-                invoice_lines_obj = self.env['account.invoice.line']
-                invoice_line = invoice_lines_obj.search(
-                    [('product_id.default_code', '=',
-                      sq.product_id.default_code)],
-                    order="id desc",
-                    limit=1)
+        # Obtener las lineas de la factura de Siemens. FA-A0001-00000009
+        ails = ail_obj.search([('invoice_id.id', '=', 13982)])
 
-                if invoice_line and invoice_line.price_unit:
-                    # precio que cargaron en la factura de compra
-                    invoice_price = invoice_line.price_unit
-                    # descuento en la linea de factura
-                    invoice_price *= (1 - invoice_line.discount / 100)
-                    sq.cost = invoice_price
-        """
+        # chequear que es la correcta
+        assert ails[0].invoice_id.display_name == 'FA-A0001-00000009'
+
+        for ail in ails:
+            # esto esta en dolares
+
+            # precio unitario de la linea de factura de venta
+            unit_price = ail.price_unit
+
+            # currency de la factura USD
+            ic = ail.invoice_id.currency_id.with_context(date=ail.date_invoice)
+            # currency de la company ARS
+            cc = self.env.user.currency_id
+
+            # pasar el precio a pesos a la fecha de la factura
+            unit_price = ic.compute(unit_price, cc, round=False)
+
+            # descuento unitario en la linea de factura de venta
+            discount = ail.discount
+
+            # precio unitario a que se vendio este item en ARS
+            price = unit_price * (1-discount/100)
+
+            # recalculamos el invoice cost por las dudas.
+            ail.product_id.product_tmpl_id.set_invoice_cost()
+
+            #esto seguramente esta en la moneda del prodcuto.
+            cost = ail.product_id.invoice_cost
+
+            ail.product_margin = 100 * (price / cost - 1) \
+                if cost != 0 else 1e10
+
+            _logger.info('FIX: %s - %s' % (ail.product_margin,
+                                           ail.product_id.default_code))
