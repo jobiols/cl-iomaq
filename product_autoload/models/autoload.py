@@ -554,7 +554,7 @@ class AutoloadMgr(models.Model):
 
         # obtener todos los templates de productos que son bulonfer sin repetir
         for prod in prods:
-            if not prod.product_tmpl_id in prod_tmpl:
+            if prod.product_tmpl_id not in prod_tmpl:
                 prod_tmpl += prod.product_tmpl_id
 
         # por cada producto bulonfer revisar los precios

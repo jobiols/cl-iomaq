@@ -22,7 +22,7 @@
     'name': 'Iomaq',
     'version': '9.0.2.1.3',
     'license': 'Other OSI approved licence',
-    "development_status": "Production/Stable",  # "Alpha|Beta|Production/Stable|Mature"
+    "development_status": "Production/Stable",  
     'category': 'Tools',
     'summary': 'Customización IOMAQ SA',
     'author': 'jeo Software',

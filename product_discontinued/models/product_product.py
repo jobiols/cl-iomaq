@@ -4,9 +4,9 @@
 from openerp import fields, models
 
 
-class ProductTemplate(models.Model):
-    _inherit = "product.template"
+class ProductProduct(models.Model):
+    _inherit = "product.product"
 
     discontinued = fields.Boolean(
-        string='Discontinuado'
+        related="product_tmpl_id.discontinued"
     )
