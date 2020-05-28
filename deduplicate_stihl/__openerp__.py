@@ -27,7 +27,7 @@
     'author': "jeo Software",
     'website': 'http://github.com/jobiols/cl-iomaq',
     'license': 'AGPL-3',
-    "development_status": "Production/Stable",  
+    "development_status": "Production/Stable",
     'depends': [
         'stock'
     ],

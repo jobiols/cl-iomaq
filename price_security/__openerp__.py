@@ -25,7 +25,7 @@
     'author': 'ADHOC SA, Odoo Community Association (OCA), jeo Software',
     'website': 'http://www.jeosoft.com.ar/',
     'license': 'AGPL-3',
-    "development_status": "Production/Stable",  
+    "development_status": "Production/Stable",
     'depends': [
         'sale',
         'stock',

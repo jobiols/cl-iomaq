@@ -22,7 +22,7 @@
     'name': 'Product autoload',
     'version': '9.0.2.2.1',
     'license': 'AGPL-3',
-    "development_status": "Production/Stable",  
+    "development_status": "Production/Stable",
     'category': 'Tools',
     'summary': 'Carga automatica de productos',
     'author': 'jeo Software',

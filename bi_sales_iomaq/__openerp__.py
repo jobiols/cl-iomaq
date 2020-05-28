@@ -22,7 +22,7 @@
     'name': 'Inteligencia de negocio para ventas',
     'version': '9.0.0.10.1',
     'license': 'AGPL-3',
-    "development_status": "Production/Stable", 
+    "development_status": "Production/Stable",
     'category': 'Tools',
     'summary': 'Customizacion de BI para IOMAQ',
     'author': 'jeo Software',
