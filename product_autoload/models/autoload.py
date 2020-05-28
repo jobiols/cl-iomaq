@@ -618,7 +618,7 @@ class AutoloadMgr(models.Model):
             historic_inv_cost = get_historic_cost(ail.product_id, invoice_date)
 
             # obtener el costo del producto segun los quants
-            historic_quant_cost = ail.product_id.standard_product_price
+            # historic_quant_cost = ail.product_id.standard_product_price
 
             # obtener el costo del producto segun bulonfer hoy
             today_cost = ail.product_id.bulonfer_cost
@@ -685,7 +685,7 @@ class AutoloadMgr(models.Model):
             # recalculamos el invoice cost por las dudas.
             ail.product_id.product_tmpl_id.set_invoice_cost()
 
-            #esto seguramente esta en la moneda del prodcuto.
+            # esto seguramente esta en la moneda del prodcuto.
             cost = ail.product_id.invoice_cost
 
             ail.product_margin = (price / cost - 1) if cost != 0 else 1e10

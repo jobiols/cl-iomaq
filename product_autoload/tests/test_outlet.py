@@ -4,10 +4,6 @@
 from __future__ import division
 
 from openerp.tests.common import TransactionCase
-from ..models.mappers import ProductMapper, MAP_NAME, MAP_UPV, \
-    MAP_STANDARD_PRICE, MAP_WEIGHT
-import csv
-import os
 
 #   Forma de correr el test
 #   -----------------------
@@ -37,4 +33,3 @@ class TestOutlet(TransactionCase):
         """ Este setup corre antes de cada método ---------------------------00
         """
         super(TestOutlet, self).setUp()
-

@@ -7,15 +7,13 @@
     <field name="model">purchase.order</field>
     <field name="inherit_id" ref="purchase.purchase_order_form"/>
     <field name="arch" type="xml">
-    
-        <xpath expr="//tree" position="attributes">
-
-            <attribute name="colors">orange:product_id</attribute>
-
+        <xpath expr="//tree" position="inside">
+            <field name="discontinued" invisible="1"/>
         </xpath>
-        
+        <xpath expr="//tree" position="attributes">
+            <attribute name="colors">orange:discontinued</attribute>
+        </xpath>
     </field>
 </record>
 
 </odoo>
-<!--product_id.discontinued-->
