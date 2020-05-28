@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- agregar marca de discontinuado -->
+    <record id="view_product_supplier_inherit" model="ir.ui.view">
+        <field name="name">PRODUCT DISONTINUED marca de discontinuado</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="purchase.view_product_supplier_inherit"/>
+        <field name="arch" type="xml">
+            <div name="options" position="inside">
+                <div>
+                    <field name="discontinued"/>
+                    <label for="discontinued"/>
+                </div>
+            </div>
+        </field>
+    </record>
+    
+<!-- colorizar el treeview de productos -->
+<record id="product_template_tree_view" model="ir.ui.view">
+    <field name="name">PRODUCT DISONTINUED color en treeview</field>
+    <field name="model">product.template</field>
+    <field name="inherit_id" ref="product.product_template_tree_view"/>
+    <field name="arch" type="xml">
+        <xpath expr="//tree" position="inside">
+            <field name="discontinued" invisible="1" />
+        </xpath>
+
+        <xpath expr="//tree" position="attributes">
+            <attribute name="colors">orange:discontinued</attribute>
+        </xpath>
+        
+    </field>
+</record>
+
+<!-- filtro de discontinuados -->
+<record id="product_template_search_view" model="ir.ui.view">
+    <field name="name">product.template.search</field>
+    <field name="model">product.template</field>
+    <field name="inherit_id" ref="product.product_template_search_view"/>
+    <field name="arch" type="xml">
+
+    <xpath expr="//search" position="inside">
+            <filter string="Discontinuado" name="filter_discontinuated" 
+            domain="[('discontinued','=',1)]"/>
+    </xpath>
+
+    </field>
+</record>
+
+</odoo>

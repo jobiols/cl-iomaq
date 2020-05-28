@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <!-- grupo con acceso para ver productos discontinuados -->
+        <record id="group_enable_product_discontinued" model="res.groups">
+            <field name="name">Ver productos discontinuados</field>
+            <field name="comment">Los usuarios de este grupo podran ver los productos discontinuados, los que no sean usuarios no los veran.</field>
+        </record>
+     </data>
+</openerp>
