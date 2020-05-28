@@ -25,7 +25,7 @@
     'category': 'Tools',
     'summary': 'Crear / Actualizar productos',
     'author': 'jeo Software',
-    "development_status": "Production/Stable",  # "Alpha|Beta|Production/Stable|Mature"
+    "development_status": "Production/Stable",
     'depends': [
         'stock',
         'product_currency',

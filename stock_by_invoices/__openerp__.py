@@ -27,7 +27,7 @@
     'author': "jeo Software",
     'website': 'http://github.com/jobiols/module-repo',
     'license': 'AGPL-3',
-    "development_status": "Production/Stable",  # "Alpha|Beta|Production/Stable|Mature"
+    "development_status": "Production/Stable",
     'depends': [
         'product',
         'stock'
