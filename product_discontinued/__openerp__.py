@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-# -----------------------------------------------------------------------------
+##############################################################################
 #
-#    Copyright (C) 2016  jeo Software  (http://www.jeosoft.com.ar)
+#    Copyright (C) 2020 jeo Software  (http://www.jeosoft.com.ar)
 #    All Rights Reserved.
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -17,37 +17,26 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-# -----------------------------------------------------------------------------
+##############################################################################
+
 {
-    'name': 'Product autoload',
-    'version': '9.0.2.2.1',
+    'name': 'Product Discontinued',
+    'version': '9.0.0.0.0',
+    'category': 'Stock',
+    'summary': "Manejo especial de productos discontinuados",
+    'author': "jeo Software",
+    'website': 'http://github.com/jobiols/cl-iomaq',
     'license': 'AGPL-3',
-    "development_status": "Production/Stable",
-    'category': 'Tools',
-    'summary': 'Carga automatica de productos',
-    'author': 'jeo Software',
+    "development_status": "Beta",  # "Alpha|Beta|Production/Stable|Mature"
     'depends': [
-        'l10n_ar_account',
-        'stock',
-        'sale',
-        'purchase',
-        'product_multi_barcode',
+        'product',
+        'purchase'
     ],
     'data': [
-        'security/ir.model.access.csv',
-        'data/cron_data.xml',
-        'views/settings_view.xml',
+        'views/sale_order_view.xml',
         'views/product_view.xml',
-        'views/autoload_manager_view.xml',
-        'views/purchase_view.xml',
-        'wizard/check_prices_view.xml',
         'security/security.xml'
-    ],
-    'demo': [
-        'data/demo_data.xml',
     ],
     'installable': True,
     'application': False,
-    'auto_install': False,
-    'images': [],
 }

@@ -24,7 +24,7 @@
     'author': 'jeo Software',
     'website': 'www.jeosoft.com.ar',
     'license': 'AGPL-3',
-    "development_status": "Production/Stable",  # "Alpha|Beta|Production/Stable|Mature"
+    "development_status": "Production/Stable",
     'category': 'Accounting & Finance',
     'data': [
         'security/ir.model.access.csv',

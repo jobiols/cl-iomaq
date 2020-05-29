@@ -25,7 +25,7 @@
     'author': 'jeo Software',
     'website': 'http://jeosoft.com.ar/',
     'license': 'AGPL-3',
-    "development_status": "Production/Stable",  # "Alpha|Beta|Production/Stable|Mature"
+    "development_status": "Production/Stable",
     'depends': [
         'product_currency',
         'stock',

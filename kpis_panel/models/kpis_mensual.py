@@ -71,7 +71,7 @@ class Kpis_mensual(models.Model):
         # fecha del dia de hoy
         date = datetime.date.today()
         # para pruebas fecha del dia de la prueba
-        #date = datetime.datetime.strptime('2020-01-31', '%Y-%m-%d')
+        # date = datetime.datetime.strptime('2020-01-31', '%Y-%m-%d')
         # sumamos un dia
         tomorrow = date + relativedelta(days=1)
         # si no cambia el mes, no es el ultimo dia, entonces terminamos
