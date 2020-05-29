@@ -306,7 +306,7 @@ class AutoloadMgr(models.Model):
             })
 
         except Exception as ex:
-            _logger.error('Replicacion Bulonfer {}'.format(ex.message))
+            _logger.error('Replicacion Bulonfer Error -> %s' % str(ex))
             with api.Environment.manage():
                 with registry(self.env.cr.dbname).cursor() as new_cr:
                     # Create a new environment with new cursor database
@@ -315,14 +315,13 @@ class AutoloadMgr(models.Model):
                     # with_env replace original env for this method
 
                     self.with_env(new_env).create({
-                        'name': '#{} ERROR {}'.format(rec.id, ex.message),
+                        'name': '#%s ERROR %s' % (rec.id, str(ex)),
                         'statistics': '',
                     })  # isolated transaction to commit
 
                     self.with_env(new_env).send_email(
-                        'Replicacion Bulonfer #{}, '
-                        'ERROR'.format(rec.id), ex.message,
-                        email_from, email_to)
+                        'Replicacion Bulonfer #%s, ERROR' % rec.id, 
+                        str(ex), email_from, email_to)
 
                     new_env.cr.commit()  # Don't show invalid-commit
                     # don't need close cr because is closed when finish "with"
@@ -415,7 +414,7 @@ class AutoloadMgr(models.Model):
             message = smtp.build_email(email_from, email_to, subject, body)
             smtp.send_email(message)
         except Exception as ex:
-            _logger.error('Can not send mail %s' % ex.message)
+            _logger.error('Can not send mail %s' % str(ex))
 
     def get_stats(self, start, elapsed, stats):
         ret = u'Productos procesados: {}\n'.format(stats['prod_processed'])
